@@ -1,9 +1,9 @@
 package com.neighborhood.npulse;
 
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 
-public interface DirtyEventRepo extends CrudRepository<DirtyEvent, Long> {
+public interface DirtyEventRepo extends JpaRepository<DirtyEvent, String> {
 
 }
