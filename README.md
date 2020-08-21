@@ -6,4 +6,5 @@ Junior Design - Capital One Neighborhood Pulse Application
 
 /dummy-event Returns a single properly formatted fake event
 
-/actual-events Returns all currently unparsed events in the DB
+/actual-events?limit= Returns a number of records from the database, defaults to 10 if not specified
+
