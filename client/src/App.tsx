@@ -1,16 +1,15 @@
-import React, {Component} from "react";
-import {hot} from "react-hot-loader/root";
-import "./App.css";
-import MapComponent from "./MapComponent";
+import React, { Component } from "react";
+import { hot } from "react-hot-loader/root";
+import { MapComponent } from "./components/MapComponent";
 
 class App extends Component {
   render() {
     return (
-      <div id="app" className="App">
+      <div>
         <MapComponent/>
       </div>
     );
   }
-}
+};
 
 export default hot(App);
