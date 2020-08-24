@@ -2,7 +2,7 @@ import requests
 from bs4 import BeautifulSoup
 from geopy.geocoders import GoogleV3
 
-geolocator = GoogleV3(api_key="AIzaSyBpNi3qyG9Vhc3zMKZH1ZYnuQLT0AMDzQ4",user_agent="cafe_analytics")
+geolocator = GoogleV3(api_key="api_key_here",user_agent="cafe_analytics")
 
 events = []
 page = requests.get("https://www.atlanta.net/events", headers={'User-Agent':"Firefox/48.0"})
