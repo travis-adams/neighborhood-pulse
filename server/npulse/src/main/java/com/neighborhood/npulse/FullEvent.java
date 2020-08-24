@@ -2,7 +2,7 @@ package com.neighborhood.npulse;
 
 import java.util.HashMap;
 import java.util.Map;
-
+//Deprecated
 public class FullEvent {
     private final String name;
     private final String desc;
