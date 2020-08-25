@@ -2,13 +2,16 @@ import requests
 from bs4 import BeautifulSoup
 from geopy.geocoders import GoogleV3
 
-geolocator = GoogleV3(api_key="api_key_here",user_agent="cafe_analytics")
+#KEY IS AIzaSyBpNi3-qyG9Vhc3zMKZH1ZYnuQLT0AMDzQ4 (remove dash)
 
+geolocator = GoogleV3(api_key="api_key_here",user_agent="cafe_analytics")
+i = 0
 events = []
 page = requests.get("https://www.atlanta.net/events", headers={'User-Agent':"Firefox/48.0"})
 main = BeautifulSoup(page.content, 'html.parser')
 for el in main.find_all("a", class_ = "learnMore"):
     if el.text == 'More Details':
+
         event = {}
         link = "https://www.atlanta.net" + el['href']
         event['link'] = link
@@ -49,7 +52,7 @@ for el in main.find_all("a", class_ = "learnMore"):
                     event['date'] = value
 
         #convert addr to lat/long
-        if event['addr'] != None:
+        if event['addr'] != "NULL" and event['loc'] != 'Online':
             location = geolocator.geocode(event['addr'].replace('\n',' '))
             event['latitude']  = str(location.latitude)
             event['longitude'] = str(location.longitude)
@@ -58,7 +61,8 @@ for el in main.find_all("a", class_ = "learnMore"):
             event['longitude'] = "NULL"
         
         events.append(event)
-        print(event)
+        i += 1
+        print(i)
         
 import json
 with open('events.json','w') as fp:

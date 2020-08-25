@@ -19,7 +19,7 @@ for event in events:
     #get attributes
     name = event['name']
     date = event['date']
-    desc = event['desc'].replace('"',"'")
+    desc = event['desc']
     loc  = event['loc']
     addr = event['addr']
     cat  = event['cat']
@@ -29,8 +29,8 @@ for event in events:
     lng  = event['longitude']
     #enter into table
     sql = 'INSERT INTO %s VALUES("%s","%s","%s","%s","%s","%s","%s","%s",%s,%s)' % (table_name,name,date,desc,loc,addr,cat,time,link,lat,lng)#Define insert
-    print(sql)
-    print('=======================================')
+    # print(sql)
+    # print('=======================================')
     cursor.execute(sql) #Execute insert
 conn.commit() #Commit all inserts
 conn.close()  #Close the connection
