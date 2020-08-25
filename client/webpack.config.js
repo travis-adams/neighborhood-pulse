@@ -14,7 +14,7 @@ module.exports = {
           options: {
             babelrc: false,
             presets: ["@babel/preset-env", "@babel/preset-typescript", "@babel/preset-react"],
-            plugins: ["react-hot-loader/babel"]
+            plugins: ["react-hot-loader/babel", "@babel/plugin-proposal-class-properties"]
           }
         }
       },
