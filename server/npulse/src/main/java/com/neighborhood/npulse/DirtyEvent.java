@@ -2,55 +2,57 @@ package com.neighborhood.npulse;
 
 import javax.persistence.*;
 
+
+//Deprecated
 @Entity
 @Table(name = "new_table")
 public class DirtyEvent {
     @Id
-    private String Name;
-    private String Date;
-    private String Desc;
-    private String Location;
+    private String name;
+    private String date;
+    private String desc;
+    private String location;
 
     public DirtyEvent(){
 
     }
 
-    public DirtyEvent(String Name, String Date, String Desc, String Location){
-        this.Date = Date;
-        this.Desc = Desc;
-        this.Name = Name;
-        this.Location = Location;
+    public DirtyEvent(String name, String Date, String Desc, String Location){
+        this.date = Date;
+        this.desc = Desc;
+        this.name = name;
+        this.location = Location;
     }
 
     public String getName() {
-        return Name;
+        return name;
     }
 
     public String getDate() {
-        return Date;
+        return date;
     }
 
     public String getDesc() {
-        return Desc;
+        return desc;
     }
 
     public String getLocation() {
-        return Location;
+        return location;
     }
 
     public void setDate(String date) {
-        Date = date;
+        date = date;
     }
 
     public void setDesc(String desc) {
-        Desc = desc;
+        desc = desc;
     }
 
     public void setLocation(String location) {
-        Location = location;
+        location = location;
     }
 
     public void setName(String name) {
-        Name = name;
+        name = name;
     }
 }
