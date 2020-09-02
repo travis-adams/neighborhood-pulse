@@ -6,6 +6,11 @@ import javax.persistence.Column;
 import javax.persistence.Table;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+
+/**
+ * Represents an entry in the sprint_one table
+ * Stores the data for a single event
+ */
 @Entity
 @Table(name = "sprint_one")
 public class Event {
