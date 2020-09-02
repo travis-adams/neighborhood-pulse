@@ -1,15 +1,15 @@
-import { Event } from "../domain/Event"
-import { Address } from "../domain/Address"
+import { IEvent } from "../domain/Event"
+import { IAddress } from "../domain/Address"
 
-export const DummyEvents: Event[] = [
+export const DummyEvents: IEvent[] = [
   {
     name: "Coffee and Banking",
     desc: "Get some caffeine AND learn how to manage your money!",
     eType:  "Community Event",
     link: "https://www.capitalone.com",
     date: {
-      start: new Date(),
-      end: new Date()
+      start: "8-28-2020",
+      end: "8-9-2020"
     },
     address: {
       line1: "3393 Peachtree Rd NE",
@@ -17,7 +17,7 @@ export const DummyEvents: Event[] = [
       city: "Atlanta",
       state: "GA",
       zipCode: "30326"
-    } as Address,
+    } as IAddress,
     position: {
       lat: 33.8463,
       lng: -84.3621

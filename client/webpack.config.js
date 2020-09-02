@@ -14,7 +14,7 @@ module.exports = {
           options: {
             babelrc: false,
             presets: ["@babel/preset-env", "@babel/preset-typescript", "@babel/preset-react"],
-            plugins: ["react-hot-loader/babel"]
+            plugins: ["react-hot-loader/babel", "@babel/plugin-proposal-class-properties"]
           }
         }
       },
@@ -33,7 +33,8 @@ module.exports = {
   devServer: {
     contentBase: path.join(__dirname, "public/"),
     port: 3000,
-    publicPath: "http://localhost:3000/dist/",
+    host: '0.0.0.0',
+    publicPath: "http://0.0.0.0:3000/dist/",
     hotOnly: true
   },
   plugins: [new webpack.HotModuleReplacementPlugin()]
