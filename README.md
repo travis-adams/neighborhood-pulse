@@ -10,7 +10,9 @@ Junior Design - Capital One Neighborhood Pulse Application
 
 /events/date?date=""&limit="" Returns events with matching date
 
-/events/online?limit="" Returns online events
+/events/online?limit="" Returns online events 
+
+
 =======
 
 ## Front-end
