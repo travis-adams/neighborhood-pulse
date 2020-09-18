@@ -1,6 +1,7 @@
-import React, { CSSProperties } from 'react'
+import React, { FC, CSSProperties, useState, useCallback, memo } from 'react';
 import { GoogleMap, LoadScript, Marker, InfoWindow } from '@react-google-maps/api';
-import { DummyEvents } from "../data/DummyEvents"
+import { EventService } from "../service/EventService";
+import { IEvent } from "../domain/Event";
  
 const containerStyle: CSSProperties = {
   width: '99vw',
@@ -17,22 +18,33 @@ const defaultCenter: google.maps.LatLngLiteral = {
   lng: -84.3621
 };
 
-export const MapComponent: React.FC = () => {
-  const [map, setMap] = React.useState(null);
-  // Replace DummyEvents with a list of retrieved events
-  const [events,] = React.useState(DummyEvents);
-  const [markerInfoOpenMap, setMarkerInfoOpenMap] = React.useState(new Map<number, boolean>());
+const numEvents: number = 50;
+const eventService = new EventService();
+
+export const MapComponent: FC = () => {
+  const [map, setMap] = useState(null);
+  const [markerInfoOpenMap, setMarkerInfoOpenMap] = useState(new Map<number, boolean>());
+  const [events, setEvents] = useState<IEvent[]>([]);
+
+  // Asynchronously load the events
+  const loadEvents = async (numEvents: number) => {
+    var eventList = await eventService.fetchEventsWithLimit(numEvents).then((fetchedEvents: IEvent[]) => {
+      return fetchedEvents;
+    });
+    setEvents(eventList);
+  };
 
   const toggleMarkerInfoOpen = (markerIndex: number, bool: boolean): void => {
     const newMap: Map<number, boolean> = new Map(markerInfoOpenMap).set(markerIndex, bool);
     setMarkerInfoOpenMap(newMap);
   };
 
-  const onLoad = React.useCallback(function callback(map) {
+  const onLoad = useCallback(function callback(map) {
     setMap(map);
+    loadEvents(numEvents);
   }, []);
  
-  const onUnmount = React.useCallback(function callback(map) {
+  const onUnmount = useCallback(function callback(map) {
     setMap(null);
   }, []);
 
@@ -43,7 +55,7 @@ export const MapComponent: React.FC = () => {
       <GoogleMap
         id={"map"}
         mapContainerStyle={containerStyle}
-        center={events[0].position || defaultCenter}
+        center={defaultCenter}
         zoom={10}
         onLoad={onLoad}
         onUnmount={onUnmount}
@@ -71,7 +83,7 @@ export const MapComponent: React.FC = () => {
         })}
       </GoogleMap>
     </LoadScript>
-  )
+  );
 };
 
-export default React.memo(MapComponent);
+export default memo(MapComponent);
