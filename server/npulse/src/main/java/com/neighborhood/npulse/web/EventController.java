@@ -3,9 +3,12 @@ package com.neighborhood.npulse.web;
 import com.neighborhood.npulse.data.repository.EventRepo;
 import com.neighborhood.npulse.data.entity.Event;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.*;
 
 
 /**
@@ -33,7 +36,7 @@ public class EventController {
     }
 
     @GetMapping("/date")
-    //Search for and return events matching Data criteria
+    //Search for and return events matching Date criteria
     public @ResponseBody Iterable<Event> getEventsByDate(@RequestParam(value="date", defaultValue = "none")String date,
                                                          @RequestParam(value="limit",defaultValue = "10")String limit){
         Pageable eventLimit = PageRequest.of(0, Integer.parseInt(limit));
@@ -45,5 +48,19 @@ public class EventController {
     public @ResponseBody Iterable<Event> getEventsOnline(@RequestParam(value="limit", defaultValue = "10")String limit){
         Pageable eventLimit = PageRequest.of(0, Integer.parseInt(limit));
         return eventRepo.findEventsByLoc("Online", eventLimit);
+    }
+
+    @GetMapping("/category")
+    //Return only events relevant to a certain category(s)
+    public @ResponseBody Iterable<Event> getEventsByCategroy(@RequestParam(value = "limit",defaultValue = "10")String limit,
+                                                             @RequestParam(value = "category")List<String> category){
+        Pageable eventLimit = PageRequest.of(0,Integer.parseInt(limit));
+        Set<Event> eventSet = new HashSet<>();
+        for(String cat : category) {
+            eventSet.addAll(eventRepo.findEventsByCat(cat, eventLimit));
+        }
+        List<Event> eventList = new ArrayList<>(eventSet);
+        Collections.shuffle(eventList);
+        return eventList;
     }
 }
