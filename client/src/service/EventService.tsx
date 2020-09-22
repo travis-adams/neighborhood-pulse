@@ -9,10 +9,10 @@ export class EventService {
   // If testing on a local machine:
   // baseUrl: string = "https://cors-anywhere.herokuapp.com/" + "http://npulsebackendpoc-env.eba-qcadjde2.us-east-2.elasticbeanstalk.com:5000";
   // OR (bottom seems better)
-  // baseUrl: string = "https://thingproxy.freeboard.io/fetch/" + "http://npulsebackendpoc-env.eba-qcadjde2.us-east-2.elasticbeanstalk.com:5000";
+  baseUrl: string = "https://thingproxy.freeboard.io/fetch/" + "http://npulsebackendpoc-env.eba-qcadjde2.us-east-2.elasticbeanstalk.com:5000";
   //
   // For production:
-  baseUrl: string = "http://npulsebackendpoc-env.eba-qcadjde2.us-east-2.elasticbeanstalk.com:5000";
+  // baseUrl: string = "http://npulsebackendpoc-env.eba-qcadjde2.us-east-2.elasticbeanstalk.com:5000";
 
   // Prepares fetched events for display on the map
   validateAndFormatEvents = (events: any): IEvent[] => {
