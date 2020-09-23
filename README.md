@@ -12,6 +12,9 @@ Junior Design - Capital One Neighborhood Pulse Application
 
 /events/online?limit="" Returns online events 
 
+/events/category?category="","",""&limit="" Returns events matching the categories provided
+Note, limit is used for **each category individually**, so the total results may be more than limit
+
 
 =======
 
