@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import { Paper, Grid } from '@material-ui/core';
+import { Paper, Grid, Card, CardContent, CardActionArea, Button, CardMedia } from '@material-ui/core';
 import useStyles from "../css";
 
 const EventGrid: FC = () => {
@@ -8,19 +8,36 @@ const EventGrid: FC = () => {
     <Grid
       container
       direction="column"
-      spacing={1}
       wrap="nowrap"
       className={classes.eventGrid}
     >
-      { // until event card is made, just putting 20 placeholders here
+      {
+       // until event card is made, just putting 20 placeholders here
         Array.from({length: 20}, (v, i) => {return (
-          <Grid item key={i}>
-            <Paper className={classes.event}>
+          <Grid
+            container
+            direction="row"
+          >
+            <Card key={i} className={classes.event}>
+              <Grid>
+                <div className={classes.eventDate}>
+                    <h2>SEP</h2>
+                    <h2>23</h2>
+                </div>
+                  <Button 
+                    size="small"
+                    color="secondary"
+                  >
+                    Save
+                  </Button>
+              </Grid>
               <div className={classes.eventDetails}>
-                <h3>Event</h3>
-                <p>description</p>
+                <h2>Event</h2>
+                <p>day and time</p>
+                <p>address</p>
+                <p>Atlanta, GA</p>
               </div>
-            </Paper>
+            </Card>
           </Grid>
           )}
         )

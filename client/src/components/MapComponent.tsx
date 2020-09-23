@@ -21,6 +21,7 @@ const MapComponent: FC = () => {
   // Asynchronously load the events
   const loadEvents = async (numEvents: number) => {
     var eventList = await eventService.fetchEventsWithLimit(numEvents).then((fetchedEvents: IEvent[]) => {
+      console.log(fetchedEvents)
       return fetchedEvents;
     });
     setEvents(eventList);
@@ -42,7 +43,7 @@ const MapComponent: FC = () => {
 
   return (
     <LoadScript
-      googleMapsApiKey="API_KEY_HERE"
+      googleMapsApiKey="AIzaSyBpNi3qyG9Vhc3zMKZH1ZYnuQLT0AMDzQ4"
     >
       <GoogleMap
         id={"map"}

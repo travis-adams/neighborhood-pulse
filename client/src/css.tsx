@@ -14,17 +14,26 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     event: {
       display: 'flex',
-      height: '15vh',
-      alignItems: 'center',
+      height: '18vh',
+      flex: 1
     },
     eventDetails: {
       flex: 1,
+      textAlign: 'left',
+      padding: 10,
+      lineHeight: '0.5'
+    },
+    eventDate: {
+      flex: 1,
       textAlign: 'center',
+      padding: 10,
+      lineHeight: '0.5'
     },
     eventGrid: {
       backgroundColor: "#dddddd",
       overflow: "auto",
-      flex: 1,
+      gridGap: theme.spacing(0.5),
+      flex: 0.5,
     },
     flexColumn: {
       display: "flex",
