@@ -27,7 +27,7 @@ public class EventSpecifications {
 
     //Matches by category
     public static Specification<Event> matchCategory(String category){
-        return ((root, criteriaQuery, criteriaBuilder) -> criteriaBuilder.like(root.get("cat"), "%"+category+"%"));
+        return ((root, criteriaQuery, criteriaBuilder) -> criteriaBuilder.like(root.get("cat"), "%"+category.toLowerCase()+"%"));
     }
     //Find near a lat
     public static Specification<Event> nearLat(double latitude, double radius){
