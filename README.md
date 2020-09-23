@@ -6,11 +6,11 @@ Junior Design - Capital One Neighborhood Pulse Application
 
 /events?limit= Returns a number of records from the database, defaults to 10 if not specified
 
-/events/filter?date=**date** defaults to current date, yyyy-mm-dd format
-               category=**cat1**,**cat2**,...**catN** will match at least one category
-               lat=**latitude** decimal value
-               lng=**longitude** decimal value
-               radius=**radius** defaults to 1, in units of...itude?
+/events/filter?date=**date** defaults to current date, yyyy-mm-dd format  
+               category=**cat1**,**cat2**,...**catN** will match at least one category  
+               lat=**latitude** decimal value  
+               lng=**longitude** decimal value  
+               radius=**radius** defaults to 1, in units of...itude?  
 
 
 =======
