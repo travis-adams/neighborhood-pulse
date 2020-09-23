@@ -6,16 +6,16 @@ const EventGrid: FC = () => {
   const classes = useStyles();
   return (
     <Grid
-     container
-     direction="column"
-     spacing={1}
-     wrap="nowrap"
-     style={{backgroundColor: "#dddddd", overflow: "auto", width: "50vw"}}
+      container
+      direction="column"
+      spacing={1}
+      wrap="nowrap"
+      className={classes.eventGrid}
     >
       { // until event card is made, just putting 20 placeholders here
         Array.from({length: 20}, (v, i) => {return (
           <Grid item key={i}>
-            <Paper className={classes.event} square={true}>
+            <Paper className={classes.event}>
               <div className={classes.eventDetails}>
                 <h3>Event</h3>
                 <p>description</p>

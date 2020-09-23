@@ -1,8 +1,8 @@
-import React, { FC, CSSProperties, useState, useCallback, memo } from 'react';
+import React, { FC, useState, useCallback, memo } from 'react';
 import { GoogleMap, LoadScript, Marker, InfoWindow } from '@react-google-maps/api';
 import { EventService } from "../service/EventService";
 import { IEvent } from "../domain/Event";
-import { mapStyle } from "../css"
+import useStyles from "../css"
 
 const defaultCenter: google.maps.LatLngLiteral = {
   lat: 33.8463,
@@ -13,6 +13,7 @@ const numEvents: number = 50;
 const eventService = new EventService();
 
 const MapComponent: FC = () => {
+  const classes = useStyles();
   const [map, setMap] = useState(null);
   const [markerInfoOpenMap, setMarkerInfoOpenMap] = useState(new Map<number, boolean>());
   const [events, setEvents] = useState<IEvent[]>([]);
@@ -45,7 +46,7 @@ const MapComponent: FC = () => {
     >
       <GoogleMap
         id={"map"}
-        mapContainerStyle={mapStyle.container}
+        mapContainerClassName={classes.mapContainer}
         center={defaultCenter}
         zoom={10}
         onLoad={onLoad}
@@ -64,7 +65,7 @@ const MapComponent: FC = () => {
                 position={event.position}
                 onCloseClick={() => {toggleMarkerInfoOpen(index, false)}}
               >
-                <div style={mapStyle.eventInfoWindow}>
+                <div className={classes.mapInfoWindow}>
                   <h3>{event.name}</h3>
                   <p>{event?.desc}</p>
                 </div>
