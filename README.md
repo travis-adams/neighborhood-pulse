@@ -11,9 +11,7 @@ Junior Design - Capital One Neighborhood Pulse Application
                lat=**latitude** decimal value  
                lng=**longitude** decimal value  
                radius=**radius** defaults to 1, in units of...itude?  
-
-
-=======
+/events/online?limit="" Returns online events
 
 ## Front-end
 
