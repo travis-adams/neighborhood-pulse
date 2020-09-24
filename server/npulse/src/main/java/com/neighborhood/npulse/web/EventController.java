@@ -75,13 +75,19 @@ public class EventController {
         return eventList;
     }*/
 
+    @GetMapping("/categories")
+    public @ResponseBody Iterable<String> getCategories(){
+        return eventRepo.findCats();
+    }
+
     @GetMapping("/filter")
     public @ResponseBody Iterable<Event> getEventsTest(@RequestParam(value = "date", required = false)String date,
                                                        @RequestParam(value = "category", required = false)List<String> category,
                                                        @RequestParam(value = "lat", required = false)String lat,
                                                        @RequestParam(value = "lng", required = false)String lng,
-                                                       @RequestParam(value = "radius", defaultValue = "1")String radius){
-        Pageable eventLimit = PageRequest.of(0,10);
+                                                       @RequestParam(value = "radius", defaultValue = "1")String radius,
+                                                       @RequestParam(value = "limit", defaultValue = "10")String limit){
+        Pageable eventLimit = PageRequest.of(0,Integer.parseInt(limit));
         //Match date
         Specification<Event> query;
         if(date != null){
@@ -107,6 +113,6 @@ public class EventController {
             query = query.and(catQuery);
         }
 
-        return eventRepo.findAll(query);
+        return eventRepo.findAll(query, eventLimit);
     }
 }
