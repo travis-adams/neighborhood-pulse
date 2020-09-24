@@ -1,3 +1,13 @@
+#load in JSON file
+#for each event in JSON file, write to SQL database
+
+#MAKE SURE 2 digit months for dates
+
+def format(string):
+    if string == None:
+        return "NULL"
+    return string
+
 import json
 events = []
 with open('events.json','r') as fp:
@@ -7,7 +17,7 @@ with open('events.json','r') as fp:
 host = 'database-1.c8futoifja4g.us-east-2.rds.amazonaws.com'
 port = 3306
 db_name    = 'new_schema'
-table_name = 'sprint_one'
+table_name = 'sprint_two'
 username   = 'CafeAmbassador'
 password   = 'TravisHasABeardNow'
 
@@ -15,26 +25,20 @@ password   = 'TravisHasABeardNow'
 import pymysql
 conn = pymysql.connect(host,user=username, port=port, passwd=password, db=db_name) #Connect
 cursor = conn.cursor() #Get a cursor to the data
-
-def format(string):
-    if string == None:
-        return "NULL"
-    return string
-
 for event in events:
     #get attributes
-    name = event['name']
-    date = event['date']
-    desc = event['desc']
-    loc  = event['loc']
-    addr = event['addr']
-    cat  = event['cat']
-    time = event['time']
-    link = event['link']
-    lat  = event['latitude']
-    lng  = event['longitude']
+    name = format(event['name'])
+    date = format(event['date'])
+    desc = format(event['desc'])
+    loca = format(event['loca'])
+    addr = format(event['addr'])
+    catg = format(event['catg'])
+    time = format(event['time'])
+    link = format(event['link'])
+    lati = format(event['lati'])
+    logi = format(event['long'])
     #enter into table
-    sql = 'INSERT INTO %s VALUES("%s","%s","%s","%s","%s","%s","%s","%s",%s,%s)' % (table_name,name,date,desc,loc,addr,cat,time,link,lat,lng)#Define insert
+    sql = 'INSERT INTO %s VALUES("%s","%s","%s","%s","%s","%s","%s","%s",%s,%s)' % (table_name,name,date,desc,loca,addr,catg,time,link,lati,logi)#Define insert
     # print(sql)
     # print('=======================================')
     cursor.execute(sql) #Execute insert

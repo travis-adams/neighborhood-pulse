@@ -2,8 +2,6 @@ import requests
 from bs4 import BeautifulSoup
 from geopy.geocoders import GoogleV3
 
-#KEY IS AIzaSyBpNi3-qyG9Vhc3zMKZH1ZYnuQLT0AMDzQ4 (remove dash)
-
 geolocator = GoogleV3(api_key="api_key_here",user_agent="cafe_analytics")
 i = 0
 events = []
