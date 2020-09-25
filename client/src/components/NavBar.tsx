@@ -1,11 +1,16 @@
-import React, { FC } from 'react';
-import { AppBar, Toolbar, Button, IconButton, OutlinedInput } from '@material-ui/core';
+import React, { FunctionComponent } from 'react';
+import { AppBar, Toolbar, Button, OutlinedInput } from '@material-ui/core';
 import SearchIcon from '@material-ui/icons/Search';
 import UserIcon from '@material-ui/icons/PermIdentity'
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import useStyles from '../css';
+import Filters from '../domain/Filters';
 
-const NavBar: FC = () => {
+interface Props {
+  setFilters: (filters: Filters) => void;
+};
+
+const NavBar: FunctionComponent<Props> = (props: Props) => {
   const classes = useStyles();
   const logo = "c1-logo-full.png";
 
@@ -24,6 +29,7 @@ const NavBar: FC = () => {
           >
               Filter Results
           </Button>
+          {/* when this^ button actually works, call props.setFilters(...) when saving the new filter selections */}
           <div className={classes.search}>
             <div className={classes.searchIcon}>
               <SearchIcon/>

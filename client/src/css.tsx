@@ -2,15 +2,14 @@ import { makeStyles, createStyles, Theme } from '@material-ui/core/styles';
 
 const buttonColor = '#444444';
 
-
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     mapContainer: {
-      flex: 1,
+      flex: 3
     },
     mapInfoWindow: {
       textAlign: 'center',
-      padding: 10,
+      padding: 10
     },
     event: {
       display: 'flex',
@@ -21,7 +20,8 @@ const useStyles = makeStyles((theme: Theme) =>
       flex: 1,
       textAlign: 'left',
       padding: 10,
-      lineHeight: '0.5'
+      lineHeight: '0.5',
+      whiteSpace: 'nowrap'
     },
     eventDate: {
       flex: 1,
@@ -33,45 +33,45 @@ const useStyles = makeStyles((theme: Theme) =>
       backgroundColor: "#dddddd",
       overflow: "auto",
       gridGap: theme.spacing(0.5),
-      flex: 0.5,
+      flex: 2
     },
     flexColumn: {
       display: "flex",
       flexDirection: "column",
-      height: "100vh",
+      height: "100vh"
     },
     mainBox: {
       flex: 1,
       display: "flex",
       flexFlow: "row nowrap",
-      overflow: "hidden",
+      overflow: "hidden"
     },
     navBar: {
       flex: 0,
       backgroundColor: theme.palette.common.white,
-      boxShadow: 'none',
+      boxShadow: 'none'
     },
     logoDiv: {
       flex: 1,
       display: 'flex',
-      justifyContent: 'flex-start',
+      justifyContent: 'flex-start'
     },
     logoImg: {
       flex: 1,
       maxWidth: '25%',
-      maxHeight: '25%',
+      maxHeight: '25%'
     },
     gap: {
-      flex: 1,
+      flex: 1
     },
     filterButton: {
       color: buttonColor,
-      marginRight: '2%',
+      marginRight: '2%'
     },
     filterAndSearch: {
       flex: 2,
       display: 'flex',
-      alignItems: 'center',
+      alignItems: 'center'
     },
     search: {
       flex: 1,
@@ -80,7 +80,7 @@ const useStyles = makeStyles((theme: Theme) =>
       backgroundColor: theme.palette.common.white,
       marginRight: 0,
       marginLeft: 0,
-      width: '100%',
+      width: '100%'
     },
     searchIcon: {
       padding: theme.spacing(0, 2),
@@ -90,27 +90,27 @@ const useStyles = makeStyles((theme: Theme) =>
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      color: buttonColor,
+      color: buttonColor
     },
     inputRoot: {
-      width: '100%',
+      width: '100%'
     },
     inputInput: {
       padding: theme.spacing(1, 1, 1, 0),
       // vertical padding + font size from searchIcon
       paddingLeft: `calc(1em + ${theme.spacing(4)}px)`,
       transition: theme.transitions.create('width'),
-      color: theme.palette.common.black,
+      color: theme.palette.common.black
     },
     userDiv: {
       flex: 1,
       display: 'flex',
-      justifyContent: 'flex-end',
+      justifyContent: 'flex-end'
     },
     userButton: {
-      color: buttonColor,
-    },
-  }),
+      color: buttonColor
+    }
+  })
 );
 
 export default useStyles;

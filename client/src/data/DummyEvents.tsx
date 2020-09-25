@@ -1,7 +1,7 @@
-import { IEvent } from "../domain/Event"
-import { IAddress } from "../domain/Address"
+import Event from "../domain/Event"
+import Address from "../domain/Address"
 
-export const DummyEvents: IEvent[] = [
+export const DummyEvents: Event[] = [
   {
     name: "Coffee and Banking",
     desc: "Get some caffeine AND learn how to manage your money!",
@@ -17,7 +17,7 @@ export const DummyEvents: IEvent[] = [
       city: "Atlanta",
       state: "GA",
       zipCode: "30326"
-    } as IAddress,
+    } as Address,
     position: {
       lat: 33.8463,
       lng: -84.3621

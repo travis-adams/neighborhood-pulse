@@ -1,7 +1,8 @@
 import axios from 'axios';
 import "core-js/stable";
 import "regenerator-runtime/runtime";
-import { IEvent } from "../domain/Event";
+import Event from "../domain/Event";
+import Filters from '../domain/Filters';
 
 export class EventService {
   // BASE URL
@@ -15,37 +16,40 @@ export class EventService {
   // baseUrl: string = "http://npulsebackendpoc-env.eba-qcadjde2.us-east-2.elasticbeanstalk.com:5000";
 
   // Prepares fetched events for display on the map
-  validateAndFormatEvents = (events: any): IEvent[] => {
-    let validEvents = events.data.content.filter((event: any) => (event.latitude && event.longitude));
-    let formattedEvents = validEvents.map((event: any) => {
+  formatEvents = (events: any): Event[] => {
+    let formattedEvents = events.data.content.map((event: any) => {
       return ({
         name: event.name,
-        desc: event.desc,
+        desc: event?.desc,
         position: {
-          lat: event.latitude,
-          lng: event.longitude
+          lat: event?.latitude,
+          lng: event?.longitude
         }
-      } as IEvent);
+      } as Event);
     });
     return formattedEvents;
   };
 
-  // Backend sends back 10 events by default
-  fetchEvents = (): Promise<IEvent[] | void> => {
+  // only supporting limit right now, everything else to come later
+  fetchFilteredEvents = (filters: Filters): Promise<Event[] | void> => {
     try {
-      return axios.get(this.baseUrl + "/events").then((events: any) => {
-        return this.validateAndFormatEvents(events);
+      var filterString: string = "";
+      if (filters.limit) {
+        filterString += "?limit=" + filters.limit;
+      }
+      return axios.get(this.baseUrl + "/events" + filterString).then((events: any) => {
+        return this.formatEvents(events);
       });
     } catch(error) {
       console.error(error);
     }
   };
 
-  fetchEventsWithLimit = (limit: number): Promise<IEvent[] | void> => {
+  // Fetches a list of all string categories, for example:
+  // ["parties","NULL","networking","galas","festivals","classes","performances","other"]
+  fetchCategories = (): Promise<string[]> => {
     try {
-      return axios.get(this.baseUrl + "/events?limit=" + limit).then((events: any) => {
-        return this.validateAndFormatEvents(events);
-      });
+      return axios.get(this.baseUrl + '/categories');
     } catch(error) {
       console.error(error);
     }
