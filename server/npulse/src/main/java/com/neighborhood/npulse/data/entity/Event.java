@@ -2,6 +2,7 @@ package com.neighborhood.npulse.data.entity;
 
 import org.springframework.lang.Nullable;
 
+import javax.annotation.sql.DataSourceDefinition;
 import javax.persistence.Column;
 import javax.persistence.Table;
 import javax.persistence.Entity;
@@ -12,7 +13,7 @@ import javax.persistence.Id;
  * Stores the data for a single event
  */
 @Entity
-@Table(name = "sprint_one")
+@Table(name = "sprint_two")
 public class Event {
     @Id
     @Column(name="name")
