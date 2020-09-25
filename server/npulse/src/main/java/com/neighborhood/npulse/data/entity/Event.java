@@ -3,10 +3,8 @@ package com.neighborhood.npulse.data.entity;
 import org.springframework.lang.Nullable;
 
 import javax.annotation.sql.DataSourceDefinition;
-import javax.persistence.Column;
-import javax.persistence.Table;
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.persistence.*;
+import java.util.Date;
 
 /**
  * Represents an entry in the sprint_one table
@@ -19,6 +17,7 @@ public class Event {
     @Column(name="name")
     private String name;
     @Column(name="date")
+    //@Convert(converter = DateConverter.class)
     private String date;
     @Column(name="desc")
     private String desc;
