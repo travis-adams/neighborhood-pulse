@@ -9,7 +9,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.web.bind.annotation.*;
-
 import javax.persistence.criteria.CriteriaBuilder;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -19,6 +18,7 @@ import java.util.*;
  * RESTful controller for serving Events by varying criteria
  * endpoint at /events
  */
+@CrossOrigin
 @RestController
 @RequestMapping("/events")
 public class EventController {
