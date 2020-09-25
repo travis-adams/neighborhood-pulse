@@ -82,27 +82,29 @@ public class EventController {
 
     @GetMapping("/filter")
     public @ResponseBody Iterable<Event> getEventsTest(@RequestParam(value = "date", required = false)String date,
+                                                       @RequestParam(value = "firstDate", required = false)String firstDate,
+                                                       @RequestParam(value = "lastDate", required = false)String lastDate,
                                                        @RequestParam(value = "category", required = false)List<String> category,
-                                                       @RequestParam(value = "lat", required = false)String lat,
-                                                       @RequestParam(value = "lng", required = false)String lng,
+                                                       @RequestParam(value = "lat")String lat,
+                                                       @RequestParam(value = "lng")String lng,
                                                        @RequestParam(value = "radius", defaultValue = "1")String radius,
                                                        @RequestParam(value = "limit", defaultValue = "10")String limit){
         Pageable eventLimit = PageRequest.of(0,Integer.parseInt(limit));
-        //Match date
+
         Specification<Event> query;
+        //Match Location
+        Double latitude = Double.parseDouble(lat);
+        Double longitude = Double.parseDouble(lng);
+        Double rad = Double.parseDouble(radius);
+        query = EventSpecifications.nearLat(latitude, rad);
+        query = query.and(EventSpecifications.nearLng(longitude, rad));
+        //Match date
         if(date != null){
-            query = EventSpecifications.matchDate(date);
-        } else {
-            String currentDate = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
-            query = EventSpecifications.matchDate(currentDate);
+            query = query.and(EventSpecifications.matchDate(date));
         }
-        //Match Location if provided
-        if (lat != null && lng != null) {
-            Double latitude = Double.parseDouble(lat);
-            Double longitude = Double.parseDouble(lng);
-            Double rad = Double.parseDouble(radius);
-            query = query.and(EventSpecifications.nearLat(latitude, rad));
-            query = query.and(EventSpecifications.nearLng(longitude, rad));
+        //Date Range
+        if (firstDate != null && lastDate != null){
+            query = query.and(EventSpecifications.dateInRange(firstDate, lastDate));
         }
         //Match Categories if provided
         if (category != null) {

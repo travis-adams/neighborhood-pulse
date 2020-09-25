@@ -7,6 +7,9 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class EventSpecifications {
 
@@ -22,7 +25,21 @@ public class EventSpecifications {
 
     //Matches by date
     public static Specification<Event> matchDate(String date){
-        return ((root, criteriaQuery, criteriaBuilder) -> criteriaBuilder.equal(root.get("date"), date));
+        return new Specification<Event>() {
+            @Override
+            public Predicate toPredicate(Root<Event> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder criteriaBuilder) {
+                return criteriaBuilder.equal(root.get("date"), date);
+            }
+        };
+    }
+
+    public static Specification<Event> dateInRange(String beginning, String end){
+        return new Specification<Event>() {
+            @Override
+            public Predicate toPredicate(Root<Event> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder criteriaBuilder) {
+                return criteriaBuilder.between(root.<String>get("date"), beginning, end);
+            }
+        };
     }
 
     //Matches by category
