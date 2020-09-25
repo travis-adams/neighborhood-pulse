@@ -10,8 +10,10 @@ Junior Design - Capital One Neighborhood Pulse Application
                &category=**cat1**,**cat2**,...**catN** will match at least one category  
                &lat=**latitude** decimal value  
                &lng=**longitude** decimal value  
-               &radius=**radius** defaults to 1, in units of...itude?
-               &limit=**limit** defaults to 10  
+               &radius=**radius** defaults to 1, in units of...itude?  
+               &firstDate=**date**  
+               &lastDate=**date** (Both must be supplied  
+               &limit=**limit** defaults to 10    
 /events/online?limit="" Returns online events  
 /events/categories Returns all distinct categories  
 
