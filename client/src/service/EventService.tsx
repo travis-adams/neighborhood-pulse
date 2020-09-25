@@ -33,11 +33,14 @@ export class EventService {
   // only supporting limit right now, everything else to come later
   fetchFilteredEvents = (filters: Filters): Promise<Event[] | void> => {
     try {
-      var filterString: string = "";
+      var filterString: string = "lat=" + filters.userPos.lat + "&lng=" + filters.userPos.lng;
       if (filters.limit) {
-        filterString += "?limit=" + filters.limit;
+        filterString += "&limit=" + filters.limit;
       }
-      return axios.get(this.baseUrl + "/events" + filterString).then((events: any) => {
+      if (filters.firstDate && filters.lastDate) {
+        filterString += "&firstDate=" + filters.firstDate + "&lastDate=" + filters.lastDate;
+      }
+      return axios.get(this.baseUrl + "/events/filter?" + filterString).then((events: any) => {
         return this.formatEvents(events);
       });
     } catch(error) {

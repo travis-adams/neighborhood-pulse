@@ -13,7 +13,10 @@ export const defaultFilters: Filters = {
     lat: 33.8463,
     lng: -84.3621
   },
-  limit: 50
+  limit: 75,
+  firstDate: '2020-01-02',
+  lastDate: '2021-01-01',
+  online: false
 };
 const eventService = new EventService();
 
@@ -36,7 +39,7 @@ const MainPage: FunctionComponent = () => {
 
   return (
     <div className={classes.flexColumn}>
-      <NavBar setFilters={setFilters} />
+      <NavBar filters={filters} setFilters={setFilters}/>
       <Divider/>
       <Box className={classes.mainBox}>
         <EventGrid events={events} />
