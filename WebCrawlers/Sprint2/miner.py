@@ -28,7 +28,6 @@ def main(main_url):
         print("{} of {}".format(i,end))
         #detect if at end of pages, if so break
         if i == end: break
-        if i == 3: break #for testing
         #else set URL = url of next page of results
         else:
             i += 1

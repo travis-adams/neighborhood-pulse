@@ -5,12 +5,12 @@
 
 def format(string):
     if string == None:
-        return "NULL"
-    return string
+        return 'NULL'
+    return '"{}"'.format(string)
 
 import json
 events = []
-with open('events.json','r') as fp:
+with open('filtered.json','r', encoding="utf-8") as fp:
     events = json.load(fp)
 
 #Connection stuff-----------------------------------------------
@@ -36,9 +36,9 @@ for event in events:
     time = format(event['time'])
     link = format(event['link'])
     lati = format(event['lati'])
-    logi = format(event['long'])
+    logi = format(event['logi'])
     #enter into table
-    sql = 'INSERT INTO %s VALUES("%s","%s","%s","%s","%s","%s","%s","%s",%s,%s)' % (table_name,name,date,desc,loca,addr,catg,time,link,lati,logi)#Define insert
+    sql = 'INSERT INTO %s VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)' % (table_name,name,date,desc,loca,addr,catg,time,link,lati,logi)#Define insert
     # print(sql)
     # print('=======================================')
     cursor.execute(sql) #Execute insert
