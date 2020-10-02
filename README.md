@@ -11,8 +11,15 @@ Junior Design - Capital One Neighborhood Pulse Application
                lat=**latitude** decimal value  
                lng=**longitude** decimal value  
                radius=**radius** defaults to 1, in units of...itude?  
-/events/online?limit="" Returns online events
+/events/online?limit="" Returns online events  
+/events/categories Returns a list of all categories in the db  
 
+
+/user/sign-up Create a new user account.
+* Requires a username, password, in JSON Body  
+
+/login Will return a JWT Token if correct username and password are provided
+* Requires a username, password, in JSON Body
 ## Front-end
 
 To run the front-end locally:
