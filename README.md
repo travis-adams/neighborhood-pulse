@@ -15,6 +15,7 @@ Junior Design - Capital One Neighborhood Pulse Application
 /events/categories Returns a list of all categories in the db  
 
 
+
 /user/sign-up Create a new user account.
 * Requires a username, password, in JSON Body  
 
