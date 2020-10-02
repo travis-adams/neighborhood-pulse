@@ -3,14 +3,12 @@ package com.neighborhood.npulse.web;
 import com.neighborhood.npulse.data.repository.EventRepo;
 import com.neighborhood.npulse.data.entity.Event;
 import com.neighborhood.npulse.data.repository.EventSpecifications;
+import com.neighborhood.npulse.utils.FilterBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.web.bind.annotation.*;
-import javax.persistence.criteria.CriteriaBuilder;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 
@@ -32,48 +30,21 @@ public class EventController {
         return eventRepo.findAll(eventLimit);
     }
 
-
-    /*Will Remove Soon
-    @GetMapping("/name")
-    //Search for and return events matching name criteria
-    public @ResponseBody Iterable<Event> getEventsByName(@RequestParam(value="name", defaultValue = "none")String name,
-                                                         @RequestParam(value="limit",defaultValue = "10")String limit){
-        Pageable eventLimit = PageRequest.of(0, Integer.parseInt(limit));
-        return eventRepo.findEventsByName(name, eventLimit);
-    }*/
-
-
-    /*Will remove soon
-    @GetMapping("/date")
-    //Search for and return events matching Date criteria
-    public @ResponseBody Iterable<Event> getEventsByDate(@RequestParam(value="date", defaultValue = "none")String date,
-                                                         @RequestParam(value="limit",defaultValue = "10")String limit){
-        Pageable eventLimit = PageRequest.of(0, Integer.parseInt(limit));
-        return eventRepo.findEventsByDate(date, eventLimit);
-    }*/
-
     @GetMapping("/online")
     //Return only events that are taking place online
-    public @ResponseBody Iterable<Event> getEventsOnline(@RequestParam(value="limit", defaultValue = "10")String limit){
+    public @ResponseBody Iterable<Event> getEventsOnline(@RequestParam(value="limit", defaultValue = "10")String limit,
+                                                         @RequestParam(value = "date", required = false)String date,
+                                                         @RequestParam(value = "firstDate", required = false)String firstDate,
+                                                         @RequestParam(value = "lastDate", required = false)String lastDate,
+                                                         @RequestParam(value = "category", required = false)List<String> category){
         Pageable eventLimit = PageRequest.of(0, Integer.parseInt(limit));
-        return eventRepo.findEventsByLoc("Online", eventLimit);
+        Specification<Event> query =  EventSpecifications.matchLoc("nline");
+        query = query.or(EventSpecifications.matchLoc("web"));
+        query = query.or(EventSpecifications.matchLoc("Web"));
+        query = FilterBuilder.buildFilters(query,date,firstDate,lastDate,category);
+        return eventRepo.findAll(query,eventLimit);
     }
 
-    /* Will Be Removed Soon
-    @GetMapping("/category")
-    //Return only events relevant to a certain category(s)
-
-    public @ResponseBody Iterable<Event> getEventsByCategroy(@RequestParam(value = "limit",defaultValue = "10")String limit,
-                                                             @RequestParam(value = "category")List<String> category){
-        Pageable eventLimit = PageRequest.of(0,Integer.parseInt(limit));
-        Set<Event> eventSet = new HashSet<>();
-        for(String cat : category) {
-            eventSet.addAll(eventRepo.findEventsByCat(cat, eventLimit));
-        }
-        List<Event> eventList = new ArrayList<>(eventSet);
-        Collections.shuffle(eventList);
-        return eventList;
-    }*/
 
     @GetMapping("/categories")
     public @ResponseBody Iterable<String> getCategories(){
@@ -81,7 +52,7 @@ public class EventController {
     }
 
     @GetMapping("/filter")
-    public @ResponseBody Iterable<Event> getEventsTest(@RequestParam(value = "date", required = false)String date,
+    public @ResponseBody Iterable<Event> getEventsFiltered(@RequestParam(value = "date", required = false)String date,
                                                        @RequestParam(value = "firstDate", required = false)String firstDate,
                                                        @RequestParam(value = "lastDate", required = false)String lastDate,
                                                        @RequestParam(value = "category", required = false)List<String> category,
@@ -98,22 +69,8 @@ public class EventController {
         Double rad = Double.parseDouble(radius);
         query = EventSpecifications.nearLat(latitude, rad);
         query = query.and(EventSpecifications.nearLng(longitude, rad));
-        //Match date
-        if(date != null){
-            query = query.and(EventSpecifications.matchDate(date));
-        }
-        //Date Range
-        if (firstDate != null && lastDate != null){
-            query = query.and(EventSpecifications.dateInRange(firstDate, lastDate));
-        }
-        //Match Categories if provided
-        if (category != null) {
-            Specification<Event> catQuery = EventSpecifications.matchCategory(category.get(0));
-            for (String cat : category) {
-                catQuery = catQuery.or(EventSpecifications.matchCategory(cat));
-            }
-            query = query.and(catQuery);
-        }
+
+        query = FilterBuilder.buildFilters(query,date,firstDate,lastDate,category);
 
         return eventRepo.findAll(query, eventLimit);
     }

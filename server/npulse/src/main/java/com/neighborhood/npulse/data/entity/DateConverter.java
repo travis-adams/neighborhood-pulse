@@ -13,8 +13,7 @@ public class DateConverter implements AttributeConverter<Date, String> {
 
     @Override
     public String convertToDatabaseColumn(Date date) {
-        String dateString = new SimpleDateFormat("yyyy-MM-dd").format(date);
-        return dateString;
+        return new SimpleDateFormat("yyyy-MM-dd").format(date);
     }
 
     @Override
