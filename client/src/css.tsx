@@ -73,6 +73,10 @@ const useStyles = makeStyles((theme: Theme) =>
       display: 'flex',
       alignItems: 'center'
     },
+    filterElement: {
+      margin: theme.spacing(1),
+      minWidth: 120,
+    },
     search: {
       flex: 1,
       position: 'relative',

@@ -1,12 +1,12 @@
 import 'date-fns';
 import React, { FunctionComponent, useState } from 'react';
-import { AppBar, Toolbar, Button, OutlinedInput, Menu,
-  MenuItem, FormControlLabel, Checkbox, InputLabel, Select } from '@material-ui/core';
+import { AppBar, Toolbar, Button, OutlinedInput, Menu, MenuItem, FormControl,
+  FormControlLabel, FormGroup, Checkbox, InputLabel, Select} from '@material-ui/core';
 import DateFnsUtils from '@date-io/date-fns';
 import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/pickers';
 import SearchIcon from '@material-ui/icons/Search';
 import UserIcon from '@material-ui/icons/PermIdentity'
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import { ExpandMore, ExpandLess } from '@material-ui/icons';
 import useStyles from '../css';
 import Filters from '../domain/Filters';
 
@@ -39,11 +39,11 @@ const NavBar: FunctionComponent<Props> = (props: Props) => {
     setUnsavedFilters({ ...unsavedFilters, online: event.target.checked });
   };
 
-  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    setAnchorEl(event.currentTarget);
+  const handleOpenFilters = (event: React.MouseEvent<HTMLButtonElement>) => {
+    anchorEl ? handleCloseFilters() : setAnchorEl(event.currentTarget);
   };
 
-  const handleClose = () => {
+  const handleCloseFilters = () => {
     setAnchorEl(null);
     setUnsavedFilters(props.filters);
   };
@@ -63,66 +63,86 @@ const NavBar: FunctionComponent<Props> = (props: Props) => {
           <Button
            className={classes.filterButton}
            color="inherit"
-           onClick={handleClick}
-           endIcon={<ExpandMoreIcon/>}
+           onClick={handleOpenFilters}
+           endIcon={anchorEl ? <ExpandLess/> : <ExpandMore/>}
           >
               Filter Results
           </Button>
           <Menu
-           anchorEl={anchorEl}
-           open={Boolean(anchorEl)}
-           onClose={handleClose}
+            anchorEl={anchorEl}
+            open={Boolean(anchorEl)}
+            onClose={handleCloseFilters}
+            anchorReference="anchorPosition"
+            // anchorPosition and transformOrigin handle the position of the filter menu dropdown
+            anchorPosition={{
+              top: anchorEl?.getBoundingClientRect().bottom,
+              left: (anchorEl?.getBoundingClientRect().left + anchorEl?.getBoundingClientRect().right)/2
+            }}
+            transformOrigin={{
+              vertical: 'top',
+              horizontal: 'center'
+            }}
           >
-            <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
-              <InputLabel id="limit">Number of Results</InputLabel>
-              <Select
-               labelId="limit"
-               name="limit"
-               value={unsavedFilters.limit}
-               onChange={handleLimitChange}
-              >
-                <MenuItem value={10}>10</MenuItem>
-                <MenuItem value={25}>25</MenuItem>
-                <MenuItem value={50}>50</MenuItem>
-                <MenuItem value={75}>75</MenuItem>
-              </Select>
-              <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                <KeyboardDatePicker
-                disableToolbar
-                variant="inline"
-                format="yyyy-MM-dd"
-                margin="normal"
-                id="firstDate"
-                label="Begin Date"
-                value={unsavedFilters.firstDate}
-                onChange={handleFirstDateChange}
-                />
-                <KeyboardDatePicker
-                disableToolbar
-                variant="inline"
-                format="yyyy-MM-dd"
-                margin="normal"
-                id="lastDate"
-                label="End Date"
-                value={unsavedFilters.lastDate}
-                onChange={handleLastDateChange}
-                />
-              </MuiPickersUtilsProvider>
-              <FormControlLabel
-                value="start"
-                control={<Checkbox
-                          checked={unsavedFilters.online}
-                          onChange={handleOnlineChange}
-                          color="primary"
-                          name="online"
-                        />}
-                label="Online only"
-                labelPlacement="start"
-              />
-              <Button variant="contained" color="primary" onClick={handleApply}>Apply</Button>
+            <div>
+              <FormGroup>
+                <FormControl className={classes.filterElement}>
+                  <InputLabel id="limit">Number of Results</InputLabel>
+                  <Select
+                  labelId="limit"
+                  name="limit"
+                  value={unsavedFilters.limit}
+                  onChange={handleLimitChange}
+                  >
+                    <MenuItem value={10}>10</MenuItem>
+                    <MenuItem value={25}>25</MenuItem>
+                    <MenuItem value={50}>50</MenuItem>
+                    <MenuItem value={75}>75</MenuItem>
+                  </Select>
+                </FormControl>
+                <FormControl className={classes.filterElement}>
+                  <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                    <KeyboardDatePicker
+                    disableToolbar
+                    variant="inline"
+                    format="yyyy-MM-dd"
+                    id="firstDate"
+                    label="Begin Date"
+                    value={unsavedFilters.firstDate}
+                    onChange={handleFirstDateChange}
+                    />
+                  </MuiPickersUtilsProvider>
+                </FormControl>
+                <FormControl className={classes.filterElement}>
+                  <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                    <KeyboardDatePicker
+                    disableToolbar
+                    variant="inline"
+                    format="yyyy-MM-dd"
+                    id="lastDate"
+                    label="End Date"
+                    value={unsavedFilters.lastDate}
+                    onChange={handleLastDateChange}
+                    />
+                  </MuiPickersUtilsProvider>
+                </FormControl>
+                <FormControl className={classes.filterElement}>
+                  <FormControlLabel
+                    control={<Checkbox
+                              checked={unsavedFilters.online}
+                              onChange={handleOnlineChange}
+                              color="primary"
+                              name="online"
+                            />}
+                    label="Online only"
+                    labelPlacement="end"
+                  />
+                </FormControl>
+                <FormControl className={classes.filterElement}>
+                  <Button variant="contained" color="primary" onClick={handleApply}>Apply</Button>
+                </FormControl>
+              </FormGroup>
             </div>
           </Menu>
-          {/* when this^ button actually works, call props.setFilters(...) when saving the new filter selections */}
           <div className={classes.search}>
             <div className={classes.searchIcon}>
               <SearchIcon/>
