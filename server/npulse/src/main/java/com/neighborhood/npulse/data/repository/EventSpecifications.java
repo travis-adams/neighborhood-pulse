@@ -7,9 +7,6 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 public class EventSpecifications {
 
@@ -67,5 +64,12 @@ public class EventSpecifications {
                 return criteriaBuilder.between(root.get("longitude"),low, high);
             }
         };
+    }
+
+
+    //Matches by location containing
+    //Mainly just for the Online endpoint
+    public static Specification<Event> matchLoc(String locString){
+        return (root, criteriaQuery, criteriaBuilder) -> criteriaBuilder.like(root.get("loc"), "%"+locString.toLowerCase()+"%");
     }
 }
