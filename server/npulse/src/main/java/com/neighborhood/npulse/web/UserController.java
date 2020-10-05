@@ -47,6 +47,14 @@ public class UserController {
         savedEventRepo.save(newSave);
     }
 
+    @DeleteMapping("/unsave")
+    public void deleteEvent(@RequestParam(value = "event")String event,
+                            @RequestParam(value = "user")String user){
+        int eventID = Integer.parseInt(event);
+        int userID = appUserRepo.findIDByUsername(user);
+        savedEventRepo.deleteSavedEventByUserIDAndEventID(userID, eventID);
+    }
+
     @GetMapping("/saved")
     public @ResponseBody Iterable<Event> getSavedEvents(@RequestParam(value = "user")String user) {
         int userID = appUserRepo.findIDByUsername(user);//Get the User's ID from the user table

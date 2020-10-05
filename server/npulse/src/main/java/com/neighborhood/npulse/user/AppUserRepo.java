@@ -9,4 +9,5 @@ public interface AppUserRepo extends JpaRepository<AppUser, String> {
 
     @Query("select u.id from AppUser u where u.username=:username")
     Integer findIDByUsername(String username);
+
 }
