@@ -76,4 +76,5 @@ public class EventController {
 
         return eventRepo.findAll(query, eventLimit);
     }
+
 }
