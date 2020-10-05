@@ -8,10 +8,16 @@ import java.util.List;
 
 public class FilterBuilder {
     public static Specification<Event> buildFilters(Specification<Event> query,
+                                                    String name,
                                                     String date,
                                                     String firstDate,
                                                     String lastDate,
                                                     List<String> category){
+
+        //Match Name
+        if(name != null){
+            query = query.and(EventSpecifications.matchName(name));
+        }
         //Match date
         if(date != null){
             query = query.and(EventSpecifications.matchDate(date));

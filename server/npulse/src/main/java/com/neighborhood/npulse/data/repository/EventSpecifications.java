@@ -15,7 +15,7 @@ public class EventSpecifications {
         return new Specification<Event>() {
             @Override
             public Predicate toPredicate(Root<Event> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder criteriaBuilder) {
-                return criteriaBuilder.equal(root.get("name"), name);
+                return criteriaBuilder.like(root.get("name"), "%" + name + "%");
             }
         };
     }
@@ -65,7 +65,6 @@ public class EventSpecifications {
             }
         };
     }
-
 
     //Matches by location containing
     //Mainly just for the Online endpoint

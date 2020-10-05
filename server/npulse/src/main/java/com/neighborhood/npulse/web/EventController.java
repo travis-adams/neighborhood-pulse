@@ -33,6 +33,7 @@ public class EventController {
     @GetMapping("/online")
     //Return only events that are taking place online
     public @ResponseBody Iterable<Event> getEventsOnline(@RequestParam(value="limit", defaultValue = "10")String limit,
+                                                         @RequestParam(value="name", required = false)String name,
                                                          @RequestParam(value = "date", required = false)String date,
                                                          @RequestParam(value = "firstDate", required = false)String firstDate,
                                                          @RequestParam(value = "lastDate", required = false)String lastDate,
@@ -41,7 +42,7 @@ public class EventController {
         Specification<Event> query =  EventSpecifications.matchLoc("nline");
         query = query.or(EventSpecifications.matchLoc("web"));
         query = query.or(EventSpecifications.matchLoc("Web"));
-        query = FilterBuilder.buildFilters(query,date,firstDate,lastDate,category);
+        query = FilterBuilder.buildFilters(query,name, date,firstDate,lastDate,category);
         return eventRepo.findAll(query,eventLimit);
     }
 
@@ -53,6 +54,7 @@ public class EventController {
 
     @GetMapping("/filter")
     public @ResponseBody Iterable<Event> getEventsFiltered(@RequestParam(value = "date", required = false)String date,
+                                                       @RequestParam(value = "name", required = false)String name,
                                                        @RequestParam(value = "firstDate", required = false)String firstDate,
                                                        @RequestParam(value = "lastDate", required = false)String lastDate,
                                                        @RequestParam(value = "category", required = false)List<String> category,
@@ -70,7 +72,7 @@ public class EventController {
         query = EventSpecifications.nearLat(latitude, rad);
         query = query.and(EventSpecifications.nearLng(longitude, rad));
 
-        query = FilterBuilder.buildFilters(query,date,firstDate,lastDate,category);
+        query = FilterBuilder.buildFilters(query,name,date,firstDate,lastDate,category);
 
         return eventRepo.findAll(query, eventLimit);
     }
