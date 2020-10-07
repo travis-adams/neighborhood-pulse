@@ -5,15 +5,7 @@ import Event from "../domain/Event";
 import Filters from '../domain/Filters';
 
 export class EventService {
-  // BASE URL
-  //
-  // If testing on a local machine:
-  // baseUrl: string = "https://cors-anywhere.herokuapp.com/" + "http://npulsebackendpoc-env.eba-qcadjde2.us-east-2.elasticbeanstalk.com:5000";
-  // OR (bottom seems better)
-  baseUrl: string = "https://thingproxy.freeboard.io/fetch/" + "http://npulsebackendpoc-env.eba-qcadjde2.us-east-2.elasticbeanstalk.com:5000";
-  //
-  // For production:
-  // baseUrl: string = "http://npulsebackendpoc-env.eba-qcadjde2.us-east-2.elasticbeanstalk.com:5000";
+  baseUrl: string = "http://npulsebackendpoc-env.eba-qcadjde2.us-east-2.elasticbeanstalk.com:5000";
 
   // Prepares fetched events for display on the map
   formatEvents = (events: any): Event[] => {
@@ -30,8 +22,8 @@ export class EventService {
     return formattedEvents;
   };
 
-  // only supporting limit right now, everything else to come later
-  fetchFilteredEvents = (filters: Filters): Promise<Event[] | void> => {
+  // only supporting limit and date range right now, everything else to come later
+  fetchFilteredEvents = async (filters: Filters): Promise<Event[] | void> => {
     try {
       var filterString: string = "lat=" + filters.userPos.lat + "&lng=" + filters.userPos.lng;
       if (filters.limit) {
@@ -40,9 +32,8 @@ export class EventService {
       if (filters.firstDate && filters.lastDate) {
         filterString += "&firstDate=" + filters.firstDate + "&lastDate=" + filters.lastDate;
       }
-      return axios.get(this.baseUrl + "/events/filter?" + filterString).then((events: any) => {
-        return this.formatEvents(events);
-      });
+      const events = await axios.get(this.baseUrl + "/events/filter?" + filterString);
+      return this.formatEvents(events);
     } catch(error) {
       console.error(error);
     }
@@ -50,12 +41,33 @@ export class EventService {
 
   // Fetches a list of all string categories, for example:
   // ["parties","NULL","networking","galas","festivals","classes","performances","other"]
-  fetchCategories = (): Promise<string[]> => {
+  fetchCategories = async (): Promise<string[]> => {
     try {
-      return axios.get(this.baseUrl + '/categories');
+      const response = await axios.get(this.baseUrl + '/categories');
+      return response.data.content;
     } catch(error) {
       console.error(error);
     }
   };
 
+  // Logs a user in. Returns the authorizaton token provided by the backend.
+  userLogIn = async (username_: string, password_: string): Promise<string> => {
+    try {
+      const response = await axios.post(this.baseUrl + '/login', {username: username_, password: password_});
+      return response.headers["authorization"];
+    } catch(error) {
+      console.error(error);
+      throw new Error("Invalid username or password. Please try again.");
+    }
+  };
+
+  // Creates an account with the provided username and pw
+  userSignUp = async (username_: string, password_: string): Promise<any> => {
+    try {
+      await axios.post(this.baseUrl + '/user/sign-up', {username: username_, password: password_});
+    } catch(error) {
+      console.error(error);
+      throw new Error("Internal server error: '" + error.response.statusText + "' Please try again.");
+    }
+  };
 }

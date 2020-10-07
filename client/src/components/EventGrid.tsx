@@ -5,6 +5,9 @@ import useStyles from "../css";
 
 interface Props {
   events: Event[];
+  signedIn: boolean;
+  token: string;
+  username: string;
 };
 
 const EventGrid: FunctionComponent<Props> = (props: Props) => {

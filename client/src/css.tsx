@@ -106,7 +106,7 @@ const useStyles = makeStyles((theme: Theme) =>
       transition: theme.transitions.create('width'),
       color: theme.palette.common.black
     },
-    userDiv: {
+    endDiv: {
       flex: 1,
       display: 'flex',
       justifyContent: 'flex-end'
