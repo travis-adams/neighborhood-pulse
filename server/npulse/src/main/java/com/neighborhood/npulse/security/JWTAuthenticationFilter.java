@@ -39,8 +39,8 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         try {
             AppUser creds = new ObjectMapper().readValue(request.getInputStream(), AppUser.class);//Creates a user from the input stream
 
-            return authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(
+            return authenticationManager.authenticate(//Uses our UserNamePassword service to verify that the provided
+                    new UsernamePasswordAuthenticationToken(//Username and password match those stored in the table (decrypted)
                             creds.getUsername(),
                             creds.getPassword(),
                             new ArrayList<>())

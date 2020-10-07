@@ -42,7 +42,9 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
 
     @Override
     public void configure(AuthenticationManagerBuilder authenticationManagerBuilder) throws Exception {
-        authenticationManagerBuilder.userDetailsService(userDetailsService).passwordEncoder(bCryptPasswordEncoder);
+        authenticationManagerBuilder
+                .userDetailsService(userDetailsService)//Registers our UserDetailsService Impl as the implementation for the Security engine to use
+                .passwordEncoder(bCryptPasswordEncoder);//Registers our password encoder as the implementation to usex
     }
 
     @Bean

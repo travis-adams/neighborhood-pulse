@@ -17,4 +17,9 @@ public interface EventRepo extends PagingAndSortingRepository<Event, String>, Jp
     //Return all the categories that can be filtered on
     @Query("select DISTINCT e.cat from Event e")
     List<String> findCats();
+
+    List<Event> findEventById(int id);
+
+    //Return a list of all the vents in the table whose id is contained in the provided list
+    List<Event> findEventsByIdIn(List<Integer> ids);
 }
