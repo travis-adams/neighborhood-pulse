@@ -8,10 +8,19 @@ interface Props {
   signedIn: boolean;
   token: string;
   username: string;
+  setEvents: (event: Event[]) => void;
 };
 
 const EventGrid: FunctionComponent<Props> = (props: Props) => {
   const classes = useStyles();
+
+const handleSaveButton = (event: Event) => {
+  event.saved = !(event.saved);
+  var newEvents = [...props.events];
+
+  props.setEvents(newEvents);
+};
+
   return (
     <Grid
       container
@@ -31,13 +40,17 @@ const EventGrid: FunctionComponent<Props> = (props: Props) => {
                 <div className={classes.eventDate}>
                     <h2>SEP</h2>
                     <h2>23</h2>
-                </div>
+                
+                  {props.signedIn  &&
                   <Button 
+                  onClick = {() => handleSaveButton(event)}
                     size="small"
                     color="secondary"
                   >
-                    Save
+                    {event.saved ? "Unsave" : "Save"}
                   </Button>
+      }   
+              </div>
               </Grid>
               <div className={classes.eventDetails}>
                 <h2>{event.name}</h2>

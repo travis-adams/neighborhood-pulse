@@ -49,6 +49,11 @@ const MainPage: FunctionComponent = () => {
     loadEvents(filters);
   }, [filters]);
 
+  useEffect(() => {
+    setEvents(events);
+  }, [events]);
+
+
   return (
     <div className={classes.flexColumn}>
       <NavBar
@@ -62,7 +67,7 @@ const MainPage: FunctionComponent = () => {
       />
       <Divider/>
       <Box className={classes.mainBox}>
-        <EventGrid events={events} signedIn={signedIn} token={token} username={username}/>
+        <EventGrid events={events} signedIn={signedIn} token={token} username={username} setEvents = {setEvents}/>
         <MapComponent events={events}/>
       </Box>
       <Snackbar open={toastOpen} autoHideDuration={3000} onClose={handleCloseToast}>

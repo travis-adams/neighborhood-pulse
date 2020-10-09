@@ -13,6 +13,9 @@ export class EventService {
       return ({
         name: event.name,
         desc: event?.desc,
+        saved: false,
+        setSaved: null,
+        id: event.id,
         position: {
           lat: event?.latitude,
           lng: event?.longitude

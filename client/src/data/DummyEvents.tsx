@@ -7,6 +7,9 @@ export const DummyEvents: Event[] = [
     desc: "Get some caffeine AND learn how to manage your money!",
     eType:  "Community Event",
     link: "https://www.capitalone.com",
+    saved: false,
+    setSaved: null,
+    id: 1111,
     date: {
       start: "8-28-2020",
       end: "8-9-2020"
@@ -26,6 +29,9 @@ export const DummyEvents: Event[] = [
   {
     name: "Student Banking Seminar",
     desc: "Scared of student loans? So are we!",
+    saved: false,
+    setSaved: null,
+    id: 1234,
     position: {
       lat: 33.7739,
       lng: -84.3988
