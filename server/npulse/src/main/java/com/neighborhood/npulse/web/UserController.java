@@ -9,10 +9,10 @@ import com.neighborhood.npulse.user.AppUserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.ArrayList;
 import java.util.List;
 
+@CrossOrigin
 @RestController
 @RequestMapping("/user")
 public class UserController {
@@ -36,7 +36,7 @@ public class UserController {
         appUserRepo.save(user);
     }
 
-    @PostMapping("/save-event")
+    @PostMapping("/save")
     public void saveEvent(@RequestParam(value = "event")String event,
                           @RequestParam(value = "user")String user){
         int eventID = Integer.parseInt(event);
@@ -47,7 +47,12 @@ public class UserController {
         savedEventRepo.save(newSave);
     }
 
-    @DeleteMapping("/unsave")
+    /**
+     * Should be a DeleteMapping
+     * But I couldn't get the CORS configuration to allow the options request yet
+     * So for now it is a @GetMapping, since AXIOS is dumb
+     */
+    @GetMapping("/unsave")
     public void deleteEvent(@RequestParam(value = "event")String event,
                             @RequestParam(value = "user")String user){
         int eventID = Integer.parseInt(event);
@@ -62,4 +67,6 @@ public class UserController {
         List<Event> eventList = eventRepo.findEventsByIdIn(eventIDs);//Get all th events by Event ID
         return eventList;
     }
+
+
 }

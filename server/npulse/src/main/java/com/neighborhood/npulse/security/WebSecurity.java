@@ -13,6 +13,8 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import java.util.Arrays;
+
 import static com.neighborhood.npulse.security.SecurityConstants.SIGN_UP_URL;
 
 @EnableWebSecurity
@@ -50,7 +52,9 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", new CorsConfiguration().applyPermitDefaultValues());
+        CorsConfiguration configuration =  new CorsConfiguration();
+        source.registerCorsConfiguration("/**", configuration.applyPermitDefaultValues());
+        configuration.setExposedHeaders(Arrays.asList("Authorization"));
         return source;
     }
 }
