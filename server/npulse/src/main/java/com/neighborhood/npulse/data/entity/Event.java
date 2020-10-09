@@ -2,22 +2,22 @@ package com.neighborhood.npulse.data.entity;
 
 import org.springframework.lang.Nullable;
 
-import javax.persistence.Column;
-import javax.persistence.Table;
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.annotation.sql.DataSourceDefinition;
+import javax.persistence.*;
+import java.util.Date;
 
 /**
  * Represents an entry in the sprint_one table
  * Stores the data for a single event
  */
 @Entity
-@Table(name = "sprint_one")
+@Table(name = "sprint_two")
 public class Event {
     @Id
     @Column(name="name")
     private String name;
     @Column(name="date")
+    //@Convert(converter = DateConverter.class)
     private String date;
     @Column(name="desc")
     private String desc;

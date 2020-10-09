@@ -1,8 +1,16 @@
-import React, { FC } from 'react';
-import { Paper, Grid, Card, CardContent, CardActionArea, Button, CardMedia } from '@material-ui/core';
+import React, { FunctionComponent } from 'react';
+import { Grid, Card, Button } from '@material-ui/core';
+import Event from "../domain/Event";
 import useStyles from "../css";
 
-const EventGrid: FC = () => {
+interface Props {
+  events: Event[];
+  signedIn: boolean;
+  token: string;
+  username: string;
+};
+
+const EventGrid: FunctionComponent<Props> = (props: Props) => {
   const classes = useStyles();
   return (
     <Grid
@@ -11,14 +19,14 @@ const EventGrid: FC = () => {
       wrap="nowrap"
       className={classes.eventGrid}
     >
-      {
-       // until event card is made, just putting 20 placeholders here
-        Array.from({length: 20}, (v, i) => {return (
+      {props.events.map((event, index) => {
+         return (
           <Grid
             container
             direction="row"
+            key={index}
           >
-            <Card key={i} className={classes.event}>
+            <Card className={classes.event}>
               <Grid>
                 <div className={classes.eventDate}>
                     <h2>SEP</h2>
@@ -32,7 +40,7 @@ const EventGrid: FC = () => {
                   </Button>
               </Grid>
               <div className={classes.eventDetails}>
-                <h2>Event</h2>
+                <h2>{event.name}</h2>
                 <p>day and time</p>
                 <p>address</p>
                 <p>Atlanta, GA</p>
