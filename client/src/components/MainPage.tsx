@@ -44,17 +44,17 @@ const MainPage: FunctionComponent = () => {
     var eventList;
     // If the "Saved Events" checkbox is checked, only load the user's saved events. Otherwise, load all events.
     if (filters.saved) {
-      eventList = await eventService.fetchUserSavedEvents(username, token).then((fetchedEvents: Event[]) => {
+      eventList = await eventService.fetchFilteredEvents(filters, true, username, token).then((fetchedEvents: Event[]) => {
         return fetchedEvents;
       });
     } else {
-      eventList = await eventService.fetchFilteredEvents(filters).then((fetchedEvents: Event[]) => {
+      eventList = await eventService.fetchFilteredEvents(filters, false).then((fetchedEvents: Event[]) => {
         return fetchedEvents;
       });
       // if signed in, set the "saved" attribute of each event to true if the user has saved it. ideally this will
       // be relegated to the backend in the future
       if (signedIn) {
-        var savedEvents = await eventService.fetchUserSavedEvents(username, token).then((fetchedEvents: Event[]) => {
+        var savedEvents = await eventService.fetchFilteredEvents(filters, true, username, token).then((fetchedEvents: Event[]) => {
           return fetchedEvents;
         });
 
@@ -92,7 +92,13 @@ const MainPage: FunctionComponent = () => {
       />
       <Divider/>
       <Box className={classes.mainBox}>
-        <EventGrid events={events} setEvents={setEvents} signedIn={signedIn} token={token} username={username}/>
+        <EventGrid
+         events={events}
+         setEvents={setEvents}
+         signedIn={signedIn}
+         token={token}
+         username={username}
+         online={filters.online}/>
         <MapComponent events={events}/>
       </Box>
       <Snackbar open={toastOpen} autoHideDuration={3000} onClose={handleCloseToast}>

@@ -1,5 +1,6 @@
 import React, { FunctionComponent, useState, useCallback, memo } from 'react';
 import { GoogleMap, LoadScript, Marker, InfoWindow } from '@react-google-maps/api';
+import { Link } from '@material-ui/core';
 import Event from "../domain/Event";
 import { defaultFilters } from './MainPage';
 import useStyles from "../css"
@@ -53,7 +54,9 @@ const MapComponent: FunctionComponent<Props> = (props: Props) => {
                   onCloseClick={() => {toggleMarkerInfoOpen(index, false)}}
                 >
                   <div className={classes.mapInfoWindow}>
+                  <Link target="_blank" rel="noopener noreferrer" href={event.link}>
                     <h3>{event.name}</h3>
+                  </Link>
                     <p>{event?.desc}</p>
                   </div>
                 </InfoWindow>}

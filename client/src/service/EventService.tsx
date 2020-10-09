@@ -15,6 +15,8 @@ export default class EventService {
         desc: event?.desc,
         saved: isSaved,
         id: event.id,
+        date: new Date(event.date + 'T' + event.time),
+        link: event.link,
         position: {
           lat: event?.latitude,
           lng: event?.longitude
@@ -25,7 +27,7 @@ export default class EventService {
   };
 
   // only supporting limit and date range right now, everything else to come later
-  fetchFilteredEvents = async (filters: Filters): Promise<Event[]> => {
+  fetchFilteredEvents = async (filters: Filters, userSaved: boolean, username?: string, token?: string): Promise<Event[]> => {
     try {
       var filterString: string = "lat=" + filters.userPos.lat + "&lng=" + filters.userPos.lng;
       if (filters.limit) {
@@ -34,8 +36,15 @@ export default class EventService {
       if (filters.firstDate && filters.lastDate) {
         filterString += "&firstDate=" + filters.firstDate + "&lastDate=" + filters.lastDate;
       }
-      const events = await axios.get(this.baseUrl + "/events/filter?" + filterString);
-      return this.formatEvents(events.data.content, false);
+      var events;
+      if (userSaved) {
+        events = await axios.get(this.baseUrl + '/user/saved?user=' + username + '&' + filterString, {headers: {'Authorization': token}});
+        events = this.formatEvents(events.data, true);
+      } else {
+        events = await axios.get(this.baseUrl + "/events/filter?" + filterString);
+        events = this.formatEvents(events.data.content, false);
+      }
+      return events;
     } catch(error) {
       console.error(error);
     }
@@ -73,20 +82,10 @@ export default class EventService {
     }
   };
 
-  // Fetches saved events for a user
-  fetchUserSavedEvents = async (username: string, token: string): Promise<Event[]> => {
-    try {
-      const events = await axios.get(this.baseUrl + '/user/saved?user=' + username, {headers: {'Authorization': token}});
-      return this.formatEvents(events.data, true);
-    } catch(error) {
-      console.error(error);
-    }
-  };
-
   // Saves an event for a user
   saveEvent = async (eventId: number, username: string, token: string): Promise<void> => {
     try {
-      await axios.post(this.baseUrl + '/user/save-event?event=' + eventId + '&user=' + username, {headers: {'Authorization': token}});
+      await axios.post(this.baseUrl + '/user/save?event=' + eventId + '&user=' + username, null, {headers: {'Authorization': token}});
     } catch(error) {
       console.error(error);
     }
@@ -95,7 +94,7 @@ export default class EventService {
   // Unsaves an event for a user
   unsaveEvent = async (eventId: number, username: string, token: string): Promise<void> => {
     try {
-      await axios.delete(this.baseUrl + '/user/unsave?event=' + eventId + '&user=' + username, {headers: {'Authorization': token}});
+      await axios.get(this.baseUrl + '/user/unsave?event=' + eventId + '&user=' + username, {headers: {'Authorization': token}});
     } catch(error) {
       console.error(error);
     }

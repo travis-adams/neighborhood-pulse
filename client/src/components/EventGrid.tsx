@@ -1,5 +1,5 @@
 import React, { FunctionComponent } from 'react';
-import { Grid, Card, Button } from '@material-ui/core';
+import { Grid, Card, Button, Link } from '@material-ui/core';
 import Event from "../domain/Event";
 import useStyles from "../css";
 import EventService from "../service/EventService";
@@ -10,7 +10,10 @@ interface Props {
   signedIn: boolean;
   token: string;
   username: string;
+  online: boolean;
 };
+
+const monthsShort = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sept", "Oct", "Novr", "Dec"];
 
 const eventService = new EventService();
 
@@ -52,8 +55,8 @@ const EventGrid: FunctionComponent<Props> = (props: Props) => {
             <Card className={classes.event}>
               <Grid>
                 <div className={classes.eventDate}>
-                  <h2>SEP</h2>
-                  <h2>23</h2>
+                  <h2>{monthsShort[event.date.getMonth()]}</h2>
+                  <h2>{('0' + event.date.getDate()).slice(-2)}</h2>
                   {props.signedIn &&
                     <Button
                      onClick={() => handleSaveButton(event)}
@@ -66,10 +69,16 @@ const EventGrid: FunctionComponent<Props> = (props: Props) => {
                 </div>
               </Grid>
               <div className={classes.eventDetails}>
-                <h2>{event.name}</h2>
-                <p>day and time</p>
-                <p>address</p>
-                <p>Atlanta, GA</p>
+                <Link target="_blank" rel="noopener noreferrer" href={event.link}>
+                  <h2>{event.name}</h2>
+                </Link>
+                <p>{event.date.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })}</p>
+                {!props.online &&
+                  <div>
+                    <p>Address</p>
+                    <p>City, State</p>
+                  </div>
+                }
               </div>
             </Card>
           </Grid>
