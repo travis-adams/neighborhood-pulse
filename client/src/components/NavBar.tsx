@@ -10,7 +10,7 @@ import UserIcon from '@material-ui/icons/PermIdentity'
 import { ExpandMore, ExpandLess, Close } from '@material-ui/icons';
 import useStyles from '../css';
 import Filters from '../domain/Filters';
-import { EventService } from "../service/EventService";
+import EventService from "../service/EventService";
 import Alert from '@material-ui/lab/Alert';
 
 interface Props {
@@ -60,6 +60,10 @@ const NavBar: FunctionComponent<Props> = (props: Props) => {
     setUnsavedFilters({ ...unsavedFilters, online: event.target.checked });
   };
 
+  const handleSavedEventsChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setUnsavedFilters({ ...unsavedFilters, saved: event.target.checked });
+  };
+
   const handleOpenFilters = (event: React.MouseEvent<HTMLButtonElement>) => {
     anchorEl ? handleCloseFilters() : setAnchorEl(event.currentTarget);
   };
@@ -83,8 +87,8 @@ const NavBar: FunctionComponent<Props> = (props: Props) => {
     if (props.signedIn) {
       // Sign out
       props.setToken("");
-      props.setSignedIn(false);
       props.setUsername("");
+      props.setSignedIn(false);
       // Display confirmation toast
       props.setToastOpen(true);
     } else {
@@ -116,8 +120,8 @@ const NavBar: FunctionComponent<Props> = (props: Props) => {
       }
       const token: string = await eventService.userLogIn(username, password);
       props.setToken(token);
-      props.setSignedIn(true);
       props.setUsername(username);
+      props.setSignedIn(true);
       handleCloseSignIn();
       setErrorMessage("");
       // Display confirmation toast
@@ -217,6 +221,19 @@ const NavBar: FunctionComponent<Props> = (props: Props) => {
                               name="online"
                             />}
                     label="Online only"
+                    labelPlacement="end"
+                  />
+                </FormControl>
+                <FormControl className={classes.filterElement}>
+                  <FormControlLabel
+                    control={<Checkbox
+                              checked={unsavedFilters.saved}
+                              onChange={handleSavedEventsChange}
+                              disabled={!(props.signedIn)}
+                              color="primary"
+                              name="saved"
+                            />}
+                    label="Saved Events"
                     labelPlacement="end"
                   />
                 </FormControl>
