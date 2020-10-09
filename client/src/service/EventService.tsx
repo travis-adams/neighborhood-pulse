@@ -4,17 +4,16 @@ import "regenerator-runtime/runtime";
 import Event from "../domain/Event";
 import Filters from '../domain/Filters';
 
-export class EventService {
+export default class EventService {
   baseUrl: string = "http://npulsebackendpoc-env.eba-qcadjde2.us-east-2.elasticbeanstalk.com:5000";
 
   // Prepares fetched events for display on the map
-  formatEvents = (events: any): Event[] => {
-    let formattedEvents = events.data.content.map((event: any) => {
+  formatEvents = (events: any, isSaved: boolean): Event[] => {
+    let formattedEvents = events.map((event: any) => {
       return ({
         name: event.name,
         desc: event?.desc,
-        saved: false,
-        setSaved: null,
+        saved: isSaved,
         id: event.id,
         position: {
           lat: event?.latitude,
@@ -26,7 +25,7 @@ export class EventService {
   };
 
   // only supporting limit and date range right now, everything else to come later
-  fetchFilteredEvents = async (filters: Filters): Promise<Event[] | void> => {
+  fetchFilteredEvents = async (filters: Filters): Promise<Event[]> => {
     try {
       var filterString: string = "lat=" + filters.userPos.lat + "&lng=" + filters.userPos.lng;
       if (filters.limit) {
@@ -36,7 +35,7 @@ export class EventService {
         filterString += "&firstDate=" + filters.firstDate + "&lastDate=" + filters.lastDate;
       }
       const events = await axios.get(this.baseUrl + "/events/filter?" + filterString);
-      return this.formatEvents(events);
+      return this.formatEvents(events.data.content, false);
     } catch(error) {
       console.error(error);
     }
@@ -53,7 +52,7 @@ export class EventService {
     }
   };
 
-  // Logs a user in. Returns the authorizaton token provided by the backend.
+  // Logs a user in. Returns the authorizaton token provided by the backend
   userLogIn = async (username_: string, password_: string): Promise<string> => {
     try {
       const response = await axios.post(this.baseUrl + '/login', {username: username_, password: password_});
@@ -64,13 +63,41 @@ export class EventService {
     }
   };
 
-  // Creates an account with the provided username and pw
-  userSignUp = async (username_: string, password_: string): Promise<any> => {
+  // Creates an account with the provided username and password
+  userSignUp = async (username_: string, password_: string): Promise<void> => {
     try {
       await axios.post(this.baseUrl + '/user/sign-up', {username: username_, password: password_});
     } catch(error) {
       console.error(error);
       throw new Error("Internal server error: '" + error.response.statusText + "' Please try again.");
+    }
+  };
+
+  // Fetches saved events for a user
+  fetchUserSavedEvents = async (username: string, token: string): Promise<Event[]> => {
+    try {
+      const events = await axios.get(this.baseUrl + '/user/saved?user=' + username, {headers: {'Authorization': token}});
+      return this.formatEvents(events.data, true);
+    } catch(error) {
+      console.error(error);
+    }
+  };
+
+  // Saves an event for a user
+  saveEvent = async (eventId: number, username: string, token: string): Promise<void> => {
+    try {
+      await axios.post(this.baseUrl + '/user/save-event?event=' + eventId + '&user=' + username, {headers: {'Authorization': token}});
+    } catch(error) {
+      console.error(error);
+    }
+  };
+
+  // Unsaves an event for a user
+  unsaveEvent = async (eventId: number, username: string, token: string): Promise<void> => {
+    try {
+      await axios.delete(this.baseUrl + '/user/unsave?event=' + eventId + '&user=' + username, {headers: {'Authorization': token}});
+    } catch(error) {
+      console.error(error);
     }
   };
 }

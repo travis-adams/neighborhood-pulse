@@ -1,5 +1,5 @@
 import React, { FunctionComponent, useState, useEffect } from 'react';
-import { EventService } from "../service/EventService";
+import EventService from "../service/EventService";
 import { Divider, Box, Snackbar } from "@material-ui/core";
 import Alert from '@material-ui/lab/Alert';
 import Event from "../domain/Event";
@@ -17,8 +17,10 @@ export const defaultFilters: Filters = {
   limit: 75,
   firstDate: '2020-01-02',
   lastDate: '2021-01-01',
-  online: false
+  online: false,
+  saved: false
 };
+
 const eventService = new EventService();
 
 const MainPage: FunctionComponent = () => {
@@ -38,21 +40,46 @@ const MainPage: FunctionComponent = () => {
   };
 
   // Asynchronously load the events
-  const loadEvents = async (eventFilters: Filters) => {
-    var eventList = await eventService.fetchFilteredEvents(eventFilters).then((fetchedEvents: Event[]) => {
-      return fetchedEvents;
-    });
+  const loadEvents = async () => {
+    var eventList;
+    // If the "Saved Events" checkbox is checked, only load the user's saved events. Otherwise, load all events.
+    if (filters.saved) {
+      eventList = await eventService.fetchUserSavedEvents(username, token).then((fetchedEvents: Event[]) => {
+        return fetchedEvents;
+      });
+    } else {
+      eventList = await eventService.fetchFilteredEvents(filters).then((fetchedEvents: Event[]) => {
+        return fetchedEvents;
+      });
+      // if signed in, set the "saved" attribute of each event to true if the user has saved it. ideally this will
+      // be relegated to the backend in the future
+      if (signedIn) {
+        var savedEvents = await eventService.fetchUserSavedEvents(username, token).then((fetchedEvents: Event[]) => {
+          return fetchedEvents;
+        });
+
+        eventList.forEach((event: Event) => {
+          savedEvents.forEach((savedEvent: Event) => {
+            if (event.id == savedEvent.id) {
+              event.saved = true;
+            }
+          });
+        });
+      }
+    }
+    // finally, update the displayed events
     setEvents(eventList);
   };
 
+  // Triggered by handleApply in NavBar.tsx
   useEffect(() => {
-    loadEvents(filters);
+    loadEvents();
   }, [filters]);
 
+  // Triggered by handleSaveButton in EventGrid.tsx
   useEffect(() => {
     setEvents(events);
   }, [events]);
-
 
   return (
     <div className={classes.flexColumn}>
@@ -67,7 +94,7 @@ const MainPage: FunctionComponent = () => {
       />
       <Divider/>
       <Box className={classes.mainBox}>
-        <EventGrid events={events} signedIn={signedIn} token={token} username={username} setEvents = {setEvents}/>
+        <EventGrid events={events} setEvents={setEvents} signedIn={signedIn} token={token} username={username}/>
         <MapComponent events={events}/>
       </Box>
       <Snackbar open={toastOpen} autoHideDuration={3000} onClose={handleCloseToast}>

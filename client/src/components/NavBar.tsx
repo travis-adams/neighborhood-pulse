@@ -10,7 +10,7 @@ import UserIcon from '@material-ui/icons/PermIdentity'
 import { ExpandMore, ExpandLess, Close } from '@material-ui/icons';
 import useStyles from '../css';
 import Filters from '../domain/Filters';
-import { EventService } from "../service/EventService";
+import EventService from "../service/EventService";
 import Alert from '@material-ui/lab/Alert';
 
 interface Props {
@@ -58,6 +58,10 @@ const NavBar: FunctionComponent<Props> = (props: Props) => {
 
   const handleOnlineChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setUnsavedFilters({ ...unsavedFilters, online: event.target.checked });
+  };
+
+  const handleSavedEventsChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setUnsavedFilters({ ...unsavedFilters, saved: event.target.checked });
   };
 
   const handleOpenFilters = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -217,6 +221,19 @@ const NavBar: FunctionComponent<Props> = (props: Props) => {
                               name="online"
                             />}
                     label="Online only"
+                    labelPlacement="end"
+                  />
+                </FormControl>
+                <FormControl className={classes.filterElement}>
+                  <FormControlLabel
+                    control={<Checkbox
+                              checked={unsavedFilters.saved}
+                              onChange={handleSavedEventsChange}
+                              disabled={!(props.signedIn)}
+                              color="primary"
+                              name="saved"
+                            />}
+                    label="Saved Events"
                     labelPlacement="end"
                   />
                 </FormControl>
