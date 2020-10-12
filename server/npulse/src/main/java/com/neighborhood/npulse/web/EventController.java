@@ -39,9 +39,7 @@ public class EventController {
                                                          @RequestParam(value = "lastDate", required = false)String lastDate,
                                                          @RequestParam(value = "category", required = false)List<String> category){
         Pageable eventLimit = PageRequest.of(0, Integer.parseInt(limit));
-        Specification<Event> query =  EventSpecifications.matchLoc("nline");
-        query = query.or(EventSpecifications.matchLoc("web"));
-        query = query.or(EventSpecifications.matchLoc("Web"));
+        Specification<Event> query =  FilterBuilder.onlineFilter();
         query = FilterBuilder.buildFilters(query,name, date,firstDate,lastDate,category);
         return eventRepo.findAll(query,eventLimit);
     }
@@ -63,15 +61,9 @@ public class EventController {
                                                        @RequestParam(value = "radius", defaultValue = "1")String radius,
                                                        @RequestParam(value = "limit", defaultValue = "10")String limit){
         Pageable eventLimit = PageRequest.of(0,Integer.parseInt(limit));
-
-        Specification<Event> query;
-        //Match Location
-        Double latitude = Double.parseDouble(lat);
-        Double longitude = Double.parseDouble(lng);
-        Double rad = Double.parseDouble(radius);
-        query = EventSpecifications.nearLat(latitude, rad);
-        query = query.and(EventSpecifications.nearLng(longitude, rad));
-
+        //Near Location
+        Specification<Event> query = FilterBuilder.latLngFilter(lat, lng, radius);
+        //Other Filters
         query = FilterBuilder.buildFilters(query,name,date,firstDate,lastDate,category);
 
         return eventRepo.findAll(query, eventLimit);

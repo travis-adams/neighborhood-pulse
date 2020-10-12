@@ -3,10 +3,8 @@ package com.neighborhood.npulse.data.repository;
 import com.neighborhood.npulse.data.entity.Event;
 import org.springframework.data.jpa.domain.Specification;
 
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
+import javax.persistence.criteria.*;
+import java.util.List;
 
 public class EventSpecifications {
 
@@ -70,5 +68,16 @@ public class EventSpecifications {
     //Mainly just for the Online endpoint
     public static Specification<Event> matchLoc(String locString){
         return (root, criteriaQuery, criteriaBuilder) -> criteriaBuilder.like(root.get("loc"), "%"+locString.toLowerCase()+"%");
+    }
+
+    public static Specification<Event> idIn(List<Integer> ids) {
+        return new Specification<Event>() {
+            @Override
+            public Predicate toPredicate(Root<Event> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder criteriaBuilder) {
+                Expression<Integer> id = root.get("id");
+                Predicate pred = id.in(ids);
+                return pred;
+            }
+        };
     }
 }
