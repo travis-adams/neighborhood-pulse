@@ -10,29 +10,37 @@ interface Props {
   signedIn: boolean;
   token: string;
   username: string;
-  online: boolean;
+  onlineOnly: boolean;
+  savedOnly: boolean;
 };
 
-const monthsShort = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sept", "Oct", "Novr", "Dec"];
+const monthsShort = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec"];
 
 const eventService = new EventService();
 
 const EventGrid: FunctionComponent<Props> = (props: Props) => {
   const classes = useStyles();
 
+  // If the event is saved, unsave it. If it's unsaved, save it
   const handleSaveButton = async (event: Event) => {
-    // if the event is currently saved, unsave it. if it's unsaved, save it
+    var newEvents = [...props.events];
     if (event.saved) {
       await eventService.unsaveEvent(event.id, props.username, props.token);
+      // If "Saved Events" is checked, hide the event once unsaved
+      if (props.savedOnly) {
+        newEvents = newEvents.filter(newEvent => newEvent.id != event.id);
+      }
     } else {
       await eventService.saveEvent(event.id, props.username, props.token);
     }
-    // set the frontend "saved" value manually. otherwise we'd have to wait until the page refreshes for the "save"/"unsave" button to update
-    var newEvents = [...props.events];
-    for (let newEvent of newEvents) {
-      if (newEvent.id == event.id) {
-        newEvent.saved = !event.saved;
-        break;
+    // If "Saved Events" filter not checked, locally update event as saved/unsaved
+    // (provides instant update instead of needing to wait for a rerender)
+    if (!props.savedOnly) {
+      for (let newEvent of newEvents) {
+        if (newEvent.id == event.id) {
+          newEvent.saved = !event.saved;
+          break;
+        }
       }
     }
     props.setEvents(newEvents);
@@ -73,7 +81,7 @@ const EventGrid: FunctionComponent<Props> = (props: Props) => {
                   <h2>{event.name}</h2>
                 </Link>
                 <p>{event.date.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })}</p>
-                {!props.online &&
+                {!props.onlineOnly &&
                   <div>
                     <p>Address</p>
                     <p>City, State</p>

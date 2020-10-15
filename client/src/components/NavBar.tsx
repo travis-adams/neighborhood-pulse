@@ -82,15 +82,22 @@ const NavBar: FunctionComponent<Props> = (props: Props) => {
     setLogInFields({ username: "", password: "", usernameError: false, passwordError: false });
   }
 
+  const signOut = () => {
+    // Reset sign-in info
+    props.setToken("");
+    props.setUsername("");
+    props.setSignedIn(false);
+    // Uncheck "Saved Events"
+    setUnsavedFilters({ ...unsavedFilters, saved: false });
+    props.setFilters({ ...unsavedFilters, saved: false });
+    // Display confirmation toast
+    props.setToastOpen(true);
+  }
+
   // Called when the user clicks the signin/signout button on the navbar
-  const handleSignInButton = () => {
+  const handleSignInOutButton = () => {
     if (props.signedIn) {
-      // Sign out
-      props.setToken("");
-      props.setUsername("");
-      props.setSignedIn(false);
-      // Display confirmation toast
-      props.setToastOpen(true);
+     signOut();
     } else {
       // Open sign-in popup
       setIsSignUp(false);
@@ -109,7 +116,7 @@ const NavBar: FunctionComponent<Props> = (props: Props) => {
     resetSignInFields();
   };
 
-  // Handles signing the user in
+  // Handles signing the user in/up
   const handleUserSignIn = async (username: string, password: string) => {
     try {
       if (username.length == 0 || password.length == 0) {
@@ -118,6 +125,7 @@ const NavBar: FunctionComponent<Props> = (props: Props) => {
       if (isSignUp) {
         await eventService.userSignUp(username, password);
       }
+      // Hit the backend to sign the user in, then set token and username
       const token: string = await eventService.userLogIn(username, password);
       props.setToken(token);
       props.setUsername(username);
@@ -260,7 +268,7 @@ const NavBar: FunctionComponent<Props> = (props: Props) => {
           <Button
           className={classes.userButton}
           color="inherit"
-          onClick={handleSignInButton}
+          onClick={handleSignInOutButton}
           endIcon={<UserIcon/>}
           >
             {props.signedIn ? "Sign Out" : "Sign In"}

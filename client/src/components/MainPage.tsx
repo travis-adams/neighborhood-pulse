@@ -51,8 +51,7 @@ const MainPage: FunctionComponent = () => {
       eventList = await eventService.fetchFilteredEvents(filters, false).then((fetchedEvents: Event[]) => {
         return fetchedEvents;
       });
-      // if signed in, set the "saved" attribute of each event to true if the user has saved it. ideally this will
-      // be relegated to the backend in the future
+      // if signed in, set the "saved" attribute of each event to true if the user has saved it
       if (signedIn) {
         var savedEvents = await eventService.fetchFilteredEvents(filters, true, username, token).then((fetchedEvents: Event[]) => {
           return fetchedEvents;
@@ -75,10 +74,6 @@ const MainPage: FunctionComponent = () => {
     loadEvents();
   }, [filters, signedIn]);
 
-  useEffect(() => {
-    setEvents(events);
-  }, [events]);
-
   return (
     <div className={classes.flexColumn}>
       <NavBar
@@ -93,13 +88,15 @@ const MainPage: FunctionComponent = () => {
       <Divider/>
       <Box className={classes.mainBox}>
         <EventGrid
-         events={events}
-         setEvents={setEvents}
-         signedIn={signedIn}
-         token={token}
-         username={username}
-         online={filters.online}/>
-        <MapComponent events={events}/>
+          events={events}
+          setEvents={setEvents}
+          signedIn={signedIn}
+          token={token}
+          username={username}
+          onlineOnly={filters.online}
+          savedOnly={filters.saved}
+        />
+        <MapComponent events={events} />
       </Box>
       <Snackbar open={toastOpen} autoHideDuration={3000} onClose={handleCloseToast}>
         <Alert onClose={handleCloseToast} severity="success">

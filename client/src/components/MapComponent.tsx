@@ -39,7 +39,7 @@ const MapComponent: FunctionComponent<Props> = (props: Props) => {
         onLoad={onLoad}
         onUnmount={onUnmount}
       >
-        {props.events.map((event: Event, index: number) => {
+        {props.events?.map((event: Event, index: number) => {
           if (event.position.lat && event.position.lng) {
             return (
               <Marker
