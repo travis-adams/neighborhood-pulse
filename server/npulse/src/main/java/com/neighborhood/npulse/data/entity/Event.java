@@ -13,13 +13,14 @@ import javax.persistence.*;
 public class Event {
     @Id
     @Column(name="id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     @Column(name="name")
     private String name;
     @Column(name="date")
     //@Convert(converter = DateConverter.class)
     private String date;
-    @Column(name="desc")
+    @Column(name= "\"desc\"")
     private String desc;
     @Column(name="loc")
     private String loc;
@@ -39,17 +40,17 @@ public class Event {
     private Double longitude;
     @Nullable
     @Column(name="creator_user_id")
-    private int user_id;
+    private Integer userID;
 
-    public int getUser_id() {
-        return user_id;
+    public int getUserID() {
+        return userID;
     }
 
-    public void setUser_id(int user_id) {
-        this.user_id = user_id;
+    public void setUserID(Integer user_id) {
+        this.userID = user_id;
     }
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 

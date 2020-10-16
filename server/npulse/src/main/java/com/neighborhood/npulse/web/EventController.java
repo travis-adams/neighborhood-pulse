@@ -1,13 +1,16 @@
 package com.neighborhood.npulse.web;
 
+import com.neighborhood.npulse.data.entity.SavedEvent;
 import com.neighborhood.npulse.data.repository.EventRepo;
 import com.neighborhood.npulse.data.entity.Event;
-import com.neighborhood.npulse.data.repository.EventSpecifications;
+import com.neighborhood.npulse.data.repository.SavedEventRepo;
+import com.neighborhood.npulse.user.AppUserRepo;
 import com.neighborhood.npulse.utils.FilterBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import java.util.*;
 
@@ -22,7 +25,10 @@ import java.util.*;
 public class EventController {
     @Autowired
     private EventRepo eventRepo;//Repository Responsible for providing us events
-
+    @Autowired
+    private AppUserRepo userRepo;
+    @Autowired
+    private SavedEventRepo savedEventRepo;
     @GetMapping("")
     //Return events with no filtering
     public @ResponseBody Iterable<Event> getEvents(@RequestParam(value="limit", defaultValue = "10")String limit){
@@ -67,6 +73,20 @@ public class EventController {
         query = FilterBuilder.buildFilters(query,name,date,firstDate,lastDate,category);
 
         return eventRepo.findAll(query, eventLimit);
+    }
+
+    @PostMapping("/submit")
+    @ResponseStatus(HttpStatus.OK)
+    public @ResponseBody Event submitEvent(@RequestBody Event event,
+                                           @RequestParam(value = "username")String username){
+        int userID = userRepo.findIDByUsername(username);
+        event.setUserID(userID);
+        eventRepo.save(event);
+        SavedEvent newSave = new SavedEvent();
+        newSave.setEventID(event.getId());
+        newSave.setUserID(userID);
+        savedEventRepo.save(newSave);
+        return event;
     }
 
 }
