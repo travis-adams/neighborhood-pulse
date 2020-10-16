@@ -38,6 +38,7 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
                 .antMatchers("/events/online").permitAll()
                 .antMatchers("/events/categories").permitAll()
                 .antMatchers("/comment").permitAll()//Anyone can see comments
+                .antMatchers("/locations/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .addFilter(new JWTAuthenticationFilter(authenticationManager()))
