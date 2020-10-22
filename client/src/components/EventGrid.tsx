@@ -1,8 +1,9 @@
 import React, { FunctionComponent } from 'react';
-import { Grid, Card, CardActionArea, CardContent, Button, Typography } from '@material-ui/core';
+import { Grid, Card, CardActionArea, CardContent, IconButton, Typography } from '@material-ui/core';
 import Event from "../domain/Event";
 import useStyles from "../css";
 import EventService from "../service/EventService";
+import { Bookmark, BookmarkBorder } from '@material-ui/icons';
 
 interface Props {
   events: Event[];
@@ -77,14 +78,14 @@ const EventGrid: FunctionComponent<Props> = (props: Props) => {
                   {('0' + event.date.getDate()).slice(-2)}
                 </Typography>
                 {props.signedIn &&
-                  <Button
+                  <IconButton
                     onClick={() => handleSaveButton(event)}
                     size="small"
-                    color="secondary"
+                    color="primary"
                     style={{marginLeft: -7, marginRight: -7}}
                   >
-                    {event.saved ? 'Unsave' : 'Save'}
-                  </Button>
+                    {event.saved ? <Bookmark/> : <BookmarkBorder/>}
+                  </IconButton>
                 }
               </CardContent>
               <CardActionArea onClick={() => props.expandEvent(event)}>

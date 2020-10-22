@@ -26,6 +26,10 @@ const NavBar: FunctionComponent<Props> = (props: Props) => {
   const [isSignUp, setIsSignUp] = useState<boolean>(false);
   const [unsavedFilters, setUnsavedFilters] = useState<Filters>(props.filters);
 
+  const handleSavedEventsChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setUnsavedFilters({ ...unsavedFilters, saved: event.target.checked });
+  };
+
   const handleOpenFilters = (event: React.MouseEvent<HTMLButtonElement>) => {
     anchorEl ? handleCloseFilters() : setAnchorEl(event.currentTarget);
   };
