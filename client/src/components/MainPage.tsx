@@ -7,7 +7,9 @@ import Filters from '../domain/Filters';
 import EventGrid from "./EventGrid";
 import MapComponent from "./MapComponent";
 import NavBar from "./NavBar";
+import ExpandedEvent from "./ExpandedEvent";
 import useStyles from "../css";
+import Comment from "../domain/Comment";
 
 export const defaultFilters: Filters = {
   userPos: {
@@ -27,10 +29,15 @@ const MainPage: FunctionComponent = () => {
   const classes = useStyles();
   const [events, setEvents] = useState<Event[]>([]);
   const [filters, setFilters] = useState<Filters>(defaultFilters);
+  // User sign-in info
   const [signedIn, setSignedIn] = useState<boolean>(false);
   const [token, setToken] = useState<string>("");
   const [toastOpen, setToastOpen] = useState<boolean>(false);
   const [username, setUsername] = useState<string>("");
+  // Event details
+  const [expandedEvent, setExpandedEvent] = useState<Event>(null);
+  const [isExpanded, setIsExpanded] = useState<boolean>(false);
+  const [comments, setComments] = useState<Comment[]>([]);
 
   const handleCloseToast = (event?: React.SyntheticEvent, reason?: string) => {
     if (reason === 'clickaway') {
@@ -38,6 +45,32 @@ const MainPage: FunctionComponent = () => {
     }
     setToastOpen(false);
   };
+
+  const expandEvent = (event: Event) => {
+    setExpandedEvent(event);
+    setIsExpanded(true);
+  };
+
+  const closeEvent = () => {
+    setIsExpanded(false);
+    setComments([]);
+  };
+
+  const addComment = async (text: string) => {
+    var newComment = await eventService.submitEventComment(expandedEvent.id, text, username, token).then((fetchedComment: Comment) => {
+      return fetchedComment;
+    });
+    setComments([ ...comments, newComment]);
+  };
+
+  const loadComments = async () => {
+    if (expandedEvent) {
+      var commentList = await eventService.fetchEventComments(expandedEvent.id).then((fetchedComments: Comment[]) => {
+        return fetchedComments;
+      });
+      setComments(commentList);
+    }
+  }
 
   // Asynchronously load the events
   const loadEvents = async () => {
@@ -59,7 +92,7 @@ const MainPage: FunctionComponent = () => {
 
         eventList.forEach((event: Event) => {
           savedEvents.forEach((savedEvent: Event) => {
-            if (event.id == savedEvent.id) {
+            if (event.id === savedEvent.id) {
               event.saved = true;
             }
           });
@@ -71,8 +104,13 @@ const MainPage: FunctionComponent = () => {
   };
 
   useEffect(() => {
+    closeEvent();
     loadEvents();
   }, [filters, signedIn]);
+
+  useEffect(() => {
+    loadComments();
+  }, [expandedEvent]);
 
   return (
     <div className={classes.flexColumn}>
@@ -95,10 +133,33 @@ const MainPage: FunctionComponent = () => {
           username={username}
           onlineOnly={filters.online}
           savedOnly={filters.saved}
+          expandedEvent={expandedEvent}
+          expandEvent={expandEvent}
+          closeEvent={closeEvent}
         />
-        <MapComponent events={events} />
+        <ExpandedEvent
+          event={expandedEvent}
+          isExpanded={isExpanded}
+          expandEvent={expandEvent}
+          closeEvent={closeEvent}
+          comments={comments}
+          addComment={addComment}
+          signedIn={signedIn}
+        />
+        <MapComponent
+          events={events}
+          filters={filters}
+          setFilters={setFilters}
+          expandEvent={expandEvent}
+          closeEvent={closeEvent}
+        />
       </Box>
-      <Snackbar open={toastOpen} autoHideDuration={3000} onClose={handleCloseToast}>
+      <Snackbar
+        open={toastOpen}
+        autoHideDuration={3000}
+        onClose={handleCloseToast}
+        anchorOrigin={{vertical: 'bottom', horizontal: 'center'}}
+      >
         <Alert onClose={handleCloseToast} severity="success">
           {signedIn ? "Signed in" : "Signed out"}
         </Alert>

@@ -5,35 +5,30 @@ const buttonColor = '#444444';
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     mapContainer: {
-      flex: 3
-    },
-    mapInfoWindow: {
-      textAlign: 'center',
-      padding: 10
+      position: 'absolute',
+      right: 0,
+      width: '60%',
+      height: '100%',
+      zIndex: 1
     },
     event: {
       display: 'flex',
       height: '18vh',
       flex: 1
     },
-    eventDetails: {
-      flex: 1,
-      textAlign: 'left',
-      padding: 10,
-      lineHeight: '0.5',
-      whiteSpace: 'nowrap'
+    collapse: {
+      zIndex: 2
     },
-    eventDate: {
-      flex: 1,
-      textAlign: 'center',
-      padding: 10,
-      lineHeight: '0.5'
+    commentButton: {
+      marginLeft: 10,
+      marginBottom: 1
     },
     eventGrid: {
       backgroundColor: "#dddddd",
       overflow: "auto",
       gridGap: theme.spacing(0.5),
-      flex: 2
+      width: '40%',
+      zIndex: 2,
     },
     flexColumn: {
       display: "flex",
@@ -44,7 +39,9 @@ const useStyles = makeStyles((theme: Theme) =>
       flex: 1,
       display: "flex",
       flexFlow: "row nowrap",
-      overflow: "hidden"
+      position: 'relative',
+      overflow: "hidden",
+      zIndex: 1
     },
     navBar: {
       flex: 0,
@@ -101,8 +98,7 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     inputInput: {
       padding: theme.spacing(1, 1, 1, 0),
-      // vertical padding + font size from searchIcon
-      paddingLeft: `calc(1em + ${theme.spacing(4)}px)`,
+      paddingLeft: 50,
       transition: theme.transitions.create('width'),
       color: theme.palette.common.black
     },

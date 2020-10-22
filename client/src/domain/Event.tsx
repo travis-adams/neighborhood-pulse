@@ -9,6 +9,7 @@ export default interface Event {
   link: string;
   saved: boolean;
   date: Date;
-  address?: Address
-  position?: google.maps.LatLngLiteral
+  location: string;
+  address?: string;
+  position?: google.maps.LatLngLiteral;
 };

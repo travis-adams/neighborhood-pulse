@@ -1,5 +1,5 @@
 import React, { FunctionComponent } from 'react';
-import { Grid, Card, Button, Link } from '@material-ui/core';
+import { Grid, Card, CardActionArea, CardContent, Button, Typography } from '@material-ui/core';
 import Event from "../domain/Event";
 import useStyles from "../css";
 import EventService from "../service/EventService";
@@ -12,9 +12,12 @@ interface Props {
   username: string;
   onlineOnly: boolean;
   savedOnly: boolean;
+  expandedEvent: Event;
+  expandEvent: (event: Event) => void;
+  closeEvent: () => void;
 };
 
-const monthsShort = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec"];
+const monthsShort = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
 const eventService = new EventService();
 
@@ -28,7 +31,12 @@ const EventGrid: FunctionComponent<Props> = (props: Props) => {
       await eventService.unsaveEvent(event.id, props.username, props.token);
       // If "Saved Events" is checked, hide the event once unsaved
       if (props.savedOnly) {
+        // filter the event out of the displayed events
         newEvents = newEvents.filter(newEvent => newEvent.id != event.id);
+        // close the event if it's expanded
+        if (props.expandedEvent && (event.id === props.expandedEvent.id)) {
+          props.closeEvent();
+        }
       }
     } else {
       await eventService.saveEvent(event.id, props.username, props.token);
@@ -37,7 +45,7 @@ const EventGrid: FunctionComponent<Props> = (props: Props) => {
     // (provides instant update instead of needing to wait for a rerender)
     if (!props.savedOnly) {
       for (let newEvent of newEvents) {
-        if (newEvent.id == event.id) {
+        if (newEvent.id === event.id) {
           newEvent.saved = !event.saved;
           break;
         }
@@ -61,33 +69,40 @@ const EventGrid: FunctionComponent<Props> = (props: Props) => {
             key={index}
           >
             <Card className={classes.event}>
-              <Grid>
-                <div className={classes.eventDate}>
-                  <h2>{monthsShort[event.date.getMonth()]}</h2>
-                  <h2>{('0' + event.date.getDate()).slice(-2)}</h2>
-                  {props.signedIn &&
-                    <Button
-                     onClick={() => handleSaveButton(event)}
-                     size="small"
-                     color="secondary"
-                    >
-                      {event.saved ? "Unsave" : "Save"}
-                    </Button>
-                  }
-                </div>
-              </Grid>
-              <div className={classes.eventDetails}>
-                <Link target="_blank" rel="noopener noreferrer" href={event.link}>
-                  <h2>{event.name}</h2>
-                </Link>
-                <p>{event.date.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })}</p>
-                {!props.onlineOnly &&
-                  <div>
-                    <p>Address</p>
-                    <p>City, State</p>
-                  </div>
+              <CardContent style={{textAlign: 'center', backgroundColor: '#eeeeff'}}>
+                <Typography variant="h6">
+                  {monthsShort[event.date.getMonth()]}
+                </Typography>
+                <Typography variant="h4">
+                  {('0' + event.date.getDate()).slice(-2)}
+                </Typography>
+                {props.signedIn &&
+                  <Button
+                    onClick={() => handleSaveButton(event)}
+                    size="small"
+                    color="secondary"
+                    style={{marginLeft: -7, marginRight: -7}}
+                  >
+                    {event.saved ? 'Unsave' : 'Save'}
+                  </Button>
                 }
-              </div>
+              </CardContent>
+              <CardActionArea onClick={() => props.expandEvent(event)}>
+                <CardContent style={{textOverflow: "ellipsis"}}>
+                  <Typography variant="h6" noWrap>
+                    {event.name}
+                  </Typography>
+                  <Typography variant="body2">
+                    {event.date.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })}
+                  </Typography>
+                  {!props.onlineOnly &&
+                      <Typography variant="body2">
+                        {event.location}
+                        <br/>Atlanta, GA {/* should get actual city + state */}
+                      </Typography>
+                    }
+                </CardContent>
+              </CardActionArea>
             </Card>
           </Grid>
           )}

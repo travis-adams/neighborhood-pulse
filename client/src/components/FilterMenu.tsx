@@ -55,7 +55,7 @@ const FilterMenu: FunctionComponent<Props> = (props: Props) => {
       anchorReference="anchorPosition"
       // anchorPosition and transformOrigin handle the position of the filter menu dropdown
       anchorPosition={{
-        top: props.anchorEl?.getBoundingClientRect().bottom,
+        top: (props.anchorEl?.getBoundingClientRect().bottom === undefined) ? 0 : props.anchorEl?.getBoundingClientRect().bottom,
         left: (props.anchorEl?.getBoundingClientRect().left + props.anchorEl?.getBoundingClientRect().right)/2
       }}
       transformOrigin={{

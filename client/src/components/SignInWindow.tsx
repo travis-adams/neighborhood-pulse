@@ -51,7 +51,7 @@ const SignInWindow: FunctionComponent<Props> = (props: Props) => {
   // Handles signing the user in/up
   const handleUserSignIn = async (username: string, password: string) => {
     try {
-      if (username.length == 0 || password.length == 0) {
+      if (username.length === 0 || password.length === 0) {
         throw new Error("Username and password required.")
       }
       if (props.isSignUp) {
