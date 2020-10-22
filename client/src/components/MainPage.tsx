@@ -103,7 +103,6 @@ const MainPage: FunctionComponent = () => {
     setEvents(eventList);
   };
 
-  // Triggered by handleApply in NavBar.tsx
   useEffect(() => {
     closeEvent();
     loadEvents();

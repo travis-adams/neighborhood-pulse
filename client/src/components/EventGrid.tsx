@@ -34,10 +34,6 @@ const EventGrid: FunctionComponent<Props> = (props: Props) => {
       if (props.savedOnly) {
         // filter the event out of the displayed events
         newEvents = newEvents.filter(newEvent => newEvent.id != event.id);
-        // close the event if it's expanded
-        if (props.expandedEvent && (event.id === props.expandedEvent.id)) {
-          props.closeEvent();
-        }
       }
     } else {
       await eventService.saveEvent(event.id, props.username, props.token);
