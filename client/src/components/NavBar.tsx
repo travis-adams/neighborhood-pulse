@@ -11,6 +11,8 @@ import SignInWindow from './SignInWindow';
 interface Props {
   filters: Filters;
   setFilters: (filters: Filters) => void;
+  unsavedFilters: Filters;
+  setUnsavedFilters: (filters: Filters) => void;
   signedIn: boolean;
   setSignedIn: (bool: boolean) => void;
   setToken: (token: string) => void;
@@ -24,7 +26,6 @@ const NavBar: FunctionComponent<Props> = (props: Props) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [signInOpen, setSignInOpen] = useState<boolean>(false);
   const [isSignUp, setIsSignUp] = useState<boolean>(false);
-  const [unsavedFilters, setUnsavedFilters] = useState<Filters>(props.filters);
 
   const handleOpenFilters = (event: React.MouseEvent<HTMLButtonElement>) => {
     anchorEl ? handleCloseFilters() : setAnchorEl(event.currentTarget);
@@ -32,7 +33,7 @@ const NavBar: FunctionComponent<Props> = (props: Props) => {
 
   const handleCloseFilters = () => {
     setAnchorEl(null);
-    setUnsavedFilters(props.filters);
+    props.setUnsavedFilters(props.filters);
   };
 
   const signOut = () => {
@@ -41,8 +42,8 @@ const NavBar: FunctionComponent<Props> = (props: Props) => {
     props.setUsername("");
     props.setSignedIn(false);
     // Uncheck "Saved Events"
-    setUnsavedFilters({ ...unsavedFilters, saved: false });
-    props.setFilters({ ...unsavedFilters, saved: false });
+    props.setUnsavedFilters({ ...props.unsavedFilters, saved: false });
+    props.setFilters({ ...props.unsavedFilters, saved: false });
     // Display confirmation toast
     props.setToastOpen(true);
   }
@@ -78,8 +79,8 @@ const NavBar: FunctionComponent<Props> = (props: Props) => {
             setAnchorEl={setAnchorEl}
             filters={props.filters}
             setFilters={props.setFilters}
-            unsavedFilters={unsavedFilters}
-            setUnsavedFilters={setUnsavedFilters}
+            unsavedFilters={props.unsavedFilters}
+            setUnsavedFilters={props.setUnsavedFilters}
             handleCloseFilters={handleCloseFilters}
             signedIn={props.signedIn}
           />

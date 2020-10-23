@@ -10,6 +10,7 @@ import NavBar from "./NavBar";
 import ExpandedEvent from "./ExpandedEvent";
 import useStyles from "../css";
 import Comment from "../domain/Comment";
+import PointOfInterest from "../domain/PointOfInterest";
 
 export const defaultFilters: Filters = {
   userPos: {
@@ -29,6 +30,8 @@ const MainPage: FunctionComponent = () => {
   const classes = useStyles();
   const [events, setEvents] = useState<Event[]>([]);
   const [filters, setFilters] = useState<Filters>(defaultFilters);
+  const [unsavedFilters, setUnsavedFilters] = useState<Filters>(defaultFilters);
+  const [pois, setPois] = useState<PointOfInterest[]>([]);
   // User sign-in info
   const [signedIn, setSignedIn] = useState<boolean>(false);
   const [token, setToken] = useState<string>("");
@@ -70,7 +73,7 @@ const MainPage: FunctionComponent = () => {
       });
       setComments(commentList);
     }
-  }
+  };
 
   // Asynchronously load the events
   const loadEvents = async () => {
@@ -103,9 +106,18 @@ const MainPage: FunctionComponent = () => {
     setEvents(eventList);
   };
 
+  // Load points of interest
+  const loadPois = async () => {
+    var poiList = await eventService.fetchPois(filters.userPos).then((fetchedPois: PointOfInterest[]) => {
+      return fetchedPois;
+    });
+    setPois(poiList)
+  };
+
   useEffect(() => {
     closeEvent();
     loadEvents();
+    loadPois();
   }, [filters, signedIn]);
 
   useEffect(() => {
@@ -117,6 +129,8 @@ const MainPage: FunctionComponent = () => {
       <NavBar
         filters={filters}
         setFilters={setFilters}
+        unsavedFilters={unsavedFilters}
+        setUnsavedFilters={setUnsavedFilters}
         signedIn={signedIn}
         setSignedIn={setSignedIn}
         setToken={setToken}
@@ -150,8 +164,11 @@ const MainPage: FunctionComponent = () => {
           events={events}
           filters={filters}
           setFilters={setFilters}
+          unsavedFilters={unsavedFilters}
+          setUnsavedFilters={setUnsavedFilters}
           expandEvent={expandEvent}
           closeEvent={closeEvent}
+          pois={pois}
         />
       </Box>
       <Snackbar

@@ -91,7 +91,7 @@ const FilterMenu: FunctionComponent<Props> = (props: Props) => {
             <Select
             labelId="limit"
             name="limit"
-            value={props.unsavedFilters.limit}
+            value={props.unsavedFilters.limit.toString()}
             onChange={handleLimitChange}
             >
               <MenuItem value={10}>10</MenuItem>

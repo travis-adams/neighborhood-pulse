@@ -4,6 +4,7 @@ import "regenerator-runtime/runtime";
 import Event from "../domain/Event";
 import Filters from '../domain/Filters';
 import Comment from '../domain/Comment';
+import PointOfInterest from '../domain/PointOfInterest';
 
 export default class EventService {
   baseUrl: string = "http://npulsebackendpoc-env.eba-qcadjde2.us-east-2.elasticbeanstalk.com:5000";
@@ -39,9 +40,25 @@ export default class EventService {
       } as Comment);
     });
     return formattedComments;
-  }
+  };
 
-  // only supporting limit and date range right now, everything else to come later
+  formatPois = (pois: any): PointOfInterest[] => {
+    let formattedPois = pois.map((poi: any) => {
+      return ({
+        name: poi.name,
+        address: poi?.addr,
+        desc: poi?.desc,
+        link: poi.link,
+        position: {
+          lat: poi.latitude,
+          lng: poi.longitude
+        }
+      } as PointOfInterest);
+    });
+    return formattedPois;
+  };
+
+  // supports: limit, date range, lat/lng, user saved
   fetchFilteredEvents = async (filters: Filters, userSaved: boolean, username?: string, token?: string): Promise<Event[]> => {
     try {
       var filterString: string = "lat=" + filters.userPos.lat + "&lng=" + filters.userPos.lng;
@@ -135,6 +152,17 @@ export default class EventService {
     try {
       const response = await axios.post(this.baseUrl + '/comment/submit', {eventID: eventId, text: text_, username: username_}, {headers: {'Authorization': token}});
       return this.formatComments([response.data])[0];
+    } catch(error) {
+      console.error(error);
+    }
+  };
+
+  // Fetches points of interest (using a 100 constant limit for now)
+  fetchPois = async (userPos: google.maps.LatLngLiteral): Promise<PointOfInterest[]> => {
+    try {
+      // there's a 'name' filter as well... maybe use that somehow?
+      const response = await axios.get(this.baseUrl + "/locations/filter?limit=100&lat=" + userPos.lat + "&lng=" + userPos.lng);
+      return this.formatPois(response.data.content);
     } catch(error) {
       console.error(error);
     }
