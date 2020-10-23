@@ -14,6 +14,8 @@ import java.util.Date;
 @Table(name = "sprint_two")
 public class Event {
     @Id
+    @Column(name="id")
+    private int id;
     @Column(name="name")
     private String name;
     @Column(name="date")
@@ -37,6 +39,14 @@ public class Event {
     @Nullable
     @Column(name="longitude")
     private Double longitude;
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
 
     public String getLink() {
         return link;

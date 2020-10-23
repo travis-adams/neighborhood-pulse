@@ -7,16 +7,20 @@ Junior Design - Capital One Neighborhood Pulse Application
 /events?limit= Returns a number of records from the database, defaults to 10 if not specified
 
 /events/filter?date=**date** defaults to current date, yyyy-mm-dd format  
-               &category=**cat1**,**cat2**,...**catN** will match at least one category  
-               &lat=**latitude** decimal value  
-               &lng=**longitude** decimal value  
-               &radius=**radius** defaults to 1, in units of...itude?  
-               &firstDate=**date**  
-               &lastDate=**date** (Both must be supplied  
-               &limit=**limit** defaults to 10    
+               category=**cat1**,**cat2**,...**catN** will match at least one category  
+               lat=**latitude** decimal value  
+               lng=**longitude** decimal value  
+               radius=**radius** defaults to 1, in units of...itude?  
 /events/online?limit="" Returns online events  
-/events/categories Returns all distinct categories  
+/events/categories Returns a list of all categories in the db  
 
+
+
+/user/sign-up Create a new user account.
+* Requires a username, password, in JSON Body  
+
+/login Will return a JWT Token if correct username and password are provided
+* Requires a username, password, in JSON Body
 ## Front-end
 
 To run the front-end locally:
