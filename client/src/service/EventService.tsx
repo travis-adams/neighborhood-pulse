@@ -51,6 +51,11 @@ export default class EventService {
       if (filters.firstDate && filters.lastDate) {
         filterString += "&firstDate=" + filters.firstDate + "&lastDate=" + filters.lastDate;
       }
+      if (filters.categories) {
+        if (filters.categories.length > 0) {
+          filterString += "&category=" + filters.categories.join(",")
+        }
+      }
       var events;
       if (userSaved) {
         events = await axios.get(this.baseUrl + '/user/saved?user=' + username + '&' + filterString, {headers: {'Authorization': token}});

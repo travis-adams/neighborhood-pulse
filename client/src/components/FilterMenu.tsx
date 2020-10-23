@@ -47,14 +47,12 @@ const FilterMenu: FunctionComponent<Props> = (props: Props) => {
     setCategories(event.target.value);
     props.setUnsavedFilters({ ...props.unsavedFilters, categories: cats});
     console.log(cats)
-
   };
 
   const eventService = new EventService();
 
   const [stored_cats, storeCategories] = useState<string[]>([]);
   const [cats, setCategories] = useState<string[]>([]);
-
 
   const loadCategories = async () => {
     var categoryList = await eventService.fetchCategories().then((fetchedCategories: string[]) => {
@@ -158,8 +156,8 @@ const FilterMenu: FunctionComponent<Props> = (props: Props) => {
             <InputLabel>Categories</InputLabel>
             <Select
               multiple
-              value={cats}
               onChange={handleChange}
+              value={cats}
               renderValue={(selected) => (
                 <div className={classes.categoryFilter}>
                   {selected.map((value) => (
