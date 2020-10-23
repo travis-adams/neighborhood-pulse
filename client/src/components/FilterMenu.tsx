@@ -1,10 +1,11 @@
 import 'date-fns';
-import React, { FunctionComponent } from 'react';
-import { Button, Menu, MenuItem, FormControl, FormControlLabel, FormGroup, Checkbox, InputLabel, Select } from '@material-ui/core';
+import React, { FunctionComponent, useState, useEffect } from 'react';
+import { Button, Menu, MenuItem, FormControl, FormControlLabel, FormGroup, Checkbox, InputLabel, Select, Chip, Grid, Typography, Input } from '@material-ui/core';
 import DateFnsUtils from '@date-io/date-fns';
 import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/pickers';
 import useStyles from '../css';
 import Filters from '../domain/Filters';
+import EventService from "../service/EventService";
 
 interface Props {
   anchorEl: HTMLElement;
@@ -41,6 +42,25 @@ const FilterMenu: FunctionComponent<Props> = (props: Props) => {
   const handleSavedEventsChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     props.setUnsavedFilters({ ...props.unsavedFilters, saved: event.target.checked });
   };
+
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setCategories(event.target.value);
+  };
+
+  const eventService = new EventService();
+
+  const [stored_categories, storeCategories] = useState<string[]>([]);
+  const [categories, setCategories] = useState<string>([]);
+
+
+  const loadCategories = async () => {
+    var categoryList = await eventService.fetchCategories().then((fetchedCategories: string[]) => {
+      return fetchedCategories;
+    });
+    storeCategories(categoryList.slice(1, 18));
+  }
+
+  const b = loadCategories();
 
   const handleApply = () => {
     props.setAnchorEl(null);
@@ -131,6 +151,28 @@ const FilterMenu: FunctionComponent<Props> = (props: Props) => {
               labelPlacement="end"
             />
           </FormControl>
+          <FormControl className={classes.filterElement}>
+            <InputLabel>Categories</InputLabel>
+            <Select
+              multiple
+              value={categories}
+              onChange={handleChange}
+              renderValue={(selected) => (
+                <div className={classes.categoryFilter}>
+                  {selected.map((value) => (
+                    <Chip key={value} label={value} className={classes.categories} />
+                  ))}
+                </div>
+              )}
+            >
+              {stored_categories.map((category) => (
+                <MenuItem key={category} value={category}>
+                  {category}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+
           <FormControl className={classes.filterElement}>
             <Button variant="contained" color="primary" onClick={handleApply}>Apply</Button>
           </FormControl>

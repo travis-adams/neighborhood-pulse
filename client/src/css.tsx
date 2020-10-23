@@ -72,7 +72,18 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     filterElement: {
       margin: theme.spacing(1),
-      minWidth: 120,
+      maxWidth: 300,
+    },
+    categories: {
+      width: "fit-to-content"
+    },
+    categoryFilter: {
+      margin: theme.spacing(1),
+      display: 'flex',
+      flexWrap: 'wrap',
+      alignItems: 'center',
+      justifyContent: 'flex-start',
+      maxWidth: 300
     },
     search: {
       flex: 1,

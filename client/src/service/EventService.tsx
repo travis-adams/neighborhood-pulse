@@ -69,8 +69,8 @@ export default class EventService {
   // ["parties","NULL","networking","galas","festivals","classes","performances","other"]
   fetchCategories = async (): Promise<string[]> => {
     try {
-      const response = await axios.get(this.baseUrl + '/categories');
-      return response.data.content;
+      const response = await axios.get(this.baseUrl + '/events/categories');
+      return response.data;
     } catch(error) {
       console.error(error);
     }
