@@ -49,7 +49,7 @@ const MapComponent: FunctionComponent<Props> = (props: Props) => {
 
   return (
     <LoadScript
-      googleMapsApiKey="API_KEY_HERE"
+      googleMapsApiKey="AIzaSyBpNi3qyG9Vhc3zMKZH1ZYnuQLT0AMDzQ4"
     >
       <GoogleMap
         id={"map"}

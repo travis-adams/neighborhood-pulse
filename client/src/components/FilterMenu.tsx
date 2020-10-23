@@ -45,12 +45,15 @@ const FilterMenu: FunctionComponent<Props> = (props: Props) => {
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setCategories(event.target.value);
+    props.setUnsavedFilters({ ...props.unsavedFilters, categories: cats});
+    console.log(cats)
+
   };
 
   const eventService = new EventService();
 
-  const [stored_categories, storeCategories] = useState<string[]>([]);
-  const [categories, setCategories] = useState<string>([]);
+  const [stored_cats, storeCategories] = useState<string[]>([]);
+  const [cats, setCategories] = useState<string[]>([]);
 
 
   const loadCategories = async () => {
@@ -60,7 +63,7 @@ const FilterMenu: FunctionComponent<Props> = (props: Props) => {
     storeCategories(categoryList.slice(1, 18));
   }
 
-  const b = loadCategories();
+  loadCategories();
 
   const handleApply = () => {
     props.setAnchorEl(null);
@@ -155,7 +158,7 @@ const FilterMenu: FunctionComponent<Props> = (props: Props) => {
             <InputLabel>Categories</InputLabel>
             <Select
               multiple
-              value={categories}
+              value={cats}
               onChange={handleChange}
               renderValue={(selected) => (
                 <div className={classes.categoryFilter}>
@@ -165,7 +168,7 @@ const FilterMenu: FunctionComponent<Props> = (props: Props) => {
                 </div>
               )}
             >
-              {stored_categories.map((category) => (
+              {stored_cats.map((category) => (
                 <MenuItem key={category} value={category}>
                   {category}
                 </MenuItem>
