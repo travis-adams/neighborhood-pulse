@@ -13,7 +13,7 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     event: {
       display: 'flex',
-      height: '18vh',
+      height: '100%',
       flex: 1
     },
     collapse: {

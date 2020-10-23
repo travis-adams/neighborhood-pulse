@@ -99,7 +99,7 @@ const MapComponent: FunctionComponent<Props> = (props: Props) => {
         return (
           <Marker
             icon={{
-              url: 'http://maps.google.com/mapfiles/kml/paddle/blu-stars.png',
+              url: 'http://maps.google.com/mapfiles/kml/paddle/grn-stars.png',
               scaledSize: new google.maps.Size(40, 40)
             }}
             key={poiIndex}
