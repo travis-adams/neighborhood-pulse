@@ -150,6 +150,7 @@ const MainPage: FunctionComponent = () => {
           expandedEvent={expandedEvent}
           expandEvent={expandEvent}
           closeEvent={closeEvent}
+          isExpanded={isExpanded}
         />
         <ExpandedEvent
           event={expandedEvent}

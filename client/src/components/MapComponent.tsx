@@ -156,7 +156,6 @@ const MapComponent: FunctionComponent<Props> = (props: Props) => {
         onLoad={onLoad}
         onUnmount={onUnmount}
         onClick={() => props.closeEvent()}
-        onDragStart={() => props.closeEvent()}
       >
         {allPins}
       </GoogleMap>

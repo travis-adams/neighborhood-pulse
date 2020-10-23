@@ -16,6 +16,7 @@ interface Props {
   expandedEvent: Event;
   expandEvent: (event: Event) => void;
   closeEvent: () => void;
+  isExpanded: boolean;
 };
 
 const monthsShort = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
@@ -80,11 +81,11 @@ const EventGrid: FunctionComponent<Props> = (props: Props) => {
                     color="primary"
                     style={{marginLeft: -7, marginRight: -7}}
                   >
-                    {event.saved ? <Bookmark/> : <BookmarkBorder/>}
+                    {event.saved ? <Bookmark style={{fontSize: 35}} /> : <BookmarkBorder style={{fontSize: 35}} />}
                   </IconButton>
                 }
               </CardContent>
-              <CardActionArea onClick={() => props.expandEvent(event)}>
+              <CardActionArea onClick={() => ((event.id === props.expandedEvent?.id) && props.isExpanded) ? props.closeEvent() : props.expandEvent(event)}>
                 <CardContent style={{textOverflow: "ellipsis"}}>
                   <Typography variant="h6" noWrap>
                     {event.name}
