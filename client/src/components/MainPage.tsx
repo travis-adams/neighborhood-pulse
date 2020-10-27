@@ -20,18 +20,22 @@ export const defaultFilters: Filters = {
   limit: 75,
   firstDate: '2020-01-02',
   lastDate: '2021-01-01',
+  categories: [],
   online: false,
   saved: false
-};
+}
 
 const eventService = new EventService();
 
 const MainPage: FunctionComponent = () => {
   const classes = useStyles();
+  // Events & points of interest
   const [events, setEvents] = useState<Event[]>([]);
+  const [pois, setPois] = useState<PointOfInterest[]>([]);
+  // Filtering
   const [filters, setFilters] = useState<Filters>(defaultFilters);
   const [unsavedFilters, setUnsavedFilters] = useState<Filters>(defaultFilters);
-  const [pois, setPois] = useState<PointOfInterest[]>([]);
+  const [categories, setCategories] = useState<string[]>([]);
   // User sign-in info
   const [signedIn, setSignedIn] = useState<boolean>(false);
   const [token, setToken] = useState<string>("");
@@ -47,37 +51,37 @@ const MainPage: FunctionComponent = () => {
       return;
     }
     setToastOpen(false);
-  };
+  }
 
   const expandEvent = (event: Event) => {
     setExpandedEvent(event);
     setIsExpanded(true);
-  };
+  }
 
   const closeEvent = () => {
     setIsExpanded(false);
     setComments([]);
-  };
+  }
 
   const addComment = async (text: string) => {
-    var newComment = await eventService.submitEventComment(expandedEvent.id, text, username, token).then((fetchedComment: Comment) => {
+    const newComment = await eventService.submitEventComment(expandedEvent.id, text, username, token).then((fetchedComment: Comment) => {
       return fetchedComment;
     });
     setComments([ ...comments, newComment]);
-  };
+  }
 
   const loadComments = async () => {
     if (expandedEvent) {
-      var commentList = await eventService.fetchEventComments(expandedEvent.id).then((fetchedComments: Comment[]) => {
+      const commentList = await eventService.fetchEventComments(expandedEvent.id).then((fetchedComments: Comment[]) => {
         return fetchedComments;
       });
       setComments(commentList);
     }
-  };
+  }
 
   // Asynchronously load the events
   const loadEvents = async () => {
-    var eventList;
+    let eventList;
     // If the "Saved Events" checkbox is checked, only load the user's saved events. Otherwise, load all events.
     if (filters.saved) {
       eventList = await eventService.fetchFilteredEvents(filters, true, username, token).then((fetchedEvents: Event[]) => {
@@ -89,7 +93,7 @@ const MainPage: FunctionComponent = () => {
       });
       // if signed in, set the "saved" attribute of each event to true if the user has saved it
       if (signedIn) {
-        var savedEvents = await eventService.fetchFilteredEvents(filters, true, username, token).then((fetchedEvents: Event[]) => {
+        const savedEvents = await eventService.fetchFilteredEvents(filters, true, username, token).then((fetchedEvents: Event[]) => {
           return fetchedEvents;
         });
 
@@ -104,22 +108,38 @@ const MainPage: FunctionComponent = () => {
     }
     // finally, update the displayed events
     setEvents(eventList);
-  };
+  }
+
+  // Load event categories
+  const loadCategories = async () => {
+    const categoryList = await eventService.fetchCategories().then((fetchedCategories: string[]) => {
+      return fetchedCategories;
+    });
+    // slicing out the null category
+    setCategories(categoryList.slice(1, 18));
+  }
 
   // Load points of interest
   const loadPois = async () => {
-    var poiList = await eventService.fetchPois(filters.userPos).then((fetchedPois: PointOfInterest[]) => {
+    const poiList = await eventService.fetchPois(filters.userPos).then((fetchedPois: PointOfInterest[]) => {
       return fetchedPois;
     });
     setPois(poiList)
-  };
+  }
 
+  // When the page loads for the first time, load categories and points of interest
+  useEffect(() => {
+    loadCategories();
+    loadPois();
+  }, [])
+
+  // When the filters change, close the expanded event and reload events
   useEffect(() => {
     closeEvent();
     loadEvents();
-    loadPois();
-  }, [filters, signedIn]);
+  }, [filters]);
 
+  // When an event is clicked, load its comments (this is very inefficient)
   useEffect(() => {
     loadComments();
   }, [expandedEvent]);
@@ -131,6 +151,7 @@ const MainPage: FunctionComponent = () => {
         setFilters={setFilters}
         unsavedFilters={unsavedFilters}
         setUnsavedFilters={setUnsavedFilters}
+        categories={categories}
         signedIn={signedIn}
         setSignedIn={setSignedIn}
         setToken={setToken}
@@ -184,6 +205,6 @@ const MainPage: FunctionComponent = () => {
       </Snackbar>
     </div>
   );
-};
+}
 
 export default MainPage;

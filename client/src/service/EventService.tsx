@@ -7,11 +7,11 @@ import Comment from '../domain/Comment';
 import PointOfInterest from '../domain/PointOfInterest';
 
 export default class EventService {
-  baseUrl: string = "http://npulsebackendpoc-env.eba-qcadjde2.us-east-2.elasticbeanstalk.com:5000";
+  baseUrl = "http://npulsebackendpoc-env.eba-qcadjde2.us-east-2.elasticbeanstalk.com:5000";
 
   // Prepares fetched events for display on the map
   formatEvents = (events: any, isSaved: boolean): Event[] => {
-    let formattedEvents = events.map((event: any) => {
+    const formattedEvents = events.map((event: any) => {
       return ({
         name: event.name,
         desc: event?.desc,
@@ -28,10 +28,10 @@ export default class EventService {
       } as Event);
     });
     return formattedEvents;
-  };
+  }
 
   formatComments = (comments: any): Comment[] => {
-    let formattedComments = comments.map((comment: any) => {
+    const formattedComments = comments.map((comment: any) => {
       return ({
         eventId: comment.eventID,
         text: comment.text,
@@ -40,10 +40,10 @@ export default class EventService {
       } as Comment);
     });
     return formattedComments;
-  };
+  }
 
   formatPois = (pois: any): PointOfInterest[] => {
-    let formattedPois = pois.map((poi: any) => {
+    const formattedPois = pois.map((poi: any) => {
       return ({
         name: poi.name,
         address: poi?.addr,
@@ -56,12 +56,12 @@ export default class EventService {
       } as PointOfInterest);
     });
     return formattedPois;
-  };
+  }
 
   // supports: limit, date range, lat/lng, user saved
   fetchFilteredEvents = async (filters: Filters, userSaved: boolean, username?: string, token?: string): Promise<Event[]> => {
     try {
-      var filterString: string = "lat=" + filters.userPos.lat + "&lng=" + filters.userPos.lng;
+      let filterString: string = "lat=" + filters.userPos.lat + "&lng=" + filters.userPos.lng;
       if (filters.limit) {
         filterString += "&limit=" + filters.limit;
       }
@@ -73,7 +73,7 @@ export default class EventService {
           filterString += "&category=" + filters.categories.join(",")
         }
       }
-      var events;
+      let events;
       if (userSaved) {
         events = await axios.get(this.baseUrl + '/user/saved?user=' + username + '&' + filterString, {headers: {'Authorization': token}});
         events = this.formatEvents(events.data, true);
@@ -85,7 +85,7 @@ export default class EventService {
     } catch(error) {
       console.error(error);
     }
-  };
+  }
 
   // Fetches a list of all string categories, for example:
   // ["parties","NULL","networking","galas","festivals","classes","performances","other"]
@@ -96,7 +96,7 @@ export default class EventService {
     } catch(error) {
       console.error(error);
     }
-  };
+  }
 
   // Logs a user in. Returns the authorizaton token provided by the backend
   userLogIn = async (username_: string, password_: string): Promise<string> => {
@@ -107,7 +107,7 @@ export default class EventService {
       console.error(error);
       throw new Error("Invalid username or password. Please try again.");
     }
-  };
+  }
 
   // Creates an account with the provided username and password
   userSignUp = async (username_: string, password_: string): Promise<void> => {
@@ -117,7 +117,7 @@ export default class EventService {
       console.error(error);
       throw new Error("Internal server error: '" + error.response.statusText + "' Please try again.");
     }
-  };
+  }
 
   // Saves an event for a user
   saveEvent = async (eventId: number, username: string, token: string): Promise<void> => {
@@ -126,7 +126,7 @@ export default class EventService {
     } catch(error) {
       console.error(error);
     }
-  };
+  }
 
   // Unsaves an event for a user
   unsaveEvent = async (eventId: number, username: string, token: string): Promise<void> => {
@@ -135,7 +135,7 @@ export default class EventService {
     } catch(error) {
       console.error(error);
     }
-  };
+  }
 
   // Fetches an event's comments
   fetchEventComments = async (eventId: number): Promise<Comment[]> => {
@@ -145,7 +145,7 @@ export default class EventService {
     } catch(error) {
       console.error(error);
     }
-  };
+  }
 
   // Saves a new comment to an event
   submitEventComment = async (eventId: number, text_: string, username_: string, token: string): Promise<Comment> => {
@@ -155,7 +155,7 @@ export default class EventService {
     } catch(error) {
       console.error(error);
     }
-  };
+  }
 
   // Fetches points of interest (using a 100 constant limit for now)
   fetchPois = async (userPos: google.maps.LatLngLiteral): Promise<PointOfInterest[]> => {
@@ -166,6 +166,6 @@ export default class EventService {
     } catch(error) {
       console.error(error);
     }
-  };
+  }
 
 }

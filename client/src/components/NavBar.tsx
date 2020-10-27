@@ -13,12 +13,13 @@ interface Props {
   setFilters: (filters: Filters) => void;
   unsavedFilters: Filters;
   setUnsavedFilters: (filters: Filters) => void;
+  categories: string[];
   signedIn: boolean;
   setSignedIn: (bool: boolean) => void;
   setToken: (token: string) => void;
   setToastOpen: (bool: boolean) => void;
   setUsername: (username: string) => void;
-};
+}
 
 const NavBar: FunctionComponent<Props> = (props: Props) => {
   const logo = "c1-logo-full.png";
@@ -29,12 +30,12 @@ const NavBar: FunctionComponent<Props> = (props: Props) => {
 
   const handleOpenFilters = (event: React.MouseEvent<HTMLButtonElement>) => {
     anchorEl ? handleCloseFilters() : setAnchorEl(event.currentTarget);
-  };
+  }
 
   const handleCloseFilters = () => {
     setAnchorEl(null);
     props.setUnsavedFilters(props.filters);
-  };
+  }
 
   const signOut = () => {
     // Reset sign-in info
@@ -42,8 +43,8 @@ const NavBar: FunctionComponent<Props> = (props: Props) => {
     props.setUsername("");
     props.setSignedIn(false);
     // Uncheck "Saved Events"
-    props.setUnsavedFilters({ ...props.unsavedFilters, saved: false });
-    props.setFilters({ ...props.unsavedFilters, saved: false });
+    props.setUnsavedFilters({ ...props.filters, saved: false });
+    props.setFilters({ ...props.filters, saved: false });
     // Display confirmation toast
     props.setToastOpen(true);
   }
@@ -57,7 +58,7 @@ const NavBar: FunctionComponent<Props> = (props: Props) => {
       setIsSignUp(false);
       setSignInOpen(true);
     }
-  };
+  }
 
   return (
     <AppBar position="static" className={classes.navBar}>
@@ -82,6 +83,7 @@ const NavBar: FunctionComponent<Props> = (props: Props) => {
             unsavedFilters={props.unsavedFilters}
             setUnsavedFilters={props.setUnsavedFilters}
             handleCloseFilters={handleCloseFilters}
+            categories={props.categories}
             signedIn={props.signedIn}
           />
           <div className={classes.search}>
@@ -120,6 +122,6 @@ const NavBar: FunctionComponent<Props> = (props: Props) => {
       </Toolbar>
     </AppBar>
   );
-};
+}
 
 export default NavBar;

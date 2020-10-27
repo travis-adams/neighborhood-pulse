@@ -17,7 +17,7 @@ interface Props {
   expandEvent: (event: Event) => void;
   closeEvent: () => void;
   isExpanded: boolean;
-};
+}
 
 const monthsShort = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
@@ -28,7 +28,7 @@ const EventGrid: FunctionComponent<Props> = (props: Props) => {
 
   // If the event is saved, unsave it. If it's unsaved, save it
   const handleSaveButton = async (event: Event) => {
-    var newEvents = [...props.events];
+    let newEvents = [...props.events];
     if (event.saved) {
       await eventService.unsaveEvent(event.id, props.username, props.token);
       // If "Saved Events" is checked, hide the event once unsaved
@@ -42,7 +42,7 @@ const EventGrid: FunctionComponent<Props> = (props: Props) => {
     // If "Saved Events" filter not checked, locally update event as saved/unsaved
     // (provides instant update instead of needing to wait for a rerender)
     if (!props.savedOnly) {
-      for (let newEvent of newEvents) {
+      for (const newEvent of newEvents) {
         if (newEvent.id === event.id) {
           newEvent.saved = !event.saved;
           break;
@@ -50,7 +50,7 @@ const EventGrid: FunctionComponent<Props> = (props: Props) => {
       }
     }
     props.setEvents(newEvents);
-  };
+  }
 
   return (
     <Grid
@@ -108,6 +108,6 @@ const EventGrid: FunctionComponent<Props> = (props: Props) => {
       }
     </Grid>
   )
-};
+}
 
 export default EventGrid;

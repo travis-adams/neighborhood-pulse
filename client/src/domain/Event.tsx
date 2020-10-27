@@ -10,4 +10,4 @@ export default interface Event {
   location: string;
   address?: string;
   position?: google.maps.LatLngLiteral;
-};
+}

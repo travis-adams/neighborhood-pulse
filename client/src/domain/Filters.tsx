@@ -8,4 +8,4 @@ export default interface Filters {
     limit?: number;
     online?: boolean;
     saved?: boolean;
-};
+}

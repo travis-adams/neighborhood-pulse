@@ -38,15 +38,15 @@ const SignInWindow: FunctionComponent<Props> = (props: Props) => {
   const handleCloseSignIn = () => {
     props.setSignInOpen(false);
     resetSignInFields();
-  };
+  }
 
   const handleUsernameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setLogInFields({ ...logInFields, username: event.target.value, usernameError: false});
-  };
+  }
 
   const handlePasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setLogInFields({ ...logInFields, password: event.target.value, passwordError: false});
-  };
+  }
 
   // Handles signing the user in/up
   const handleUserSignIn = async (username: string, password: string) => {
@@ -70,13 +70,13 @@ const SignInWindow: FunctionComponent<Props> = (props: Props) => {
       setLogInFields({ username: "", password: "", usernameError: true, passwordError: true })
       setErrorMessage(error.message);
     }
-  };
+  }
 
   const handleSwapToSignUp = () => {
     props.setIsSignUp(true);
     setErrorMessage("");
     resetSignInFields();
-  };
+  }
 
   return (
     <Dialog open={props.signInOpen} onClose={handleCloseSignIn}>

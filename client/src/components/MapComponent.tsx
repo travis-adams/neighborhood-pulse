@@ -16,7 +16,7 @@ interface Props {
   expandEvent: (event: Event) => void;
   closeEvent: () => void;
   pois: PointOfInterest[];
-};
+}
 
 const MapComponent: FunctionComponent<Props> = (props: Props) => {
   const classes = useStyles();
@@ -54,7 +54,7 @@ const MapComponent: FunctionComponent<Props> = (props: Props) => {
   }, []);
 
   const createEventPins = () => {
-    var eventMarkers: JSX.Element[] = (
+    const eventMarkers: JSX.Element[] = (
       props.events?.map((event: Event, index: number) => {
         if (event.position.lat && event.position.lng) {
           return (
@@ -93,9 +93,9 @@ const MapComponent: FunctionComponent<Props> = (props: Props) => {
         }
       })
     );
-    var poiMarkers: JSX.Element[] = (
+    const poiMarkers: JSX.Element[] = (
       props.pois?.map((poi: PointOfInterest, index: number) => {
-        var poiIndex: string = index.toString() + "poi";
+        const poiIndex: string = index.toString() + "poi";
         return (
           <Marker
             icon={{
@@ -141,7 +141,7 @@ const MapComponent: FunctionComponent<Props> = (props: Props) => {
     } else {
       setAllPins([]);
     }
-  };
+  }
 
   useEffect(() => {
     createEventPins();
@@ -161,6 +161,6 @@ const MapComponent: FunctionComponent<Props> = (props: Props) => {
       </GoogleMap>
     </LoadScript>
   );
-};
+}
 
 export default memo(MapComponent);

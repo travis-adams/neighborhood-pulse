@@ -14,7 +14,7 @@ interface Props {
   comments: Comment[];
   addComment: (text: string) => void;
   signedIn: boolean;
-};
+}
 
 const ExpandedEvent: FunctionComponent<Props> = (props: Props) => {
   const classes = useStyles();
@@ -23,20 +23,20 @@ const ExpandedEvent: FunctionComponent<Props> = (props: Props) => {
   // unfortunate hackery is required here, since forcing the Collapse component to be 40% wide (width: '40% !important')
   // breaks the collapsing animation. hopefully we can fix this
   const width: number  = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
-  var fortyPercent: string = (width * 0.4).toString() + 'px';
+  const fortyPercent: string = (width * 0.4).toString() + 'px';
 
   const handleCommentChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setCommentText(event.target.value);
-  };
+  }
 
   const clearComment = () => {
     setCommentText("");
-  };
+  }
 
   const addComment = (text: string) => {
     props.addComment(text);
     clearComment();
-  };
+  }
 
   useEffect(() => {
     setCommentText("");
@@ -120,28 +120,30 @@ const ExpandedEvent: FunctionComponent<Props> = (props: Props) => {
                 onChange={handleCommentChange}
                 disabled={!props.signedIn}
               />
-              <div style={{display: 'flex', justifyContent: 'flex-end', marginTop: 5}}>
-                <Button
-                  color="primary"
-                  disabled={!Boolean(commentText)}
-                  onClick={() => clearComment()}
-                >
-                  Cancel
-                </Button>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  disabled={!Boolean(commentText)}
-                  className={classes.commentButton}
-                  onClick={() => addComment(commentText)}
-                >
-                  Comment
-                </Button>
-              </div>
+              {props.signedIn &&
+                <div style={{display: 'flex', justifyContent: 'flex-end', marginTop: 5}}>
+                  <Button
+                    color="primary"
+                    disabled={!commentText}
+                    onClick={() => clearComment()}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    disabled={!commentText}
+                    className={classes.commentButton}
+                    onClick={() => addComment(commentText)}
+                  >
+                    Comment
+                  </Button>
+                </div>
+              }
             </div>
-            {props.comments.slice(0).reverse().map((comment: Comment) => {
+            {props.comments.slice(0).reverse().map((comment: Comment, index: number) => {
               return (
-                <div>
+                <div key={index}>
                   <div style={{marginTop: 5}}/>
                   <Divider/>
                   <div style={{marginBottom: 5}}/>
@@ -164,6 +166,6 @@ const ExpandedEvent: FunctionComponent<Props> = (props: Props) => {
       </Card>
     </Collapse>
   );
-};
+}
 
 export default ExpandedEvent;

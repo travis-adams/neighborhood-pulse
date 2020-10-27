@@ -3,4 +3,4 @@ export default interface Comment {
     text: string;
     username: string;
     timestamp: Date;
-};
+}
