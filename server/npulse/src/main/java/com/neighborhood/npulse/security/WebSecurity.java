@@ -37,7 +37,9 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
                 .antMatchers("/events/filter").permitAll()//Anyone can view events
                 .antMatchers("/events/online").permitAll()
                 .antMatchers("/events/categories").permitAll()
+                .antMatchers("/events/dist").permitAll()
                 .antMatchers("/comment").permitAll()//Anyone can see comments
+                .antMatchers("/comment/all").permitAll()
                 .antMatchers("/locations/**").permitAll()
                 .anyRequest().authenticated()
                 .and()

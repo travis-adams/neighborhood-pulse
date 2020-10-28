@@ -9,4 +9,5 @@ import java.util.List;
 public interface CommentRepo extends CrudRepository<Comment, Integer> {
 
     List<Comment> findCommentByEventID(int eventID);
+    List<Comment> findCommentsByEventIDIn(List<Integer> eventIDs);
 }

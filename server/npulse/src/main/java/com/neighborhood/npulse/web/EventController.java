@@ -3,15 +3,20 @@ package com.neighborhood.npulse.web;
 import com.neighborhood.npulse.data.entity.SavedEvent;
 import com.neighborhood.npulse.data.repository.EventRepo;
 import com.neighborhood.npulse.data.entity.Event;
+import com.neighborhood.npulse.data.repository.EventSpecifications;
 import com.neighborhood.npulse.data.repository.SavedEventRepo;
 import com.neighborhood.npulse.user.AppUserRepo;
 import com.neighborhood.npulse.utils.FilterBuilder;
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+
+import javax.management.Query;
 import java.util.*;
 
 
@@ -23,6 +28,7 @@ import java.util.*;
 @RestController
 @RequestMapping("/events")
 public class EventController {
+
     @Autowired
     private EventRepo eventRepo;//Repository Responsible for providing us events
     @Autowired
@@ -66,12 +72,14 @@ public class EventController {
                                                        @RequestParam(value = "lng")String lng,
                                                        @RequestParam(value = "radius", defaultValue = "1")String radius,
                                                        @RequestParam(value = "limit", defaultValue = "10")String limit){
+
+
         Pageable eventLimit = PageRequest.of(0,Integer.parseInt(limit));
         //Near Location
         Specification<Event> query = FilterBuilder.latLngFilter(lat, lng, radius);
         //Other Filters
         query = FilterBuilder.buildFilters(query,name,date,firstDate,lastDate,category);
-
+        query = query.and(EventSpecifications.distanceSort(Double.parseDouble(lat), Double.parseDouble(lng)));
         return eventRepo.findAll(query, eventLimit);
     }
 
@@ -89,4 +97,9 @@ public class EventController {
         return event;
     }
 
+    @GetMapping("/dist")
+    public @ResponseBody Iterable<Event> getEventsSorted(@RequestParam(value = "lat")String lat,
+                                                         @RequestParam(value = "lng")String lng) {
+        return eventRepo.findEventsSortedByDistance(Double.parseDouble(lat), Double.parseDouble(lng));
+    }
 }

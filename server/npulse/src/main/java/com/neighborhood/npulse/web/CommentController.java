@@ -8,7 +8,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @CrossOrigin
 @RestController
@@ -24,6 +26,16 @@ public class CommentController {
     public @ResponseBody Iterable<Comment> getCommentByEvent(@RequestParam(value = "event")String event) {
         int eventID = Integer.parseInt(event);
         return commentRepo.findCommentByEventID(eventID);
+    }
+
+    @GetMapping("all")
+    public @ResponseBody Iterable<Comment> getCommentsByEvents(@RequestParam(value = "event") List<String> ids) {
+        List<Integer> eventIDs= new ArrayList<>();
+        for (String id : ids) {
+            eventIDs.add(Integer.parseInt(id));
+        }
+
+        return commentRepo.findCommentsByEventIDIn(eventIDs);
     }
 
     @PostMapping("submit")

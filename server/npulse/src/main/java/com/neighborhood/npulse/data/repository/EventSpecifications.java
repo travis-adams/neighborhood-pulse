@@ -80,4 +80,14 @@ public class EventSpecifications {
             }
         };
     }
+
+    public static Specification<Event> distanceSort(Double lat, Double lng) {
+        return new Specification<Event>() {
+            @Override
+            public Predicate toPredicate(Root<Event> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder criteriaBuilder) {
+                criteriaQuery.orderBy(criteriaBuilder.asc(criteriaBuilder.function("eventDistance", Double.class, root.get("latitude"), root.get("longitude"), criteriaBuilder.literal(lat),criteriaBuilder.literal(lng))));
+                return criteriaBuilder.isNotNull(root.get("latitude"));
+            }
+        };
+    }
 }

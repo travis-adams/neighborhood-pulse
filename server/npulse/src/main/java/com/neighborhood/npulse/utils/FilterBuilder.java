@@ -52,4 +52,5 @@ public class FilterBuilder {
         query = query.and(EventSpecifications.nearLng(longitude, rad));
         return query;
     }
+
 }
