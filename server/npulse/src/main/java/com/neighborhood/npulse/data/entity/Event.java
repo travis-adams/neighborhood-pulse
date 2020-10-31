@@ -38,7 +38,6 @@ public class Event {
     @Nullable
     @Column(name="longitude")
     private Double longitude;
-    @Nullable
     @Column(name="creator_user_id")
     private Integer userID;
 
