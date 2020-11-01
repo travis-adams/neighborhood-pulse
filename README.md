@@ -25,7 +25,9 @@ Junior Design - Capital One Neighborhood Pulse Application
 
 To run the front-end locally:
 * Navigate to the `client` folder
-* In `components/MapComponent.tsx`, replace "API_KEY_HERE" with a valid Google Maps JavaScript API key
+* In `public/index.html`, replace "API_KEY_HERE" with a valid Google Maps JavaScript API key
 * Run `npm install` to install all necessary dependencies
 * Run `npm run start` to build the code and start the dev server
 * Lastly, go to `localhost:3000` in your browser to see the app
+
+To run ESLint on the front-end code, navgiate to the `client` folder and run `eslint src/**`.

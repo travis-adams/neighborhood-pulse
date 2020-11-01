@@ -107,6 +107,17 @@ const useStyles = makeStyles((theme: Theme) =>
       display: 'flex',
       justifyContent: 'flex-end'
     },
+    createNavButton: {
+      marginLeft: 'auto',
+      marginRight: 'auto'
+    },
+    createButton: {
+      marginLeft: 10
+    },
+    addressPinIcon: {
+      color: theme.palette.text.secondary,
+      marginRight: theme.spacing(2),
+    },
     userButton: {
       color: buttonColor
     }

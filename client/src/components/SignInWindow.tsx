@@ -12,7 +12,7 @@ interface Props {
   setIsSignUp: (bool: boolean) => void;
   setSignedIn: (bool: boolean) => void;
   setToken: (token: string) => void;
-  setToastOpen: (bool: boolean) => void;
+  setIsToastOpen: (bool: boolean) => void;
   setUsername: (username: string) => void;
 }
 
@@ -65,7 +65,7 @@ const SignInWindow: FunctionComponent<Props> = (props: Props) => {
       handleCloseSignIn();
       setErrorMessage("");
       // Display confirmation toast
-      props.setToastOpen(true);
+      props.setIsToastOpen(true);
     } catch(error) {
       setLogInFields({ username: "", password: "", usernameError: true, passwordError: true })
       setErrorMessage(error.message);

@@ -1,5 +1,5 @@
 import React, { FunctionComponent, useState, useEffect, useCallback, Key, memo } from 'react';
-import { GoogleMap, LoadScript, Marker, InfoWindow } from '@react-google-maps/api';
+import { GoogleMap, Marker, InfoWindow } from '@react-google-maps/api';
 import { Button, Typography, Link } from '@material-ui/core';
 import Event from "../domain/Event";
 import { defaultFilters } from './MainPage';
@@ -148,18 +148,16 @@ const MapComponent: FunctionComponent<Props> = (props: Props) => {
   }, [props.events, props.pois, openPin]);
 
   return (
-    <LoadScript googleMapsApiKey="API_KEY_HERE">
-      <GoogleMap
-        id={"map"}
-        mapContainerClassName={classes.mapContainer}
-        zoom={12}
-        onLoad={onLoad}
-        onUnmount={onUnmount}
-        onClick={() => props.closeEvent()}
-      >
-        {allPins}
-      </GoogleMap>
-    </LoadScript>
+    <GoogleMap
+      id={"map"}
+      mapContainerClassName={classes.mapContainer}
+      zoom={12}
+      onLoad={onLoad}
+      onUnmount={onUnmount}
+      onClick={() => props.closeEvent()}
+    >
+      {allPins}
+    </GoogleMap>
   );
 }
 

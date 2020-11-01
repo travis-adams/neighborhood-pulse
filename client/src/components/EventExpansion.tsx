@@ -8,15 +8,14 @@ import { AccessTime, RoomOutlined, LinkOutlined, Close } from '@material-ui/icon
 
 interface Props {
   event: Event;
-  isExpanded: boolean;
-  expandEvent: (event: Event) => void;
+  isEventExpanded: boolean;
   closeEvent: () => void;
   comments: Comment[];
   addComment: (text: string) => void;
   signedIn: boolean;
 }
 
-const ExpandedEvent: FunctionComponent<Props> = (props: Props) => {
+const EventExpansion: FunctionComponent<Props> = (props: Props) => {
   const classes = useStyles();
   const [commentText, setCommentText] = useState<string>("");
 
@@ -45,7 +44,7 @@ const ExpandedEvent: FunctionComponent<Props> = (props: Props) => {
   return (
     <Collapse
       orientation="horizontal"
-      in={props.isExpanded}
+      in={props.isEventExpanded}
       className={classes.collapse}
     >
       <Card style={{width: fortyPercent, height: '100%', overflow: 'auto'}} >
@@ -114,7 +113,7 @@ const ExpandedEvent: FunctionComponent<Props> = (props: Props) => {
                 rows={2}
                 multiline
                 fullWidth
-                variant="outlined"
+                variant="filled"
                 placeholder={props.signedIn ? "Add a comment" : "Sign in to add a comment"}
                 value={commentText}
                 onChange={handleCommentChange}
@@ -168,4 +167,4 @@ const ExpandedEvent: FunctionComponent<Props> = (props: Props) => {
   );
 }
 
-export default ExpandedEvent;
+export default EventExpansion;

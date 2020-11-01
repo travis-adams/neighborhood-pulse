@@ -1,13 +1,12 @@
 import React, { FunctionComponent, useState, useEffect } from 'react';
 import EventService from "../service/EventService";
-import { Divider, Box, Snackbar } from "@material-ui/core";
-import Alert from '@material-ui/lab/Alert';
+import { Divider, Box } from "@material-ui/core";
 import Event from "../domain/Event";
 import Filters from '../domain/Filters';
 import EventGrid from "./EventGrid";
 import MapComponent from "./MapComponent";
 import NavBar from "./NavBar";
-import ExpandedEvent from "./ExpandedEvent";
+import EventExpansion from "./EventExpansion";
 import useStyles from "../css";
 import Comment from "../domain/Comment";
 import PointOfInterest from "../domain/PointOfInterest";
@@ -18,8 +17,8 @@ export const defaultFilters: Filters = {
     lng: -84.3621
   },
   limit: 75,
-  firstDate: '2020-01-02',
-  lastDate: '2021-01-01',
+  firstDate: new Date('2020-01-02'),
+  lastDate: new Date('2021-01-01'),
   categories: [],
   online: false,
   saved: false
@@ -39,28 +38,27 @@ const MainPage: FunctionComponent = () => {
   // User sign-in info
   const [signedIn, setSignedIn] = useState<boolean>(false);
   const [token, setToken] = useState<string>("");
-  const [toastOpen, setToastOpen] = useState<boolean>(false);
   const [username, setUsername] = useState<string>("");
   // Event details
   const [expandedEvent, setExpandedEvent] = useState<Event>(null);
-  const [isExpanded, setIsExpanded] = useState<boolean>(false);
+  const [isEventExpanded, setIsEventExpanded] = useState<boolean>(false);
   const [comments, setComments] = useState<Comment[]>([]);
-
-  const handleCloseToast = (event?: React.SyntheticEvent, reason?: string) => {
-    if (reason === 'clickaway') {
-      return;
-    }
-    setToastOpen(false);
-  }
 
   const expandEvent = (event: Event) => {
     setExpandedEvent(event);
-    setIsExpanded(true);
+    setIsEventExpanded(true);
   }
 
   const closeEvent = () => {
-    setIsExpanded(false);
+    setIsEventExpanded(false);
     setComments([]);
+  }
+
+  const submitEvent = async (event: Event) => {
+    const newEvent = await eventService.submitEvent(event, username, token).then((fetchedEvent: Event) => {
+      return fetchedEvent;
+    });
+    expandEvent(newEvent);
   }
 
   const addComment = async (text: string) => {
@@ -155,8 +153,10 @@ const MainPage: FunctionComponent = () => {
         signedIn={signedIn}
         setSignedIn={setSignedIn}
         setToken={setToken}
-        setToastOpen={setToastOpen}
         setUsername={setUsername}
+        expandEvent={expandEvent}
+        closeEvent={closeEvent}
+        submitEvent={submitEvent}
       />
       <Divider/>
       <Box className={classes.mainBox}>
@@ -171,12 +171,11 @@ const MainPage: FunctionComponent = () => {
           expandedEvent={expandedEvent}
           expandEvent={expandEvent}
           closeEvent={closeEvent}
-          isExpanded={isExpanded}
+          isEventExpanded={isEventExpanded}
         />
-        <ExpandedEvent
+        <EventExpansion
           event={expandedEvent}
-          isExpanded={isExpanded}
-          expandEvent={expandEvent}
+          isEventExpanded={isEventExpanded}
           closeEvent={closeEvent}
           comments={comments}
           addComment={addComment}
@@ -193,16 +192,6 @@ const MainPage: FunctionComponent = () => {
           pois={pois}
         />
       </Box>
-      <Snackbar
-        open={toastOpen}
-        autoHideDuration={3000}
-        onClose={handleCloseToast}
-        anchorOrigin={{vertical: 'bottom', horizontal: 'center'}}
-      >
-        <Alert onClose={handleCloseToast} severity="success">
-          {signedIn ? "Signed in" : "Signed out"}
-        </Alert>
-      </Snackbar>
     </div>
   );
 }

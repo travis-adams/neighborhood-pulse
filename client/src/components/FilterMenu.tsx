@@ -2,7 +2,7 @@ import 'date-fns';
 import React, { FunctionComponent } from 'react';
 import { Button, Menu, MenuItem, FormControl, FormControlLabel, FormGroup, Checkbox, InputLabel, Select, TextField } from '@material-ui/core';
 import DateFnsUtils from '@date-io/date-fns';
-import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/pickers';
+import { MuiPickersUtilsProvider, DatePicker } from '@material-ui/pickers';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import useStyles from '../css';
 import Filters from '../domain/Filters';
@@ -27,13 +27,11 @@ const FilterMenu: FunctionComponent<Props> = (props: Props) => {
   }
 
   const handleFirstDateChange = (date: Date) => {
-    const strDate: string = date.toISOString().split('T')[0];
-    props.setUnsavedFilters({ ...props.unsavedFilters, firstDate: strDate });
+    props.setUnsavedFilters({ ...props.unsavedFilters, firstDate: date });
   }
 
   const handleLastDateChange = (date: Date) => {
-    const strDate: string = date.toISOString().split('T')[0];
-    props.setUnsavedFilters({ ...props.unsavedFilters, lastDate: strDate });
+    props.setUnsavedFilters({ ...props.unsavedFilters, lastDate: date });
   }
 
   const handleOnlineChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -88,9 +86,8 @@ const FilterMenu: FunctionComponent<Props> = (props: Props) => {
           </FormControl>
           <FormControl className={classes.filterElement}>
             <MuiPickersUtilsProvider utils={DateFnsUtils}>
-              <KeyboardDatePicker
-              disableToolbar
-              variant="inline"
+              <DatePicker
+              clearable
               format="yyyy-MM-dd"
               id="firstDate"
               label="Begin Date"
@@ -101,9 +98,8 @@ const FilterMenu: FunctionComponent<Props> = (props: Props) => {
           </FormControl>
           <FormControl className={classes.filterElement}>
             <MuiPickersUtilsProvider utils={DateFnsUtils}>
-              <KeyboardDatePicker
-              disableToolbar
-              variant="inline"
+              <DatePicker
+              clearable
               format="yyyy-MM-dd"
               id="lastDate"
               label="End Date"
@@ -133,7 +129,7 @@ const FilterMenu: FunctionComponent<Props> = (props: Props) => {
                         color="primary"
                         name="saved"
                       />}
-              label="Saved Events"
+              label="Saved events only"
               labelPlacement="end"
             />
           </FormControl>

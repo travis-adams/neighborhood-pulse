@@ -16,7 +16,7 @@ interface Props {
   expandedEvent: Event;
   expandEvent: (event: Event) => void;
   closeEvent: () => void;
-  isExpanded: boolean;
+  isEventExpanded: boolean;
 }
 
 const monthsShort = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
@@ -85,7 +85,7 @@ const EventGrid: FunctionComponent<Props> = (props: Props) => {
                   </IconButton>
                 }
               </CardContent>
-              <CardActionArea onClick={() => ((event.id === props.expandedEvent?.id) && props.isExpanded) ? props.closeEvent() : props.expandEvent(event)}>
+              <CardActionArea onClick={() => ((event.id === props.expandedEvent?.id) && props.isEventExpanded) ? props.closeEvent() : props.expandEvent(event)}>
                 <CardContent style={{textOverflow: "ellipsis"}}>
                   <Typography variant="h6" noWrap>
                     {event.name}
@@ -94,11 +94,15 @@ const EventGrid: FunctionComponent<Props> = (props: Props) => {
                     {event.date.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })}
                   </Typography>
                   {!props.onlineOnly &&
+                    <div>
                       <Typography variant="body2">
                         {event.location}
-                        <br/>Atlanta, GA {/* should get actual city + state */}
                       </Typography>
-                    }
+                      <Typography variant="body2">
+                        {event.address}
+                      </Typography>
+                    </div>
+                  }
                 </CardContent>
               </CardActionArea>
             </Card>

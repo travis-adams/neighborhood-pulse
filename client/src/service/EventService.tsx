@@ -19,6 +19,7 @@ export default class EventService {
         id: event.id,
         date: new Date(event.date + 'T' + event.time),
         link: event.link,
+        cat: event?.category,
         location: event?.loc,
         address: event?.addr,
         position: {
@@ -66,7 +67,7 @@ export default class EventService {
         filterString += "&limit=" + filters.limit;
       }
       if (filters.firstDate && filters.lastDate) {
-        filterString += "&firstDate=" + filters.firstDate + "&lastDate=" + filters.lastDate;
+        filterString += "&firstDate=" + filters.firstDate.toISOString().split("T")[0] + "&lastDate=" + filters.lastDate.toISOString().split("T")[0];
       }
       if (filters.categories) {
         if (filters.categories.length > 0) {
@@ -88,7 +89,7 @@ export default class EventService {
   }
 
   // Fetches a list of all string categories, for example:
-  // ["parties","NULL","networking","galas","festivals","classes","performances","other"]
+  // ["parties","networking","galas","festivals","classes","performances","other"]
   fetchCategories = async (): Promise<string[]> => {
     try {
       const response = await axios.get(this.baseUrl + '/events/categories');
@@ -163,6 +164,28 @@ export default class EventService {
       // there's a 'name' filter as well... maybe use that somehow?
       const response = await axios.get(this.baseUrl + "/locations/filter?limit=100&lat=" + userPos.lat + "&lng=" + userPos.lng);
       return this.formatPois(response.data.content);
+    } catch(error) {
+      console.error(error);
+    }
+  }
+
+  // Submit a user-created event
+  submitEvent = async (event: Event, username: string, token: string): Promise<Event> => {
+    try {
+      const data = {
+        name: event.name,
+        desc: event.desc,
+        date: event.date.toISOString().split("T")[0], // YYYY-MM-DD
+        time: event.date.toISOString().split("T")[1].slice(0, 8), // HH:MM:SS
+        loc: event.location,
+        addr: event.address,
+        cat: event.category,
+        link: event.link,
+        latitude: event.position.lat,
+        longitude: event.position.lng
+      };
+      const response = await axios.post(this.baseUrl + "/events/submit?username=" +  username, data, {headers: {'Authorization': token}});
+      return this.formatEvents([response.data], true)[0];
     } catch(error) {
       console.error(error);
     }
