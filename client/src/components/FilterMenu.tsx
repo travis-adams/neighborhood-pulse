@@ -67,99 +67,97 @@ const FilterMenu: FunctionComponent<Props> = (props: Props) => {
         horizontal: 'center'
       }}
     >
-      <div>
-        <FormGroup>
-          <FormControl className={classes.filterElement}>
-            <InputLabel id="limit">Number of Results</InputLabel>
-            <Select
-            labelId="limit"
-            name="limit"
-            value={props.unsavedFilters.limit.toString()}
-            onChange={handleLimitChange}
-            >
-              <MenuItem value={10}>10</MenuItem>
-              <MenuItem value={25}>25</MenuItem>
-              <MenuItem value={50}>50</MenuItem>
-              <MenuItem value={75}>75</MenuItem>
-              <MenuItem value={100}>100</MenuItem>
-            </Select>
-          </FormControl>
-          <FormControl className={classes.filterElement}>
-            <MuiPickersUtilsProvider utils={DateFnsUtils}>
-              <DatePicker
-              clearable
-              format="yyyy-MM-dd"
-              id="firstDate"
-              label="Begin Date"
-              value={props.unsavedFilters.firstDate}
-              onChange={handleFirstDateChange}
+      <FormGroup className={classes.filterMenu}>
+        <FormControl className={classes.filterElement}>
+          <InputLabel id="limit">Number of Results</InputLabel>
+          <Select
+          labelId="limit"
+          name="limit"
+          value={props.unsavedFilters.limit.toString()}
+          onChange={handleLimitChange}
+          >
+            <MenuItem value={10}>10</MenuItem>
+            <MenuItem value={25}>25</MenuItem>
+            <MenuItem value={50}>50</MenuItem>
+            <MenuItem value={75}>75</MenuItem>
+            <MenuItem value={100}>100</MenuItem>
+          </Select>
+        </FormControl>
+        <FormControl className={classes.filterElement}>
+          <MuiPickersUtilsProvider utils={DateFnsUtils}>
+            <DatePicker
+            clearable
+            format="yyyy-MM-dd"
+            id="firstDate"
+            label="Begin Date"
+            value={props.unsavedFilters.firstDate}
+            onChange={handleFirstDateChange}
+            />
+          </MuiPickersUtilsProvider>
+        </FormControl>
+        <FormControl className={classes.filterElement}>
+          <MuiPickersUtilsProvider utils={DateFnsUtils}>
+            <DatePicker
+            clearable
+            format="yyyy-MM-dd"
+            id="lastDate"
+            label="End Date"
+            value={props.unsavedFilters.lastDate}
+            onChange={handleLastDateChange}
+            />
+          </MuiPickersUtilsProvider>
+        </FormControl>
+        <FormControl className={classes.filterElement}>
+          <FormControlLabel
+            control={<Checkbox
+                      checked={props.unsavedFilters.online}
+                      onChange={handleOnlineChange}
+                      color="primary"
+                      name="online"
+                    />}
+            label="Online only"
+            labelPlacement="end"
+          />
+        </FormControl>
+        <FormControl className={classes.filterElement}>
+          <FormControlLabel
+            control={<Checkbox
+                      checked={props.unsavedFilters.saved}
+                      onChange={handleSavedEventsChange}
+                      disabled={!(props.signedIn)}
+                      color="primary"
+                      name="saved"
+                    />}
+            label="Saved events only"
+            labelPlacement="end"
+          />
+        </FormControl>
+        <FormControl className={classes.filterElement}>
+          <Autocomplete
+            multiple
+            options={props.categories}
+            defaultValue={props.filters.categories}
+            onChange={handleCategoriesChange}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                variant="standard"
+                label="Categories"
               />
-            </MuiPickersUtilsProvider>
-          </FormControl>
-          <FormControl className={classes.filterElement}>
-            <MuiPickersUtilsProvider utils={DateFnsUtils}>
-              <DatePicker
-              clearable
-              format="yyyy-MM-dd"
-              id="lastDate"
-              label="End Date"
-              value={props.unsavedFilters.lastDate}
-              onChange={handleLastDateChange}
-              />
-            </MuiPickersUtilsProvider>
-          </FormControl>
-          <FormControl className={classes.filterElement}>
-            <FormControlLabel
-              control={<Checkbox
-                        checked={props.unsavedFilters.online}
-                        onChange={handleOnlineChange}
-                        color="primary"
-                        name="online"
-                      />}
-              label="Online only"
-              labelPlacement="end"
-            />
-          </FormControl>
-          <FormControl className={classes.filterElement}>
-            <FormControlLabel
-              control={<Checkbox
-                        checked={props.unsavedFilters.saved}
-                        onChange={handleSavedEventsChange}
-                        disabled={!(props.signedIn)}
-                        color="primary"
-                        name="saved"
-                      />}
-              label="Saved events only"
-              labelPlacement="end"
-            />
-          </FormControl>
-          <FormControl className={classes.filterElement}>
-            <Autocomplete
-              multiple
-              options={props.categories}
-              defaultValue={props.filters.categories}
-              onChange={handleCategoriesChange}
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  variant="standard"
-                  label="Categories"
-                />
-              )}
-            />
-          </FormControl>
-          <FormControl className={classes.filterElement}>
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={handleApply}
-              disabled={props.unsavedFilters === props.filters}
-            >
-              Apply
-            </Button>
-          </FormControl>
-        </FormGroup>
-      </div>
+            )}
+          />
+        </FormControl>
+        <FormControl className={classes.filterElement}>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handleApply}
+            disabled={props.unsavedFilters === props.filters}
+          >
+            Apply
+          </Button>
+        </FormControl>
+      </FormGroup>
     </Menu>
   );
 }

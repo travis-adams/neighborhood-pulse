@@ -70,9 +70,13 @@ const useStyles = makeStyles((theme: Theme) =>
       display: 'flex',
       alignItems: 'center'
     },
+    filterMenu: {
+      padding: theme.spacing(1, 2, 1, 2)
+    },
     filterElement: {
       margin: theme.spacing(1),
       maxWidth: 300,
+      minWidth: 300
     },
     search: {
       flex: 1,
