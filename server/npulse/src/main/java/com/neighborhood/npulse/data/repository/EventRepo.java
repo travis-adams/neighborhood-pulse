@@ -20,6 +20,9 @@ public interface EventRepo extends PagingAndSortingRepository<Event, String>, Jp
 
     List<Event> findEventById(int id);
 
+    @Query("select e from Event e order by st_distance(POINT(:lat,:lng), POINT(e.latitude, e.longitude))")
+    List<Event> findEventsSortedByDistance(Double lat, Double lng);
+
     //Return a list of all the vents in the table whose id is contained in the provided list
     List<Event> findEventsByIdIn(List<Integer> ids);
 }

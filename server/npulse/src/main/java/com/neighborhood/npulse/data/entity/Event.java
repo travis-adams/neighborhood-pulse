@@ -2,26 +2,25 @@ package com.neighborhood.npulse.data.entity;
 
 import org.springframework.lang.Nullable;
 
-import javax.annotation.sql.DataSourceDefinition;
 import javax.persistence.*;
-import java.util.Date;
 
 /**
  * Represents an entry in the sprint_one table
  * Stores the data for a single event
  */
 @Entity
-@Table(name = "sprint_two")
+@Table(name = "events")
 public class Event {
     @Id
     @Column(name="id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     @Column(name="name")
     private String name;
     @Column(name="date")
     //@Convert(converter = DateConverter.class)
     private String date;
-    @Column(name="desc")
+    @Column(name= "\"desc\"")
     private String desc;
     @Column(name="loc")
     private String loc;
@@ -39,8 +38,18 @@ public class Event {
     @Nullable
     @Column(name="longitude")
     private Double longitude;
+    @Column(name="creator_user_id")
+    private Integer userID;
 
-    public int getId() {
+    public int getUserID() {
+        return userID;
+    }
+
+    public void setUserID(Integer user_id) {
+        this.userID = user_id;
+    }
+
+    public Integer getId() {
         return id;
     }
 
