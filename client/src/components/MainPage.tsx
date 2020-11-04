@@ -51,7 +51,6 @@ const MainPage: FunctionComponent = () => {
 
   const closeEvent = () => {
     setIsEventExpanded(false);
-    setComments([]);
   }
 
   const submitEvent = async (event: Event) => {
@@ -174,6 +173,7 @@ const MainPage: FunctionComponent = () => {
           isEventExpanded={isEventExpanded}
         />
         <EventExpansion
+          filters={filters}
           event={expandedEvent}
           isEventExpanded={isEventExpanded}
           closeEvent={closeEvent}

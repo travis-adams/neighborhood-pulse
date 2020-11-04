@@ -59,10 +59,16 @@ export default class EventService {
     return formattedPois;
   }
 
-  // supports: limit, date range, lat/lng, user saved
+  // supports: limit, date range, lat/lng, online, user saved, categories
   fetchFilteredEvents = async (filters: Filters, userSaved: boolean, username?: string, token?: string): Promise<Event[]> => {
     try {
-      let filterString: string = "lat=" + filters.userPos.lat + "&lng=" + filters.userPos.lng;
+      let filterString = "";
+      if (userSaved) {
+        filterString += "user=" + username;
+      }
+      if (!filters.online) {
+        filterString += "&lat=" + filters.userPos.lat + "&lng=" + filters.userPos.lng;
+      }
       if (filters.limit) {
         filterString += "&limit=" + filters.limit;
       }
@@ -76,8 +82,11 @@ export default class EventService {
       }
       let events;
       if (userSaved) {
-        events = await axios.get(this.baseUrl + '/user/saved?user=' + username + '&' + filterString, {headers: {'Authorization': token}});
+        events = await axios.get(this.baseUrl + '/user/saved?' + filterString, {headers: {'Authorization': token}});
         events = this.formatEvents(events.data, true);
+      } else if (filters.online) {
+        events = await axios.get(this.baseUrl + "/events/online?" + filterString);
+        events = this.formatEvents(events.data.content, false);
       } else {
         events = await axios.get(this.baseUrl + "/events/filter?" + filterString);
         events = this.formatEvents(events.data.content, false);

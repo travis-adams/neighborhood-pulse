@@ -119,7 +119,7 @@ const SignInWindow: FunctionComponent<Props> = (props: Props) => {
           </Button>
         }
       </DialogActions>
-      {errorMessage && <Alert severity="error">{errorMessage}</Alert>}
+      {errorMessage && <Alert severity="error" variant="filled">{errorMessage}</Alert>}
     </Dialog>
   )
 }

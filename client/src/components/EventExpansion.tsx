@@ -2,11 +2,13 @@ import React, { FunctionComponent, useEffect, useState } from 'react';
 import useStyles from '../css';
 import Event from '../domain/Event';
 import Comment from "../domain/Comment";
+import Filters from "../domain/Filters";
 import { Collapse, Card, CardContent, CardHeader, Typography, Divider,
   Link, IconButton, TextField, Button } from '@material-ui/core';
 import { AccessTime, RoomOutlined, LinkOutlined, Close } from '@material-ui/icons';
 
 interface Props {
+  filters: Filters;
   event: Event;
   isEventExpanded: boolean;
   closeEvent: () => void;
@@ -23,6 +25,7 @@ const EventExpansion: FunctionComponent<Props> = (props: Props) => {
   // breaks the collapsing animation. hopefully we can fix this
   const width: number  = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
   const fortyPercent: string = (width * 0.4).toString() + 'px';
+  const fiftyPercent: string = (width * 0.5).toString() + 'px';
 
   const handleCommentChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setCommentText(event.target.value);
@@ -38,8 +41,10 @@ const EventExpansion: FunctionComponent<Props> = (props: Props) => {
   }
 
   useEffect(() => {
-    setCommentText("");
-  },[props.event]);
+    if (!props.isEventExpanded) {
+      setCommentText("");
+    }
+  },[props.event, props.isEventExpanded]);
 
   return (
     <Collapse
@@ -47,7 +52,7 @@ const EventExpansion: FunctionComponent<Props> = (props: Props) => {
       in={props.isEventExpanded}
       className={classes.collapse}
     >
-      <Card style={{width: fortyPercent, height: '100%', overflow: 'auto'}} >
+      <Card style={{width: props.filters.online ? fiftyPercent : fortyPercent, height: '100%', overflow: 'auto'}} >
         <CardHeader
           title={props.event?.name}
           action={
@@ -71,18 +76,20 @@ const EventExpansion: FunctionComponent<Props> = (props: Props) => {
                 </Typography>
               </div>
             </div>
-            <div style={{display: 'flex', alignItems: 'center', paddingTop: 15, paddingBottom: 15}}>
-              <RoomOutlined style={{marginRight: 10}}/>
-              <div style={{display: 'flex', flexDirection: 'column'}}>
-                <Typography variant="body1" component="p">
-                  {props.event?.location}
-                </Typography>
-                <Typography variant="body1" component="p">
-                  {props.event?.address}
-                </Typography>
+            {!props.filters.online &&
+              <div style={{display: 'flex', alignItems: 'center', paddingTop: 15}}>
+                <RoomOutlined style={{marginRight: 10}}/>
+                <div style={{display: 'flex', flexDirection: 'column'}}>
+                  <Typography variant="body1" component="p">
+                    {props.event?.location}
+                  </Typography>
+                  <Typography variant="body1" component="p">
+                    {props.event?.address}
+                  </Typography>
+                </div>
               </div>
-            </div>
-            <div style={{display: 'flex', alignItems: 'center'}}>
+            }
+            <div style={{display: 'flex', alignItems: 'center', paddingTop: 15}}>
               <LinkOutlined style={{marginRight: 10}}/>
               <Typography variant="body1" component="p">
                 <Link target="_blank" rel="noopener noreferrer" href={props.event?.link}>
@@ -140,7 +147,7 @@ const EventExpansion: FunctionComponent<Props> = (props: Props) => {
                 </div>
               }
             </div>
-            {props.comments.slice(0).reverse().map((comment: Comment, index: number) => {
+            {props?.comments.slice(0).reverse().map((comment: Comment, index: number) => {
               return (
                 <div key={index}>
                   <div style={{marginTop: 5}}/>

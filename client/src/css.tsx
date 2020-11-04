@@ -11,13 +11,28 @@ const useStyles = makeStyles((theme: Theme) =>
       height: '100%',
       zIndex: 1
     },
+    mapContainerOnline: {
+      position: 'absolute',
+      right: 0,
+      width: '50%',
+      height: '100%',
+      zIndex: 1
+    },
+    mapGrayCover: {
+      backgroundColor: 'rgba(0, 0, 0, 0.4)',
+      position: 'absolute',
+      right: 0,
+      width: '50%',
+      height: '100%',
+      zIndex: 2
+    },
     event: {
       display: 'flex',
       height: '100%',
       flex: 1
     },
     collapse: {
-      zIndex: 2
+      zIndex: 3
     },
     commentButton: {
       marginLeft: 10,
@@ -28,6 +43,13 @@ const useStyles = makeStyles((theme: Theme) =>
       overflow: "auto",
       gridGap: theme.spacing(0.5),
       width: '40%',
+      zIndex: 2,
+    },
+    eventGridOnline: {
+      backgroundColor: "#dddddd",
+      overflow: "auto",
+      gridGap: theme.spacing(0.5),
+      width: '50%',
       zIndex: 2,
     },
     flexColumn: {

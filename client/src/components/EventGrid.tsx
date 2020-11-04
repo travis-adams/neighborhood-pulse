@@ -57,7 +57,7 @@ const EventGrid: FunctionComponent<Props> = (props: Props) => {
       container
       direction="column"
       wrap="nowrap"
-      className={classes.eventGrid}
+      className={props.onlineOnly ? classes.eventGridOnline : classes.eventGrid}
     >
       {props.events.map((event, index) => {
          return (

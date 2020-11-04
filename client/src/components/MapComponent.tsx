@@ -148,16 +148,19 @@ const MapComponent: FunctionComponent<Props> = (props: Props) => {
   }, [props.events, props.pois, openPin]);
 
   return (
-    <GoogleMap
-      id={"map"}
-      mapContainerClassName={classes.mapContainer}
-      zoom={12}
-      onLoad={onLoad}
-      onUnmount={onUnmount}
-      onClick={() => props.closeEvent()}
-    >
-      {allPins}
-    </GoogleMap>
+    <div>
+      {props.filters.online && <div className={classes.mapGrayCover} />}
+      <GoogleMap
+        id={"map"}
+        mapContainerClassName={props.filters.online ? classes.mapContainerOnline : classes.mapContainer}
+        zoom={12}
+        onLoad={onLoad}
+        onUnmount={onUnmount}
+        onClick={() => props.closeEvent()}
+      >
+        {!props.filters.online && allPins}
+      </GoogleMap>
+    </div>
   );
 }
 
