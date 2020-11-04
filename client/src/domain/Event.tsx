@@ -1,15 +1,13 @@
-import { IAddress } from "./Address"
-
-// Only required fields are name and position (latitude and longitude)
-export interface IEvent {
+// Only required attribute is the event name
+export default interface Event {
+  id?: number;
   name: string;
   desc?: string;
-  eType?: string;
-  link?: string;
-  date?: {
-      start: string;
-      end: string;
-  }
-  address?: IAddress
-  position: google.maps.LatLngLiteral
-};
+  link: string;
+  saved?: boolean;
+  date: Date;
+  category?: string;
+  location: string;
+  address?: string;
+  position?: google.maps.LatLngLiteral;
+}
