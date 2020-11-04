@@ -40,3 +40,7 @@ hs_err_pid*
 # Client files
 /client/node_modules
 /client/dist
+
+
+#Security Files
+*.p12

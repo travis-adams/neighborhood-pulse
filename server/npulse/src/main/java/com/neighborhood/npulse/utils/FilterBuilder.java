@@ -36,4 +36,21 @@ public class FilterBuilder {
         }
         return query;
     }
+
+    public static Specification<Event> onlineFilter(){
+        Specification<Event> onQuery = EventSpecifications.matchLoc("nline");
+        onQuery = onQuery.or(EventSpecifications.matchLoc("web"));
+        onQuery = onQuery.or(EventSpecifications.matchLoc("Web"));
+        return onQuery;
+    }
+
+    public static Specification<Event> latLngFilter(String lat, String lng, String radius) {
+        Double latitude = Double.parseDouble(lat);
+        Double longitude = Double.parseDouble(lng);
+        Double rad = Double.parseDouble(radius);
+        Specification<Event> query = EventSpecifications.nearLat(latitude, rad);
+        query = query.and(EventSpecifications.nearLng(longitude, rad));
+        return query;
+    }
+
 }
