@@ -6,11 +6,11 @@ import EventService from "../service/EventService";
 import useStyles from '../css';
 
 interface Props {
-  signInOpen: boolean;
-  setSignInOpen: (bool: boolean) => void;
+  isSignInOpen: boolean;
+  setIsSignInOpen: (bool: boolean) => void;
   isSignUp: boolean;
   setIsSignUp: (bool: boolean) => void;
-  setSignedIn: (bool: boolean) => void;
+  setIsSignedIn: (bool: boolean) => void;
   setToken: (token: string) => void;
   setIsToastOpen: (bool: boolean) => void;
   setUsername: (username: string) => void;
@@ -36,7 +36,7 @@ const SignInWindow: FunctionComponent<Props> = (props: Props) => {
   }
 
   const handleCloseSignIn = () => {
-    props.setSignInOpen(false);
+    props.setIsSignInOpen(false);
     resetSignInFields();
   }
 
@@ -61,7 +61,7 @@ const SignInWindow: FunctionComponent<Props> = (props: Props) => {
       const token: string = await eventService.userLogIn(username, password);
       props.setToken(token);
       props.setUsername(username);
-      props.setSignedIn(true);
+      props.setIsSignedIn(true);
       handleCloseSignIn();
       setErrorMessage("");
       // Display confirmation toast
@@ -72,14 +72,15 @@ const SignInWindow: FunctionComponent<Props> = (props: Props) => {
     }
   }
 
-  const handleSwapToSignUp = () => {
-    props.setIsSignUp(true);
+  // Toggles between the sign-in and sign-up screens
+  const handleToggleSignUp = () => {
+    props.setIsSignUp(!props.isSignUp);
     setErrorMessage("");
     resetSignInFields();
   }
 
   return (
-    <Dialog open={props.signInOpen} onClose={handleCloseSignIn}>
+    <Dialog open={props.isSignInOpen} onClose={handleCloseSignIn}>
       <div style={{display: "flex", alignItems: "flex-start"}}>
         <div className={classes.gap}/>
         <img src={logo} style={{marginTop: "3%"}} className={classes.logoImg}/>
@@ -113,11 +114,9 @@ const SignInWindow: FunctionComponent<Props> = (props: Props) => {
           {props.isSignUp ? "Sign Up" : "Sign In"}
         </Button>
         <div style={{marginTop: 8}}/>
-        {!props.isSignUp &&
-          <Button onClick={handleSwapToSignUp} color="primary" size="small">
-            Create an account
-          </Button>
-        }
+        <Button onClick={handleToggleSignUp} color="primary" size="small">
+          {props.isSignUp ? "Return to sign in" : "Create an account"}
+        </Button>
       </DialogActions>
       {errorMessage && <Alert severity="error" variant="filled">{errorMessage}</Alert>}
     </Dialog>

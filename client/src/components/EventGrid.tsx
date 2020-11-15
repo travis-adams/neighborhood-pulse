@@ -8,7 +8,7 @@ import { Bookmark, BookmarkBorder } from '@material-ui/icons';
 interface Props {
   events: Event[];
   setEvents: (event: Event[]) => void;
-  signedIn: boolean;
+  isSignedIn: boolean;
   token: string;
   username: string;
   onlineOnly: boolean;
@@ -74,7 +74,7 @@ const EventGrid: FunctionComponent<Props> = (props: Props) => {
                 <Typography variant="h4">
                   {('0' + event.date.getDate()).slice(-2)}
                 </Typography>
-                {props.signedIn &&
+                {props.isSignedIn &&
                   <IconButton
                     onClick={() => handleSaveButton(event)}
                     size="small"

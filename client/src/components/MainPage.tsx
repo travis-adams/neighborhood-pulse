@@ -36,7 +36,7 @@ const MainPage: FunctionComponent = () => {
   const [unsavedFilters, setUnsavedFilters] = useState<Filters>(defaultFilters);
   const [categories, setCategories] = useState<string[]>([]);
   // User sign-in info
-  const [signedIn, setSignedIn] = useState<boolean>(false);
+  const [isSignedIn, setIsSignedIn] = useState<boolean>(false);
   const [token, setToken] = useState<string>("");
   const [username, setUsername] = useState<string>("");
   // Event details
@@ -89,7 +89,7 @@ const MainPage: FunctionComponent = () => {
         return fetchedEvents;
       });
       // if signed in, set the "saved" attribute of each event to true if the user has saved it
-      if (signedIn) {
+      if (isSignedIn) {
         const savedEvents = await eventService.fetchFilteredEvents(filters, true, username, token).then((fetchedEvents: Event[]) => {
           return fetchedEvents;
         });
@@ -149,8 +149,8 @@ const MainPage: FunctionComponent = () => {
         unsavedFilters={unsavedFilters}
         setUnsavedFilters={setUnsavedFilters}
         categories={categories}
-        signedIn={signedIn}
-        setSignedIn={setSignedIn}
+        isSignedIn={isSignedIn}
+        setIsSignedIn={setIsSignedIn}
         setToken={setToken}
         setUsername={setUsername}
         expandEvent={expandEvent}
@@ -162,7 +162,7 @@ const MainPage: FunctionComponent = () => {
         <EventGrid
           events={events}
           setEvents={setEvents}
-          signedIn={signedIn}
+          isSignedIn={isSignedIn}
           token={token}
           username={username}
           onlineOnly={filters.online}
@@ -179,7 +179,7 @@ const MainPage: FunctionComponent = () => {
           closeEvent={closeEvent}
           comments={comments}
           addComment={addComment}
-          signedIn={signedIn}
+          isSignedIn={isSignedIn}
         />
         <MapComponent
           events={events}

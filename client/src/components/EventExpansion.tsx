@@ -14,7 +14,7 @@ interface Props {
   closeEvent: () => void;
   comments: Comment[];
   addComment: (text: string) => void;
-  signedIn: boolean;
+  isSignedIn: boolean;
 }
 
 const EventExpansion: FunctionComponent<Props> = (props: Props) => {
@@ -121,12 +121,12 @@ const EventExpansion: FunctionComponent<Props> = (props: Props) => {
                 multiline
                 fullWidth
                 variant="filled"
-                placeholder={props.signedIn ? "Add a comment" : "Sign in to add a comment"}
+                placeholder={props.isSignedIn ? "Add a comment" : "Sign in to add a comment"}
                 value={commentText}
                 onChange={handleCommentChange}
-                disabled={!props.signedIn}
+                disabled={!props.isSignedIn}
               />
-              {props.signedIn &&
+              {props.isSignedIn &&
                 <div style={{display: 'flex', justifyContent: 'flex-end', marginTop: 5}}>
                   <Button
                     color="primary"

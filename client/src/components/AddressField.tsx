@@ -18,7 +18,6 @@ interface Props {
   setValue: (value: google.maps.places.AutocompletePrediction | null) => void;
   setAddressString: (address: string) => void;
   setAddressLatLng: (valuePos: google.maps.LatLng | null) => void;
-  setDirty?: (dirty: boolean) => void;
 }
 
 const AddressField: FunctionComponent<Props> = (props: Props) => {
@@ -54,10 +53,8 @@ const AddressField: FunctionComponent<Props> = (props: Props) => {
       return undefined;
     }
     if (props.value) {
-      console.log(props.value);
       fetchValuePos(props.value.place_id, (result?: google.maps.places.PlaceResult) => {
         if (active && result) {
-          console.log(result);
           props.setAddressString(result.formatted_address);
           props.setAddressLatLng(result.geometry.location);
         }
@@ -105,7 +102,6 @@ const AddressField: FunctionComponent<Props> = (props: Props) => {
       onChange={(event: React.ChangeEvent<{}>, newValue: google.maps.places.AutocompletePrediction | null) => {
         setOptions(newValue ? [newValue, ...options] : options);
         props.setValue(newValue);
-        props?.setDirty(true);
       }}
       onInputChange={(event, newInputValue) => {
         setInputValue(newInputValue);

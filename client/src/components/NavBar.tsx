@@ -1,5 +1,5 @@
 import React, { FunctionComponent, useState } from 'react';
-import { AppBar, Toolbar, Button, OutlinedInput, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Snackbar } from '@material-ui/core';
+import { AppBar, Toolbar, Button, OutlinedInput, Snackbar } from '@material-ui/core';
 import SearchIcon from '@material-ui/icons/Search';
 import UserIcon from '@material-ui/icons/PermIdentity'
 import Alert from '@material-ui/lab/Alert';
@@ -17,8 +17,8 @@ interface Props {
   unsavedFilters: Filters;
   setUnsavedFilters: (filters: Filters) => void;
   categories: string[];
-  signedIn: boolean;
-  setSignedIn: (bool: boolean) => void;
+  isSignedIn: boolean;
+  setIsSignedIn: (bool: boolean) => void;
   setToken: (token: string) => void;
   setUsername: (username: string) => void;
   expandEvent: (event: Event) => void;
@@ -31,13 +31,11 @@ const NavBar: FunctionComponent<Props> = (props: Props) => {
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   // Sign-in
-  const [signInOpen, setSignInOpen] = useState<boolean>(false);
+  const [isSignInOpen, setIsSignInOpen] = useState<boolean>(false);
   const [isSignUp, setIsSignUp] = useState<boolean>(false);
   const [isToastOpen, setIsToastOpen] = useState<boolean>(false);
   // Event creation
   const [isCreateOpen, setIsCreateOpen] = useState<boolean>(false);
-  const [unsavedDialogOpen, setUnsavedDialogOpen] = useState<boolean>(false);
-  const [dirty, setDirty] = useState<boolean>(false);
 
   const handleCloseToast = (event?: React.SyntheticEvent, reason?: string) => {
     if (reason === 'clickaway') {
@@ -59,7 +57,7 @@ const NavBar: FunctionComponent<Props> = (props: Props) => {
     // Reset sign-in info
     props.setToken("");
     props.setUsername("");
-    props.setSignedIn(false);
+    props.setIsSignedIn(false);
     // Uncheck "Saved Events"
     props.setUnsavedFilters({ ...props.filters, saved: false });
     props.setFilters({ ...props.filters, saved: false });
@@ -69,37 +67,18 @@ const NavBar: FunctionComponent<Props> = (props: Props) => {
 
   // Called when the user clicks the signin/signout button on the navbar
   const handleSignInOutButton = () => {
-    if (props.signedIn) {
+    if (props.isSignedIn) {
      signOut();
     } else {
       // Open sign-in popup
       setIsSignUp(false);
-      setSignInOpen(true);
+      setIsSignInOpen(true);
     }
   }
 
   const openCreate = () => {
     props.closeEvent();
     setIsCreateOpen(true);
-  }
-
-  const closeCreate = () => {
-    // dirty-ness is broken right now
-    // if (dirty) {
-    //   setUnsavedDialogOpen(true);
-    // } else {
-    //   setIsCreateOpen(false);
-    // }
-    setIsCreateOpen(false);
-  }
-
-  const handleDiscard = () => {
-    setUnsavedDialogOpen(false);
-    setIsCreateOpen(false);
-  }
-
-  const handleCancel = () => {
-    setUnsavedDialogOpen(false);
   }
 
   return (
@@ -126,7 +105,7 @@ const NavBar: FunctionComponent<Props> = (props: Props) => {
             setUnsavedFilters={props.setUnsavedFilters}
             handleCloseFilters={handleCloseFilters}
             categories={props.categories}
-            signedIn={props.signedIn}
+            isSignedIn={props.isSignedIn}
           />
           <div className={classes.search}>
             <div className={classes.searchIcon}>
@@ -142,7 +121,7 @@ const NavBar: FunctionComponent<Props> = (props: Props) => {
           </div>
         </div>
         <div className={classes.endDiv}>
-          {props.signedIn &&
+          {props.isSignedIn &&
             <Button
               variant="contained"
               className={classes.createNavButton}
@@ -155,10 +134,8 @@ const NavBar: FunctionComponent<Props> = (props: Props) => {
           <CreateEventWindow
             expandEvent={props.expandEvent}
             isCreateOpen={isCreateOpen}
-            closeCreate={closeCreate}
+            setIsCreateOpen={setIsCreateOpen}
             filters={props.filters}
-            dirty={dirty}
-            setDirty={setDirty}
             categories={props.categories}
             submitEvent={props.submitEvent}
           />
@@ -168,14 +145,14 @@ const NavBar: FunctionComponent<Props> = (props: Props) => {
             onClick={handleSignInOutButton}
             startIcon={<UserIcon/>}
           >
-            {props.signedIn ? "Sign Out" : "Sign In"}
+            {props.isSignedIn ? "Sign Out" : "Sign In"}
           </Button>
           <SignInWindow
-            signInOpen={signInOpen}
-            setSignInOpen={setSignInOpen}
+            isSignInOpen={isSignInOpen}
+            setIsSignInOpen={setIsSignInOpen}
             isSignUp={isSignUp}
             setIsSignUp={setIsSignUp}
-            setSignedIn={props.setSignedIn}
+            setIsSignedIn={props.setIsSignedIn}
             setToken={props.setToken}
             setIsToastOpen={setIsToastOpen}
             setUsername={props.setUsername}
@@ -189,28 +166,9 @@ const NavBar: FunctionComponent<Props> = (props: Props) => {
         anchorOrigin={{vertical: 'bottom', horizontal: 'center'}}
       >
         <Alert onClose={handleCloseToast} severity="success">
-          {props.signedIn ? "Signed in" : "Signed out"}
+          {props.isSignedIn ? "Signed in" : "Signed out"}
         </Alert>
       </Snackbar>
-      <Dialog
-        open={unsavedDialogOpen}
-        onClose={handleCancel}
-      >
-        <DialogTitle>{"Unsaved changes"}</DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-            You have unsaved changes. Do you want to discard them?
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCancel} color="primary">
-            Cancel
-          </Button>
-          <Button onClick={handleDiscard} color="primary" autoFocus>
-            Discard
-          </Button>
-        </DialogActions>
-      </Dialog>
     </AppBar>
   );
 }

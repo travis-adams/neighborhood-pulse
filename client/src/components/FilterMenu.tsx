@@ -16,7 +16,7 @@ interface Props {
   setUnsavedFilters: (filters: Filters) => void;
   handleCloseFilters: () => void;
   categories: string[];
-  signedIn: boolean;
+  isSignedIn: boolean;
 }
 
 const FilterMenu: FunctionComponent<Props> = (props: Props) => {
@@ -124,7 +124,7 @@ const FilterMenu: FunctionComponent<Props> = (props: Props) => {
             control={<Checkbox
                       checked={props.unsavedFilters.saved}
                       onChange={handleSavedEventsChange}
-                      disabled={!(props.signedIn)}
+                      disabled={!(props.isSignedIn)}
                       color="primary"
                       name="saved"
                     />}
