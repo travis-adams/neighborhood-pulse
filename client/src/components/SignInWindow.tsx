@@ -29,23 +29,24 @@ const SignInWindow: FunctionComponent<Props> = (props: Props) => {
   const logo = "c1-logo-full.png";
   const classes = useStyles();
   const [errorMessage, setErrorMessage] = useState<string>("");
-  const [logInFields, setLogInFields] = useState<LogInFields>({username: "", password: "", usernameError: false, passwordError: false});
+  const [signInFields, setSignInFields] = useState<LogInFields>({username: "", password: "", usernameError: false, passwordError: false});
 
   const resetSignInFields = () => {
-    setLogInFields({ username: "", password: "", usernameError: false, passwordError: false });
+    setSignInFields({ username: "", password: "", usernameError: false, passwordError: false });
   }
 
   const handleCloseSignIn = () => {
     props.setIsSignInOpen(false);
+    setErrorMessage("");
     resetSignInFields();
   }
 
   const handleUsernameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setLogInFields({ ...logInFields, username: event.target.value, usernameError: false});
+    setSignInFields({ ...signInFields, username: event.target.value, usernameError: false});
   }
 
   const handlePasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setLogInFields({ ...logInFields, password: event.target.value, passwordError: false});
+    setSignInFields({ ...signInFields, password: event.target.value, passwordError: false});
   }
 
   // Handles signing the user in/up
@@ -67,7 +68,7 @@ const SignInWindow: FunctionComponent<Props> = (props: Props) => {
       // Display confirmation toast
       props.setIsToastOpen(true);
     } catch(error) {
-      setLogInFields({ username: "", password: "", usernameError: true, passwordError: true })
+      setSignInFields({ username: "", password: "", usernameError: true, passwordError: true })
       setErrorMessage(error.message);
     }
   }
@@ -91,23 +92,23 @@ const SignInWindow: FunctionComponent<Props> = (props: Props) => {
         autoFocus
         id="username"
         label="Username"
-        value={logInFields.username}
+        value={signInFields.username}
         onChange={handleUsernameChange}
-        error={logInFields.usernameError}
+        error={signInFields.usernameError}
         />
         <div style={{marginTop: "1%"}} />
         <TextField
         id="password"
         label="Password"
         type="password"
-        value={logInFields.password}
+        value={signInFields.password}
         onChange={handlePasswordChange}
-        error={logInFields.passwordError}
+        error={signInFields.passwordError}
         />
       </DialogContent>
       <DialogActions disableSpacing style={{display: "flex", flexDirection: "column"}}>
         <Button
-          onClick={async () => {await handleUserSignIn(logInFields.username, logInFields.password);}}
+          onClick={async () => {await handleUserSignIn(signInFields.username, signInFields.password);}}
           variant="contained"
           color="primary"
           size="large">

@@ -1,15 +1,14 @@
 import React, { FunctionComponent, useState } from 'react';
-import { AppBar, Toolbar, Button, OutlinedInput, Snackbar } from '@material-ui/core';
-import SearchIcon from '@material-ui/icons/Search';
-import UserIcon from '@material-ui/icons/PermIdentity'
+import { AppBar, Toolbar, Button, Snackbar } from '@material-ui/core';
 import Alert from '@material-ui/lab/Alert';
-import { ExpandMore, ExpandLess, Add } from '@material-ui/icons';
+import { ExpandMore, ExpandLess, Add, PermIdentity } from '@material-ui/icons';
 import useStyles from '../css';
 import Filters from '../domain/Filters';
 import FilterMenu from './FilterMenu';
 import SignInWindow from './SignInWindow';
 import Event from '../domain/Event';
 import CreateEventWindow from './CreateEventWindow';
+import SearchBar from './SearchBar';
 
 interface Props {
   filters: Filters;
@@ -107,18 +106,11 @@ const NavBar: FunctionComponent<Props> = (props: Props) => {
             categories={props.categories}
             isSignedIn={props.isSignedIn}
           />
-          <div className={classes.search}>
-            <div className={classes.searchIcon}>
-              <SearchIcon/>
-            </div>
-            <OutlinedInput
-              placeholder="Search for a location or an event..."
-              classes={{
-                root: classes.inputRoot,
-                input: classes.inputInput
-              }}
-            />
-          </div>
+          <SearchBar
+            filters={props.filters}
+            setFilters={props.setFilters}
+            setUnsavedFilters={props.setUnsavedFilters}
+          />
         </div>
         <div className={classes.endDiv}>
           {props.isSignedIn &&
@@ -143,7 +135,7 @@ const NavBar: FunctionComponent<Props> = (props: Props) => {
             className={classes.userButton}
             color="inherit"
             onClick={handleSignInOutButton}
-            startIcon={<UserIcon/>}
+            startIcon={<PermIdentity/>}
           >
             {props.isSignedIn ? "Sign Out" : "Sign In"}
           </Button>

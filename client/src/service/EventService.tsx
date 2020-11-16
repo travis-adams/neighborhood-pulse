@@ -22,10 +22,7 @@ export default class EventService {
         cat: event?.category,
         location: event?.loc,
         address: event?.addr,
-        position: {
-          lat: event?.latitude,
-          lng: event?.longitude
-        }
+        position: (event.latitude && event.longitude) ? new google.maps.LatLng({lat: event.latitude, lng: event.longitude}) : null
       } as Event);
     });
     return formattedEvents;
@@ -50,10 +47,7 @@ export default class EventService {
         address: poi?.addr,
         desc: poi?.desc,
         link: poi.link,
-        position: {
-          lat: poi.latitude,
-          lng: poi.longitude
-        }
+        position: new google.maps.LatLng({lat: poi.latitude, lng: poi.longitude})
       } as PointOfInterest);
     });
     return formattedPois;
@@ -67,7 +61,7 @@ export default class EventService {
         filterString += "user=" + username;
       }
       if (!filters.online) {
-        filterString += "&lat=" + filters.userPos.lat + "&lng=" + filters.userPos.lng;
+        filterString += "&lat=" + filters.searchPos.lat() + "&lng=" + filters.searchPos.lng();
       }
       if (filters.limit) {
         filterString += "&limit=" + filters.limit;
@@ -168,10 +162,10 @@ export default class EventService {
   }
 
   // Fetches points of interest (using a 100 constant limit for now)
-  fetchPois = async (userPos: google.maps.LatLngLiteral): Promise<PointOfInterest[]> => {
+  fetchPois = async (searchPos: google.maps.LatLng): Promise<PointOfInterest[]> => {
     try {
       // there's a 'name' filter as well... maybe use that somehow?
-      const response = await axios.get(this.baseUrl + "/locations/filter?limit=100&lat=" + userPos.lat + "&lng=" + userPos.lng);
+      const response = await axios.get(this.baseUrl + "/locations/filter?limit=100&lat=" + searchPos.lat() + "&lng=" + searchPos.lng());
       return this.formatPois(response.data.content);
     } catch(error) {
       console.error(error);

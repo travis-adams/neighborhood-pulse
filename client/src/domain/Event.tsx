@@ -9,5 +9,5 @@ export default interface Event {
   category?: string;
   location: string;
   address?: string;
-  position?: google.maps.LatLngLiteral;
+  position?: google.maps.LatLng;
 }

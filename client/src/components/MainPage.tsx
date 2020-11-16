@@ -12,10 +12,7 @@ import Comment from "../domain/Comment";
 import PointOfInterest from "../domain/PointOfInterest";
 
 export const defaultFilters: Filters = {
-  userPos: {
-    lat: 33.8463,
-    lng: -84.3621
-  },
+  searchPos: new google.maps.LatLng({lat: 33.8463, lng: -84.3621}),
   limit: 75,
   firstDate: new Date('2020-01-02'),
   lastDate: new Date('2021-01-01'),
@@ -118,7 +115,7 @@ const MainPage: FunctionComponent = () => {
 
   // Load points of interest
   const loadPois = async () => {
-    const poiList = await eventService.fetchPois(filters.userPos).then((fetchedPois: PointOfInterest[]) => {
+    const poiList = await eventService.fetchPois(filters.searchPos).then((fetchedPois: PointOfInterest[]) => {
       return fetchedPois;
     });
     setPois(poiList)

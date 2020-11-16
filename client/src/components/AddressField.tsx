@@ -14,10 +14,12 @@ const placesService = new google.maps.places.PlacesService(document.createElemen
 interface Props {
   online: boolean;
   variant: 'filled' | 'outlined' | 'standard';
+  label?: string;
+  placeholder?: string;
   value: google.maps.places.AutocompletePrediction | null;
   setValue: (value: google.maps.places.AutocompletePrediction | null) => void;
-  setAddressString: (address: string) => void;
   setAddressLatLng: (valuePos: google.maps.LatLng | null) => void;
+  setAddressString?: (address: string) => void;
 }
 
 const AddressField: FunctionComponent<Props> = (props: Props) => {
@@ -34,7 +36,7 @@ const AddressField: FunctionComponent<Props> = (props: Props) => {
     [],
   );
 
-  // Get the lat and long of the address value
+  // Get the lat & long and full address of an address result
   const fetchValuePos = useMemo(
     () =>
       throttle((place_id: string, callback: (result: google.maps.places.PlaceResult) => void) => {
@@ -55,8 +57,10 @@ const AddressField: FunctionComponent<Props> = (props: Props) => {
     if (props.value) {
       fetchValuePos(props.value.place_id, (result?: google.maps.places.PlaceResult) => {
         if (active && result) {
-          props.setAddressString(result.formatted_address);
           props.setAddressLatLng(result.geometry.location);
+          if (props.setAddressString) {
+            props.setAddressString(result.formatted_address);
+          }
         }
       });
     }
@@ -80,8 +84,10 @@ const AddressField: FunctionComponent<Props> = (props: Props) => {
   useEffect(() => {
     if (props.online) {
       props.setValue(null);
-      props.setAddressString(null);
       props.setAddressLatLng(null);
+      if (props.setAddressString) {
+        props.setAddressString(null);
+      }
       setInputValue('');
       setOptions([]);
     }
@@ -110,8 +116,9 @@ const AddressField: FunctionComponent<Props> = (props: Props) => {
         <TextField
           {...params}
           required={!props.online}
-          label={props.online ? "Online" : "Address"}
+          label={props.online ? "Online" : props.label}
           variant={props.variant}
+          placeholder={props.placeholder}
           fullWidth />
       )}
       renderOption={(option) => {

@@ -93,7 +93,7 @@ const useStyles = makeStyles((theme: Theme) =>
       alignItems: 'center'
     },
     filterMenu: {
-      padding: theme.spacing(1, 2, 1, 2)
+      padding: theme.spacing(1, 2)
     },
     filterElement: {
       margin: theme.spacing(1),
@@ -102,31 +102,18 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     search: {
       flex: 1,
-      position: 'relative',
-      borderRadius: theme.shape.borderRadius,
-      backgroundColor: theme.palette.common.white,
-      marginRight: 0,
-      marginLeft: 0,
-      width: '100%'
+      height: '100%',
+      display: 'flex',
+      alignItems: 'center'
     },
     searchIcon: {
-      padding: theme.spacing(0, 2),
-      height: '100%',
-      position: 'absolute',
-      pointerEvents: 'none',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
       color: buttonColor
     },
-    inputRoot: {
-      width: '100%'
-    },
-    inputInput: {
+    searchInput: {
       padding: theme.spacing(1, 1, 1, 0),
-      paddingLeft: 50,
-      transition: theme.transitions.create('width'),
-      color: theme.palette.common.black
+      paddingLeft: 5,
+      color: theme.palette.common.black,
+      width: "100%"
     },
     endDiv: {
       flex: 1,

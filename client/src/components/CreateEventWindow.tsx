@@ -26,8 +26,8 @@ const CreateEventWindow: FunctionComponent<Props> = (props: Props) => {
   const [cat, setCat] = useState<string>("");
   const [date, setDate] = useState<Date | null>(null);
   const [address, setAddress] = useState<google.maps.places.AutocompletePrediction | null>(null);
-  const [addressString, setAddressString] = useState<string | null>(null);
   const [addressLatLng, setAddressLatLng] = useState<google.maps.LatLng | null>(null);
+  const [addressString, setAddressString] = useState<string | null>(null);
   const [online, setOnline] = useState<boolean>(false);
   const [link, setLink] = useState<string>("");
   const [desc, setDesc] = useState<string>("");
@@ -111,7 +111,7 @@ const CreateEventWindow: FunctionComponent<Props> = (props: Props) => {
       address: online ? "Online" : addressString,
       category: cat,
       link: link,
-      position: {lat: online ? null : addressLatLng.lat(), lng: online ? null : addressLatLng.lng()} as google.maps.LatLngLiteral
+      position: online ? null : new google.maps.LatLng({lat: addressLatLng.lat(), lng: addressLatLng.lng()})
     };
     props.submitEvent(event);
     resetFields();
@@ -181,10 +181,11 @@ const CreateEventWindow: FunctionComponent<Props> = (props: Props) => {
                 <AddressField
                   online={online}
                   variant="filled"
+                  label="Address"
                   value={address}
                   setValue={setAddress}
-                  setAddressString={setAddressString}
                   setAddressLatLng={setAddressLatLng}
+                  setAddressString={setAddressString}
                 />
                 <FormControlLabel
                   checked={online}
