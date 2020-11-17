@@ -12,6 +12,8 @@ const autocompleteService = new google.maps.places.AutocompleteService();
 const placesService = new google.maps.places.PlacesService(document.createElement('div'));
 
 interface Props {
+  valid?: boolean;
+  setValid?: (valid: boolean) => void;
   online: boolean;
   variant: 'filled' | 'outlined' | 'standard';
   label?: string;
@@ -108,6 +110,9 @@ const AddressField: FunctionComponent<Props> = (props: Props) => {
       onChange={(event: React.ChangeEvent<{}>, newValue: google.maps.places.AutocompletePrediction | null) => {
         setOptions(newValue ? [newValue, ...options] : options);
         props.setValue(newValue);
+        if (typeof(props.setValid) === typeof(Function)) {
+          props.setValid(true);
+        }
       }}
       onInputChange={(event, newInputValue) => {
         setInputValue(newInputValue);
@@ -116,6 +121,8 @@ const AddressField: FunctionComponent<Props> = (props: Props) => {
         <TextField
           {...params}
           required={!props.online}
+          error={(props.valid === undefined) ? false : !props.valid}
+          helperText={(props.valid === undefined || props.valid) ? null : "Address is required for offline events"}
           label={props.online ? "Online" : props.label}
           variant={props.variant}
           placeholder={props.placeholder}

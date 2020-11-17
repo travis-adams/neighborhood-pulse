@@ -184,13 +184,13 @@ export default class EventService {
         addr: event.address,
         cat: event.category,
         link: event.link,
-        latitude: event.position.lat,
-        longitude: event.position.lng
+        latitude: event.position.lat(),
+        longitude: event.position.lng()
       };
       const response = await axios.post(this.baseUrl + "/events/submit?username=" +  username, data, {headers: {'Authorization': token}});
       return this.formatEvents([response.data], true)[0];
     } catch(error) {
-      console.error(error);
+      throw new Error("Internal server error: '" + error.response.statusText + "' Please try again.");
     }
   }
 

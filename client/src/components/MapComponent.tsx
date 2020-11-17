@@ -53,7 +53,7 @@ const MapComponent: FunctionComponent<Props> = (props: Props) => {
   const createEventPins = () => {
     const eventMarkers: JSX.Element[] = (
       props.events?.map((event: Event, index: number) => {
-        if (event.position.lat && event.position.lng) {
+        if (event.position) {
           return (
             <Marker
               key={index}

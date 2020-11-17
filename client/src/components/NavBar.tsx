@@ -1,6 +1,5 @@
 import React, { FunctionComponent, useState } from 'react';
-import { AppBar, Toolbar, Button, Snackbar } from '@material-ui/core';
-import Alert from '@material-ui/lab/Alert';
+import { AppBar, Toolbar, Button } from '@material-ui/core';
 import { ExpandMore, ExpandLess, Add, PermIdentity } from '@material-ui/icons';
 import useStyles from '../css';
 import Filters from '../domain/Filters';
@@ -18,11 +17,12 @@ interface Props {
   categories: string[];
   isSignedIn: boolean;
   setIsSignedIn: (bool: boolean) => void;
+  token: string;
   setToken: (token: string) => void;
+  username: string;
   setUsername: (username: string) => void;
   expandEvent: (event: Event) => void;
   closeEvent: () => void;
-  submitEvent: (event: Event) => void;
 }
 
 const NavBar: FunctionComponent<Props> = (props: Props) => {
@@ -32,16 +32,9 @@ const NavBar: FunctionComponent<Props> = (props: Props) => {
   // Sign-in
   const [isSignInOpen, setIsSignInOpen] = useState<boolean>(false);
   const [isSignUp, setIsSignUp] = useState<boolean>(false);
-  const [isToastOpen, setIsToastOpen] = useState<boolean>(false);
+  const [isSignInToastOpen, setIsSignInToastOpen] = useState<boolean>(false);
   // Event creation
   const [isCreateOpen, setIsCreateOpen] = useState<boolean>(false);
-
-  const handleCloseToast = (event?: React.SyntheticEvent, reason?: string) => {
-    if (reason === 'clickaway') {
-      return;
-    }
-    setIsToastOpen(false);
-  }
 
   const handleOpenFilters = (event: React.MouseEvent<HTMLButtonElement>) => {
     anchorEl ? handleCloseFilters() : setAnchorEl(event.currentTarget);
@@ -61,7 +54,7 @@ const NavBar: FunctionComponent<Props> = (props: Props) => {
     props.setUnsavedFilters({ ...props.filters, saved: false });
     props.setFilters({ ...props.filters, saved: false });
     // Display confirmation toast
-    setIsToastOpen(true);
+    setIsSignInToastOpen(true);
   }
 
   // Called when the user clicks the signin/signout button on the navbar
@@ -129,7 +122,8 @@ const NavBar: FunctionComponent<Props> = (props: Props) => {
             setIsCreateOpen={setIsCreateOpen}
             filters={props.filters}
             categories={props.categories}
-            submitEvent={props.submitEvent}
+            token={props.token}
+            username={props.username}
           />
           <Button
             className={classes.userButton}
@@ -140,27 +134,19 @@ const NavBar: FunctionComponent<Props> = (props: Props) => {
             {props.isSignedIn ? "Sign Out" : "Sign In"}
           </Button>
           <SignInWindow
+            isSignedIn={props.isSignedIn}
             isSignInOpen={isSignInOpen}
             setIsSignInOpen={setIsSignInOpen}
             isSignUp={isSignUp}
             setIsSignUp={setIsSignUp}
             setIsSignedIn={props.setIsSignedIn}
             setToken={props.setToken}
-            setIsToastOpen={setIsToastOpen}
+            isToastOpen={isSignInToastOpen}
+            setIsToastOpen={setIsSignInToastOpen}
             setUsername={props.setUsername}
           />
         </div>
       </Toolbar>
-      <Snackbar
-        open={isToastOpen}
-        autoHideDuration={3000}
-        onClose={handleCloseToast}
-        anchorOrigin={{vertical: 'bottom', horizontal: 'center'}}
-      >
-        <Alert onClose={handleCloseToast} severity="success">
-          {props.isSignedIn ? "Signed in" : "Signed out"}
-        </Alert>
-      </Snackbar>
     </AppBar>
   );
 }

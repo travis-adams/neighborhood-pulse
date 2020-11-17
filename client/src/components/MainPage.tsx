@@ -50,13 +50,6 @@ const MainPage: FunctionComponent = () => {
     setIsEventExpanded(false);
   }
 
-  const submitEvent = async (event: Event) => {
-    const newEvent = await eventService.submitEvent(event, username, token).then((fetchedEvent: Event) => {
-      return fetchedEvent;
-    });
-    expandEvent(newEvent);
-  }
-
   const addComment = async (text: string) => {
     const newComment = await eventService.submitEventComment(expandedEvent.id, text, username, token).then((fetchedComment: Comment) => {
       return fetchedComment;
@@ -148,11 +141,12 @@ const MainPage: FunctionComponent = () => {
         categories={categories}
         isSignedIn={isSignedIn}
         setIsSignedIn={setIsSignedIn}
+        token={token}
         setToken={setToken}
+        username={username}
         setUsername={setUsername}
         expandEvent={expandEvent}
         closeEvent={closeEvent}
-        submitEvent={submitEvent}
       />
       <Divider/>
       <Box className={classes.mainBox}>

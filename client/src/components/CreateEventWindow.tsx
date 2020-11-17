@@ -5,10 +5,12 @@ import React, { FunctionComponent, useState } from 'react';
 import useStyles from '../css';
 import Event from '../domain/Event';
 import Filters from '../domain/Filters';
-import { Card, CardContent, CardHeader, Divider, IconButton, TextField, Button, FormControlLabel,
-  Switch, Autocomplete, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, } from '@material-ui/core';
+import { Card, CardContent, CardHeader, Divider, IconButton, TextField, Button, FormControlLabel, Switch,
+  Autocomplete, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Snackbar } from '@material-ui/core';
 import { AccessTime, RoomOutlined, LinkOutlined, Close, LocalOfferOutlined } from '@material-ui/icons';
 import AddressField from './AddressField';
+import Alert from '@material-ui/lab/Alert';
+import EventService from "../service/EventService";
 
 interface Props {
   expandEvent: (event: Event) => void;
@@ -16,26 +18,47 @@ interface Props {
   setIsCreateOpen: (open: boolean) => void;
   filters: Filters;
   categories: string[];
-  submitEvent: (event: Event) => void;
+  token: string;
+  username: string;
 }
+
+const eventService = new EventService();
+// set in the database
+const MAX_DESC_LENGTH = 1500;
 
 const CreateEventWindow: FunctionComponent<Props> = (props: Props) => {
   const classes = useStyles();
+  const [isToastOpen, setIsToastOpen] = useState<boolean>(false);
   // fields
   const [title, setTitle] = useState<string>("");
   const [cat, setCat] = useState<string>("");
   const [date, setDate] = useState<Date | null>(null);
-  const [address, setAddress] = useState<google.maps.places.AutocompletePrediction | null>(null);
-  const [addressLatLng, setAddressLatLng] = useState<google.maps.LatLng | null>(null);
-  const [addressString, setAddressString] = useState<string | null>(null);
+  const [address, setAddress] = useState<google.maps.places.AutocompletePrediction | null>(null); // full google.maps object of the selected address
+  const [addressLatLng, setAddressLatLng] = useState<google.maps.LatLng | null>(null);            // lat & lng of the selected address
+  const [addressString, setAddressString] = useState<string | null>(null);                        // street address of the selected address
   const [online, setOnline] = useState<boolean>(false);
   const [link, setLink] = useState<string>("");
   const [desc, setDesc] = useState<string>("");
+  // validation
+  const [titleValid, setTitleValid] = useState<boolean>(true);
+  const [dateValid, setDateValid] = useState<boolean>(true);
+  const [addressValid, setAddressValid] = useState<boolean>(true);
+  const [linkValid, setLinkValid] = useState<boolean>(true);
+  const [descValid, setDescValid] = useState<boolean>(true);
+  const [errorMessage, setErrorMessage] = useState<string>("");
   // unsaved changes
   const [unsavedDialogOpen, setUnsavedDialogOpen] = useState<boolean>(false);
 
+  const handleCloseToast = (event?: React.SyntheticEvent, reason?: string) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    setIsToastOpen(false);
+  }
+
   const handleTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setTitle(event.target.value);
+    setTitleValid(true);
   }
 
   const handleCatChange = (event: React.ChangeEvent<HTMLInputElement>, input: string) => {
@@ -44,32 +67,65 @@ const CreateEventWindow: FunctionComponent<Props> = (props: Props) => {
 
   const handleDateChange = (date_: Date) => {
     setDate(date_);
+    setDateValid(true);
   }
 
   const handleOnlineChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setOnline(event.target.checked)
+    if (event.target.checked) {
+      setAddressValid(true);
+    }
   }
 
   const handleLinkChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setLink(event.target.value);
+    setLinkValid(true);
   }
 
   const handleDescChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setDesc(event.target.value);
+    setDescValid(true);
   }
 
-  const isDirty = (): boolean => {
+  // Validates fields and returns whether all are valid
+  const validateFields = (): boolean => {
+    let valid = true;
+    if (title == null || title == "") {
+      setTitleValid(false);
+      valid = false;
+    }
+    if (date == null) {
+      setDateValid(false);
+      valid = false;
+    }
+    if (address == null && !online) {
+      setAddressValid(false);
+      valid = false;
+    }
+    // should also validate that it's a real link
+    if (link == null || link == "") {
+      setLinkValid(false);
+      valid = false;
+    }
+    if (desc.length > MAX_DESC_LENGTH) {
+      setDescValid(false);
+      valid = false;
+    }
+    return valid;
+  }
+
+  // Returns whether any fields have been modified
+  const fieldsDirty = (): boolean => {
     return ((title != null && title != "")
         || (cat != null && cat != "")
         || date != null
         || address != null
-        || (addressString != null && addressString != "")
-        || addressLatLng != null
         || (link != null && link != "")
         || (desc != null && desc != ""));
   }
 
   const resetFields = () => {
+    // fields
     setTitle("");
     setCat("");
     setDate(null);
@@ -79,6 +135,13 @@ const CreateEventWindow: FunctionComponent<Props> = (props: Props) => {
     setOnline(false);
     setLink("");
     setDesc("");
+    // validation
+    setTitleValid(true);
+    setDateValid(true);
+    setAddressValid(true);
+    setLinkValid(true);
+    setDescValid(true);
+    setErrorMessage("");
   }
 
   // "Discard" option of the unsaved changes dialog
@@ -93,29 +156,44 @@ const CreateEventWindow: FunctionComponent<Props> = (props: Props) => {
     setUnsavedDialogOpen(false);
   }
 
+  // Called when the user attempts to close the create window.
+  // Will open an unsaved changes dialog if any fields are dirty
   const closeCreateWindow = () => {
-    if (isDirty()) {
+    if (fieldsDirty()) {
       setUnsavedDialogOpen(true);
     } else {
-      setOnline(false); // the online switch isn't checked for dirty since it's just a switch. setting it false here in case it was switched to true
       props.setIsCreateOpen(false);
+      resetFields();
     }
   }
 
-  const createEvent = () => {
-    const event: Event = {
-      name: title,
-      desc: desc,
-      date: date,
-      location: online ? "Online" : address.structured_formatting.main_text,
-      address: online ? "Online" : addressString,
-      category: cat,
-      link: link,
-      position: online ? null : new google.maps.LatLng({lat: addressLatLng.lat(), lng: addressLatLng.lng()})
-    };
-    props.submitEvent(event);
-    resetFields();
-    props.setIsCreateOpen(false);
+  const handleCreateEvent = async () => {
+    try {
+      // Cancel submission if any fields are invalid
+      if (!validateFields()) {
+        throw new Error("Some fields are missing or invalid.")
+      }
+      const event: Event = {
+        name: title,
+        desc: desc,
+        date: date,
+        location: online ? "Online" : address.structured_formatting.main_text,
+        address: online ? "Online" : addressString,
+        category: cat,
+        link: link,
+        position: online ? null : addressLatLng
+      };
+      const newEvent = await eventService.submitEvent(event, props.username, props.token).then((fetchedEvent: Event) => {
+        return fetchedEvent;
+      });
+      props.expandEvent(newEvent);
+      props.setIsCreateOpen(false);
+      resetFields();
+      // Display confirmation toast
+      setIsToastOpen(true);
+    } catch (error) {
+      setErrorMessage(error.message);
+    }
   }
 
   return (
@@ -134,6 +212,8 @@ const CreateEventWindow: FunctionComponent<Props> = (props: Props) => {
             <div style={{marginTop: -25}} />
             <TextField
               required
+              error={!titleValid}
+              helperText={titleValid ? null : "Title is required"}
               fullWidth
               variant="filled"
               label="Title"
@@ -160,6 +240,8 @@ const CreateEventWindow: FunctionComponent<Props> = (props: Props) => {
                 <MuiPickersUtilsProvider utils={DateFnsUtils}>
                   <DatePicker
                     required
+                    error={!dateValid}
+                    helperText={dateValid ? null : "Date is required"}
                     format="yyyy-MM-dd"
                     label="Date"
                     inputVariant="filled"
@@ -169,6 +251,8 @@ const CreateEventWindow: FunctionComponent<Props> = (props: Props) => {
                   />
                   <TimePicker
                     required
+                    error={!dateValid}
+                    helperText={dateValid ? null : "Time is required"}
                     label="Time"
                     inputVariant="filled"
                     value={date}
@@ -179,6 +263,8 @@ const CreateEventWindow: FunctionComponent<Props> = (props: Props) => {
               <div style={{display: 'flex', alignItems: 'center', paddingTop: 15, paddingBottom: 15}}>
                 <RoomOutlined style={{marginRight: 10}}/>
                 <AddressField
+                  valid={addressValid}
+                  setValid={setAddressValid}
                   online={online}
                   variant="filled"
                   label="Address"
@@ -199,6 +285,8 @@ const CreateEventWindow: FunctionComponent<Props> = (props: Props) => {
                 <LinkOutlined style={{marginRight: 10}}/>
                 <TextField
                   required
+                  error={!linkValid}
+                  helperText={linkValid ? null : "Link is required"}
                   fullWidth
                   variant="filled"
                   label="Link"
@@ -210,6 +298,8 @@ const CreateEventWindow: FunctionComponent<Props> = (props: Props) => {
             <Divider/>
             <div style={{paddingBottom: 15}} />
             <TextField
+              error={!descValid}
+              helperText={descValid ? null : "Description cannot exceed 1500 characters"}
               rows={5}
               multiline
               fullWidth
@@ -231,34 +321,45 @@ const CreateEventWindow: FunctionComponent<Props> = (props: Props) => {
                 color="primary"
                 size="large"
                 className={classes.createButton}
-                onClick={createEvent}
+                onClick={handleCreateEvent}
               >
                 Create
               </Button>
             </div>
           </CardContent>
         </Card>
+        {errorMessage && <Alert severity="error" variant="filled">{errorMessage}</Alert>}
       </Dialog>
-    <Dialog
-      open={unsavedDialogOpen}
-      onClose={handleCancel}
-    >
-      <DialogTitle>{"Unsaved changes"}</DialogTitle>
-      <DialogContent>
-        <DialogContentText>
-          You have unsaved changes. Do you want to discard them?
-        </DialogContentText>
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={handleCancel} color="primary">
-          Cancel
-        </Button>
-        <Button onClick={handleDiscard} color="primary" autoFocus>
-          Discard
-        </Button>
-      </DialogActions>
-    </Dialog>
-  </div>
+      <Dialog
+        open={unsavedDialogOpen}
+        onClose={handleCancel}
+      >
+        <DialogTitle>{"Unsaved changes"}</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            You have unsaved changes. Do you want to discard them?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCancel} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={handleDiscard} color="primary" autoFocus>
+            Discard
+          </Button>
+        </DialogActions>
+      </Dialog>
+      <Snackbar
+        open={isToastOpen}
+        autoHideDuration={3000}
+        onClose={handleCloseToast}
+        anchorOrigin={{vertical: 'bottom', horizontal: 'center'}}
+      >
+        <Alert onClose={handleCloseToast} severity="success">
+          Event created
+        </Alert>
+      </Snackbar>
+    </div>
   );
 }
 

@@ -1,26 +1,28 @@
 import React, { FunctionComponent, useState } from 'react';
-import { Button, TextField, Dialog, DialogContent, DialogActions, IconButton } from '@material-ui/core';
+import { Button, TextField, Dialog, DialogContent, DialogActions, IconButton, Snackbar } from '@material-ui/core';
 import Alert from '@material-ui/lab/Alert';
 import { Close } from '@material-ui/icons';
 import EventService from "../service/EventService";
 import useStyles from '../css';
 
 interface Props {
+  isSignedIn: boolean;
   isSignInOpen: boolean;
   setIsSignInOpen: (bool: boolean) => void;
   isSignUp: boolean;
   setIsSignUp: (bool: boolean) => void;
   setIsSignedIn: (bool: boolean) => void;
   setToken: (token: string) => void;
+  isToastOpen: boolean;
   setIsToastOpen: (bool: boolean) => void;
   setUsername: (username: string) => void;
 }
 
-interface LogInFields {
+interface SignInFields {
   username: string;
   password: string;
-  usernameError: boolean;
-  passwordError: boolean;
+  usernameValid: boolean;
+  passwordValid: boolean;
 }
 
 const eventService = new EventService();
@@ -29,10 +31,17 @@ const SignInWindow: FunctionComponent<Props> = (props: Props) => {
   const logo = "c1-logo-full.png";
   const classes = useStyles();
   const [errorMessage, setErrorMessage] = useState<string>("");
-  const [signInFields, setSignInFields] = useState<LogInFields>({username: "", password: "", usernameError: false, passwordError: false});
+  const [signInFields, setSignInFields] = useState<SignInFields>({username: "", password: "", usernameValid: true, passwordValid: true});
+
+  const handleCloseToast = (event?: React.SyntheticEvent, reason?: string) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    props.setIsToastOpen(false);
+  }
 
   const resetSignInFields = () => {
-    setSignInFields({ username: "", password: "", usernameError: false, passwordError: false });
+    setSignInFields({ username: "", password: "", usernameValid: true, passwordValid: true });
   }
 
   const handleCloseSignIn = () => {
@@ -42,11 +51,11 @@ const SignInWindow: FunctionComponent<Props> = (props: Props) => {
   }
 
   const handleUsernameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSignInFields({ ...signInFields, username: event.target.value, usernameError: false});
+    setSignInFields({ ...signInFields, username: event.target.value, usernameValid: true});
   }
 
   const handlePasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSignInFields({ ...signInFields, password: event.target.value, passwordError: false});
+    setSignInFields({ ...signInFields, password: event.target.value, passwordValid: true});
   }
 
   // Handles signing the user in/up
@@ -64,11 +73,10 @@ const SignInWindow: FunctionComponent<Props> = (props: Props) => {
       props.setUsername(username);
       props.setIsSignedIn(true);
       handleCloseSignIn();
-      setErrorMessage("");
       // Display confirmation toast
       props.setIsToastOpen(true);
-    } catch(error) {
-      setSignInFields({ username: "", password: "", usernameError: true, passwordError: true })
+    } catch (error) {
+      setSignInFields({ username: "", password: "", usernameValid: false, passwordValid: false })
       setErrorMessage(error.message);
     }
   }
@@ -81,46 +89,58 @@ const SignInWindow: FunctionComponent<Props> = (props: Props) => {
   }
 
   return (
-    <Dialog open={props.isSignInOpen} onClose={handleCloseSignIn}>
-      <div style={{display: "flex", alignItems: "flex-start"}}>
-        <div className={classes.gap}/>
-        <img src={logo} style={{marginTop: "3%"}} className={classes.logoImg}/>
-        <div className={classes.endDiv}><IconButton onClick={handleCloseSignIn}><Close/></IconButton></div>
-      </div>
-      <DialogContent style={{display: "flex", flexDirection: "column"}}>
-        <TextField
-        autoFocus
-        id="username"
-        label="Username"
-        value={signInFields.username}
-        onChange={handleUsernameChange}
-        error={signInFields.usernameError}
-        />
-        <div style={{marginTop: "1%"}} />
-        <TextField
-        id="password"
-        label="Password"
-        type="password"
-        value={signInFields.password}
-        onChange={handlePasswordChange}
-        error={signInFields.passwordError}
-        />
-      </DialogContent>
-      <DialogActions disableSpacing style={{display: "flex", flexDirection: "column"}}>
-        <Button
-          onClick={async () => {await handleUserSignIn(signInFields.username, signInFields.password);}}
-          variant="contained"
-          color="primary"
-          size="large">
-          {props.isSignUp ? "Sign Up" : "Sign In"}
-        </Button>
-        <div style={{marginTop: 8}}/>
-        <Button onClick={handleToggleSignUp} color="primary" size="small">
-          {props.isSignUp ? "Return to sign in" : "Create an account"}
-        </Button>
-      </DialogActions>
-      {errorMessage && <Alert severity="error" variant="filled">{errorMessage}</Alert>}
-    </Dialog>
+    <div>
+      <Dialog open={props.isSignInOpen} onClose={handleCloseSignIn}>
+        <div style={{display: "flex", alignItems: "flex-start"}}>
+          <div className={classes.gap}/>
+          <img src={logo} style={{marginTop: "3%"}} className={classes.logoImg}/>
+          <div className={classes.endDiv}><IconButton onClick={handleCloseSignIn}><Close/></IconButton></div>
+        </div>
+        <DialogContent style={{display: "flex", flexDirection: "column"}}>
+          <TextField
+          autoFocus
+          id="username"
+          label="Username"
+          value={signInFields.username}
+          onChange={handleUsernameChange}
+          error={!signInFields.usernameValid}
+          />
+          <div style={{marginTop: "1%"}} />
+          <TextField
+          id="password"
+          label="Password"
+          type="password"
+          value={signInFields.password}
+          onChange={handlePasswordChange}
+          error={!signInFields.passwordValid}
+          />
+        </DialogContent>
+        <DialogActions disableSpacing style={{display: "flex", flexDirection: "column"}}>
+          <Button
+            onClick={async () => {await handleUserSignIn(signInFields.username, signInFields.password);}}
+            variant="contained"
+            color="primary"
+            size="large">
+            {props.isSignUp ? "Sign Up" : "Sign In"}
+          </Button>
+          <div style={{marginTop: 8}}/>
+          <Button onClick={handleToggleSignUp} color="primary" size="small">
+            {props.isSignUp ? "Return to sign in" : "Create an account"}
+          </Button>
+        </DialogActions>
+        {errorMessage && <Alert severity="error" variant="filled">{errorMessage}</Alert>}
+      </Dialog>
+      <Snackbar
+        open={props.isToastOpen}
+        autoHideDuration={3000}
+        onClose={handleCloseToast}
+        anchorOrigin={{vertical: 'bottom', horizontal: 'center'}}
+      >
+        <Alert onClose={handleCloseToast} severity="success">
+          {props.isSignedIn ? "Signed in" : "Signed out"}
+        </Alert>
+      </Snackbar>
+    </div>
   )
 }
 
