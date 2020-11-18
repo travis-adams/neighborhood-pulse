@@ -39,7 +39,7 @@ const MainPage: FunctionComponent = () => {
   // Event details
   const [expandedEvent, setExpandedEvent] = useState<Event>(null);
   const [isEventExpanded, setIsEventExpanded] = useState<boolean>(false);
-  const [comments, setComments] = useState<Comment[]>([]);
+  const [comments, setComments] = useState<Map<number, Comment[]>>(new Map());
 
   const expandEvent = (event: Event) => {
     setExpandedEvent(event);
@@ -50,20 +50,22 @@ const MainPage: FunctionComponent = () => {
     setIsEventExpanded(false);
   }
 
-  const addComment = async (text: string) => {
-    const newComment = await eventService.submitEventComment(expandedEvent.id, text, username, token).then((fetchedComment: Comment) => {
-      return fetchedComment;
-    });
-    setComments([ ...comments, newComment]);
+  // helper function; adds a Comment to a number->Comment[] map
+  const addCommentToMap = (comment: Comment, map: Map<number, Comment[]>) => {
+    if (map.has(comment.eventId)) {
+      map.set(comment.eventId, [...map.get(comment.eventId), comment]);
+    } else {
+      map.set(comment.eventId, [comment]);
+    }
   }
 
-  const loadComments = async () => {
-    if (expandedEvent) {
-      const commentList = await eventService.fetchEventComments(expandedEvent.id).then((fetchedComments: Comment[]) => {
-        return fetchedComments;
-      });
-      setComments(commentList);
-    }
+  const addCommentToEvent = async (eventId: number, text: string) => {
+    const newComment = await eventService.submitEventComment(eventId, text, username, token).then((fetchedComment: Comment) => {
+      return fetchedComment;
+    });
+    let newComments = new Map(comments);
+    addCommentToMap(newComment, newComments);
+    setComments(newComments);
   }
 
   // Asynchronously load the events
@@ -93,8 +95,18 @@ const MainPage: FunctionComponent = () => {
         });
       }
     }
-    // finally, update the displayed events
+    // update the displayed events
     setEvents(eventList);
+
+    // get comments for all events
+    let commentList = await eventService.fetchEventComments(eventList.map((event: Event) => event.id));
+    // generate the mapping between events and their comments
+    let commentMap = new Map<number, Comment[]>();
+    commentList.forEach((comment: Comment) => {
+      addCommentToMap(comment, commentMap);
+    });
+    // update the global comments map
+    setComments(commentMap);
   }
 
   // Load event categories
@@ -102,8 +114,8 @@ const MainPage: FunctionComponent = () => {
     const categoryList = await eventService.fetchCategories().then((fetchedCategories: string[]) => {
       return fetchedCategories;
     });
-    // slicing out the null category
-    setCategories(categoryList.slice(1, 18));
+    // filter out the null category
+    setCategories(categoryList.filter(category => category != null));
   }
 
   // Load points of interest
@@ -125,11 +137,6 @@ const MainPage: FunctionComponent = () => {
     closeEvent();
     loadEvents();
   }, [filters]);
-
-  // When an event is clicked, load its comments (this is very inefficient)
-  useEffect(() => {
-    loadComments();
-  }, [expandedEvent]);
 
   return (
     <div className={classes.flexColumn}>
@@ -168,8 +175,8 @@ const MainPage: FunctionComponent = () => {
           event={expandedEvent}
           isEventExpanded={isEventExpanded}
           closeEvent={closeEvent}
-          comments={comments}
-          addComment={addComment}
+          comments={(expandedEvent && comments.has(expandedEvent.id)) ? comments.get(expandedEvent.id) : []}
+          addComment={addCommentToEvent}
           isSignedIn={isSignedIn}
         />
         <MapComponent

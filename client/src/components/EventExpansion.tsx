@@ -13,7 +13,7 @@ interface Props {
   isEventExpanded: boolean;
   closeEvent: () => void;
   comments: Comment[];
-  addComment: (text: string) => void;
+  addComment: (eventId: number, text: string) => void;
   isSignedIn: boolean;
 }
 
@@ -36,14 +36,12 @@ const EventExpansion: FunctionComponent<Props> = (props: Props) => {
   }
 
   const addComment = (text: string) => {
-    props.addComment(text);
+    props.addComment(props.event.id, text);
     clearComment();
   }
 
   useEffect(() => {
-    if (!props.isEventExpanded) {
-      setCommentText("");
-    }
+    clearComment();
   },[props.event, props.isEventExpanded]);
 
   return (

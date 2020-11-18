@@ -31,10 +31,12 @@ export default class EventService {
   formatComments = (comments: any): Comment[] => {
     const formattedComments = comments.map((comment: any) => {
       return ({
+        id: comment.id,
+        userId: comment.userID,
         eventId: comment.eventID,
         text: comment.text,
-        username: comment.username,
-        timestamp: new Date(comment.timestamp.replace(" ", "T"))
+        timestamp: new Date(comment.timestamp.replace(" ", "T")),
+        username: comment.username
       } as Comment);
     });
     return formattedComments;
@@ -141,10 +143,17 @@ export default class EventService {
     }
   }
 
-  // Fetches an event's comments
-  fetchEventComments = async (eventId: number): Promise<Comment[]> => {
+  // Fetches comments for a list of events
+  fetchEventComments = async (eventIds: number[]): Promise<Comment[]> => {
     try {
-      const response = await axios.get(this.baseUrl + '/comment?event=' + eventId);
+      if (!eventIds || eventIds.length == 0) {
+        return [];
+      }
+      let events = "";
+      eventIds.forEach((eventId: number) => {
+        events += "event=" + eventId + "&";
+      });
+      const response = await axios.get(this.baseUrl + '/comment/all?' + events);
       return this.formatComments(response.data);
     } catch(error) {
       console.error(error);
