@@ -8,6 +8,8 @@ import SignInWindow from './SignInWindow';
 import Event from '../domain/Event';
 import CreateEventWindow from './CreateEventWindow';
 import SearchBar from './SearchBar';
+import TabOption from "../domain/TabOption";
+import User from "../domain/User";
 
 interface Props {
   filters: Filters;
@@ -19,10 +21,12 @@ interface Props {
   setIsSignedIn: (bool: boolean) => void;
   token: string;
   setToken: (token: string) => void;
-  username: string;
-  setUsername: (username: string) => void;
+  user: User;
+  setUser: (newUser: User) => void;
   expandEvent: (event: Event) => void;
   closeEvent: () => void;
+  tab: TabOption
+  setTab: (newTab: TabOption) => void;
 }
 
 const NavBar: FunctionComponent<Props> = (props: Props) => {
@@ -48,11 +52,10 @@ const NavBar: FunctionComponent<Props> = (props: Props) => {
   const signOut = () => {
     // Reset sign-in info
     props.setToken("");
-    props.setUsername("");
+    props.setUser(null);
     props.setIsSignedIn(false);
-    // Uncheck "Saved Events"
-    props.setUnsavedFilters({ ...props.filters, saved: false });
-    props.setFilters({ ...props.filters, saved: false });
+    // Move to the Nearby Events tab
+    props.setTab(TabOption.NearbyEvents);
     // Display confirmation toast
     setIsSignInToastOpen(true);
   }
@@ -76,18 +79,19 @@ const NavBar: FunctionComponent<Props> = (props: Props) => {
   return (
     <AppBar position="static" className={classes.navBar}>
       <Toolbar>
-        <div className={classes.logoDiv}>
+        <div className={classes.beginDiv}>
           <img src={logo} className={classes.logoImg}/>
-        </div>
-        <div className={classes.filterAndSearch}>
-          <Button
-            className={classes.filterButton}
-            color="inherit"
-            onClick={handleOpenFilters}
-            endIcon={anchorEl ? <ExpandLess/> : <ExpandMore/>}
-          >
-              Filter Results
-          </Button>
+          {props.tab == TabOption.NearbyEvents &&
+              <Button
+                className={classes.filterButton}
+                color="inherit"
+                // variant="contained"
+                onClick={handleOpenFilters}
+                endIcon={anchorEl ? <ExpandLess/> : <ExpandMore/>}
+              >
+                  Filter Results
+              </Button>
+          }
           <FilterMenu
             anchorEl={anchorEl}
             setAnchorEl={setAnchorEl}
@@ -99,6 +103,8 @@ const NavBar: FunctionComponent<Props> = (props: Props) => {
             categories={props.categories}
             isSignedIn={props.isSignedIn}
           />
+        </div>
+        <div className={classes.middleDiv}>
           <SearchBar
             filters={props.filters}
             setFilters={props.setFilters}
@@ -123,7 +129,8 @@ const NavBar: FunctionComponent<Props> = (props: Props) => {
             filters={props.filters}
             categories={props.categories}
             token={props.token}
-            username={props.username}
+            username={props.user ? props.user.username : ""}
+            setTab={props.setTab}
           />
           <Button
             className={classes.userButton}
@@ -143,7 +150,7 @@ const NavBar: FunctionComponent<Props> = (props: Props) => {
             setToken={props.setToken}
             isToastOpen={isSignInToastOpen}
             setIsToastOpen={setIsSignInToastOpen}
-            setUsername={props.setUsername}
+            setUser={props.setUser}
           />
         </div>
       </Toolbar>

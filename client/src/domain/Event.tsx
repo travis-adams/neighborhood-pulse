@@ -4,7 +4,8 @@ export default interface Event {
   name: string;
   desc?: string;
   link: string;
-  saved?: boolean;
+  userSaved?: boolean;
+  groupSaved?: boolean;
   date: Date;
   category?: string;
   location: string;

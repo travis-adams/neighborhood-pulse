@@ -38,10 +38,6 @@ const FilterMenu: FunctionComponent<Props> = (props: Props) => {
     props.setUnsavedFilters({ ...props.unsavedFilters, online: event.target.checked });
   }
 
-  const handleSavedEventsChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    props.setUnsavedFilters({ ...props.unsavedFilters, saved: event.target.checked });
-  }
-
   const handleCategoriesChange = (event: React.ChangeEvent<HTMLInputElement>, value: string[]) => {
     props.setUnsavedFilters({ ...props.unsavedFilters, categories: value});
   }
@@ -116,19 +112,6 @@ const FilterMenu: FunctionComponent<Props> = (props: Props) => {
                       name="online"
                     />}
             label="Online only"
-            labelPlacement="end"
-          />
-        </FormControl>
-        <FormControl className={classes.filterElement}>
-          <FormControlLabel
-            control={<Checkbox
-                      checked={props.unsavedFilters.saved}
-                      onChange={handleSavedEventsChange}
-                      disabled={!(props.isSignedIn)}
-                      color="primary"
-                      name="saved"
-                    />}
-            label="Saved events only"
             labelPlacement="end"
           />
         </FormControl>

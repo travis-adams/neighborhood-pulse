@@ -3,16 +3,21 @@ import { Grid, Card, CardActionArea, CardContent, IconButton, Typography } from 
 import Event from "../domain/Event";
 import useStyles from "../css";
 import EventService from "../service/EventService";
-import { Bookmark, BookmarkBorder } from '@material-ui/icons';
+import UserSaved from '../../public/user-saved.svg';
+import UserUnsaved from '../../public/user-unsaved.svg';
+import GroupSaved from '../../public/group-saved.svg';
+import GroupUnsaved from '../../public/group-unsaved.svg';
+import TabOption from '../domain/TabOption';
+import User from '../domain/User';
 
 interface Props {
   events: Event[];
   setEvents: (event: Event[]) => void;
   isSignedIn: boolean;
   token: string;
-  username: string;
+  user: User;
   onlineOnly: boolean;
-  savedOnly: boolean;
+  tab: TabOption;
   expandedEvent: Event;
   expandEvent: (event: Event) => void;
   closeEvent: () => void;
@@ -27,24 +32,50 @@ const EventGrid: FunctionComponent<Props> = (props: Props) => {
   const classes = useStyles();
 
   // If the event is saved, unsave it. If it's unsaved, save it
-  const handleSaveButton = async (event: Event) => {
+  const handleUserSaveButton = async (event: Event) => {
     let newEvents = [...props.events];
-    if (event.saved) {
-      await eventService.unsaveEvent(event.id, props.username, props.token);
-      // If "Saved Events" is checked, hide the event once unsaved
-      if (props.savedOnly) {
+    if (event.userSaved) {
+      await eventService.userUnsaveEvent(event.id, props.user.username, props.token);
+      // If in the "My Saved Events" tab, hide the event once unsaved
+      if (props.tab == TabOption.MySavedEvents) {
         // filter the event out of the displayed events
         newEvents = newEvents.filter(newEvent => newEvent.id != event.id);
       }
     } else {
-      await eventService.saveEvent(event.id, props.username, props.token);
+      await eventService.userSaveEvent(event.id, props.user.username, props.token);
     }
-    // If "Saved Events" filter not checked, locally update event as saved/unsaved
+    // If not in the "My Saved Events" tab, locally update event as saved/unsaved
     // (provides instant update instead of needing to wait for a rerender)
-    if (!props.savedOnly) {
+    if (props.tab != TabOption.MySavedEvents) {
       for (const newEvent of newEvents) {
         if (newEvent.id === event.id) {
-          newEvent.saved = !event.saved;
+          newEvent.userSaved = !event.userSaved;
+          break;
+        }
+      }
+    }
+    props.setEvents(newEvents);
+  }
+
+  // If the event is saved, unsave it. If it's unsaved, save it
+  const handleGroupSaveButton = async (event: Event) => {
+    let newEvents = [...props.events];
+    if (event.groupSaved) {
+      await eventService.groupUnsaveEvent(event.id, props.user.groupId, props.token);
+      // If in the "My Group's Saved Events" tab, hide the event once unsaved
+      if (props.tab == TabOption.MyGroupSavedEvents) {
+        // filter the event out of the displayed events
+        newEvents = newEvents.filter(newEvent => newEvent.id != event.id);
+      }
+    } else {
+      await eventService.groupSaveEvent(event.id, props.user.groupId, props.token);
+    }
+    // If not in the "My Group's Saved Events" tab, locally update event as saved/unsaved
+    // (provides instant update instead of needing to wait for a rerender)
+    if (props.tab != TabOption.MyGroupSavedEvents) {
+      for (const newEvent of newEvents) {
+        if (newEvent.id === event.id) {
+          newEvent.groupSaved = !event.groupSaved;
           break;
         }
       }
@@ -67,22 +98,59 @@ const EventGrid: FunctionComponent<Props> = (props: Props) => {
             key={index}
           >
             <Card className={classes.event}>
-              <CardContent style={{textAlign: 'center', backgroundColor: '#eeeeff'}}>
-                <Typography variant="h6">
-                  {monthsShort[event.date.getMonth()]}
-                </Typography>
-                <Typography variant="h4">
-                  {('0' + event.date.getDate()).slice(-2)}
-                </Typography>
+              {/* vvv VERTICAL SAVE BUTTONS vvv */}
+              {/* <CardContent style={{textAlign: 'center', backgroundColor: '#eeeeff', display: 'flex'}}>
                 {props.isSignedIn &&
-                  <IconButton
-                    onClick={() => handleSaveButton(event)}
-                    size="small"
-                    color="primary"
-                    style={{marginLeft: -7, marginRight: -7}}
-                  >
-                    {event.saved ? <Bookmark style={{fontSize: 35}} /> : <BookmarkBorder style={{fontSize: 35}} />}
-                  </IconButton>
+                  <div style={{display: 'flex', flexDirection: 'column', justifyContent: 'center'}}>
+                    <IconButton
+                      onClick={() => handleUserSaveButton(event)}
+                      size="small"
+                      style={{marginLeft: -7, marginBottom: 5}}
+                    >
+                      {event.userSaved ? <UserSaved width='35' height='35' viewBox='0 0 400 492.6014319809069' /> : <UserUnsaved width='35' height='35' viewBox='0 0 400 492.6014319809069' />}
+                    </IconButton>
+                    <IconButton
+                      // onClick={() => handleGroupSaveButton(event)}
+                      size="small"
+                    >
+                      {event.groupSaved ? <GroupSaved width='35' height='35' viewBox='0 0 400 409.5238095238095' /> : <GroupUnsaved width='35' height='35' viewBox='0 0 400 409.5238095238095' />}
+                    </IconButton>
+                  </div>
+                }
+                <div style={{display: 'flex', flexDirection: 'column'}}>
+                  <Typography variant="h6">
+                    {monthsShort[event.date.getMonth()]}
+                  </Typography>
+                  <Typography variant="h4">
+                    {('0' + event.date.getDate()).slice(-2)}
+                  </Typography>
+                </div>
+              </CardContent> */}
+              {/* vvv HORIZONTAL SAVE BUTTONS vvv */}
+              <CardContent style={{textAlign: 'center', backgroundColor: '#eeeeff'}}>
+                <div style={{display: 'flex', flexDirection: 'column'}}>
+                  <Typography variant="h6">
+                    {monthsShort[event.date.getMonth()]}
+                  </Typography>
+                  <Typography variant="h4">
+                    {('0' + event.date.getDate()).slice(-2)}
+                  </Typography>
+                </div>
+                {props.isSignedIn &&
+                  <div style={{display: 'flex'}}>
+                    <IconButton
+                      onClick={() => handleUserSaveButton(event)}
+                      size="small"
+                    >
+                      {event.userSaved ? <UserSaved width='35' height='35' viewBox='0 0 400 492.6014319809069' /> : <UserUnsaved width='35' height='35' viewBox='0 0 400 492.6014319809069' />}
+                    </IconButton>
+                    <IconButton
+                      onClick={() => handleGroupSaveButton(event)}
+                      size="small"
+                    >
+                      {event.groupSaved ? <GroupSaved width='35' height='35' viewBox='0 0 400 409.5238095238095' /> : <GroupUnsaved width='35' height='35' viewBox='0 0 400 409.5238095238095' />}
+                    </IconButton>
+                  </div>
                 }
               </CardContent>
               <CardActionArea onClick={() => ((event.id === props.expandedEvent?.id) && props.isEventExpanded) ? props.closeEvent() : props.expandEvent(event)}>

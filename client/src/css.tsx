@@ -70,7 +70,7 @@ const useStyles = makeStyles((theme: Theme) =>
       backgroundColor: theme.palette.common.white,
       boxShadow: 'none'
     },
-    logoDiv: {
+    beginDiv: {
       flex: 1,
       display: 'flex',
       justifyContent: 'flex-start'
@@ -85,12 +85,13 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     filterButton: {
       color: buttonColor,
-      marginRight: '2%'
+      marginLeft: 'auto',
+      marginRight: 'auto'
     },
-    filterAndSearch: {
+    middleDiv: {
       flex: 2,
       display: 'flex',
-      alignItems: 'center'
+      flexDirection: 'column'
     },
     filterMenu: {
       padding: theme.spacing(1, 2)
@@ -111,7 +112,7 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     searchInput: {
       padding: theme.spacing(1, 1, 1, 0),
-      paddingLeft: 5,
+      paddingLeft: 10,
       color: theme.palette.common.black,
       width: "100%"
     },
@@ -126,6 +127,18 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     createButton: {
       marginLeft: 10
+    },
+    noTabIndicator: {
+      backgroundColor: 'transparent'
+    },
+    tabRoot: {
+      backgroundColor: theme.palette.grey[300],
+      borderRadius: theme.shape.borderRadius,
+      margin: theme.spacing(1, 0.5)
+    },
+    selectedTab: {
+      backgroundColor: theme.palette.primary.main,
+      color: theme.palette.common.white
     },
     addressPinIcon: {
       color: theme.palette.text.secondary,

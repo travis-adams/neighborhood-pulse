@@ -4,6 +4,7 @@ import Alert from '@material-ui/lab/Alert';
 import { Close } from '@material-ui/icons';
 import EventService from "../service/EventService";
 import useStyles from '../css';
+import User from '../domain/User';
 
 interface Props {
   isSignedIn: boolean;
@@ -15,7 +16,7 @@ interface Props {
   setToken: (token: string) => void;
   isToastOpen: boolean;
   setIsToastOpen: (bool: boolean) => void;
-  setUsername: (username: string) => void;
+  setUser: (user: User) => void;
 }
 
 interface SignInFields {
@@ -67,10 +68,11 @@ const SignInWindow: FunctionComponent<Props> = (props: Props) => {
       if (props.isSignUp) {
         await eventService.userSignUp(username, password);
       }
-      // Hit the backend to sign the user in, then set token and username
+      // Hit the backend to sign the user in, then set token and user
       const token: string = await eventService.userLogIn(username, password);
       props.setToken(token);
-      props.setUsername(username);
+      const user: User = await eventService.fetchUserInfo(username, token);
+      props.setUser(user);
       props.setIsSignedIn(true);
       handleCloseSignIn();
       // Display confirmation toast

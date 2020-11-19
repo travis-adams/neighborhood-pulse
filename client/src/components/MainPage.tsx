@@ -10,6 +10,9 @@ import EventExpansion from "./EventExpansion";
 import useStyles from "../css";
 import Comment from "../domain/Comment";
 import PointOfInterest from "../domain/PointOfInterest";
+import TabOption from "../domain/TabOption";
+import User from "../domain/User";
+import TabBar from "./TabBar";
 
 export const defaultFilters: Filters = {
   searchPos: new google.maps.LatLng({lat: 33.8463, lng: -84.3621}),
@@ -18,7 +21,6 @@ export const defaultFilters: Filters = {
   lastDate: new Date('2021-01-01'),
   categories: [],
   online: false,
-  saved: false
 }
 
 const eventService = new EventService();
@@ -32,14 +34,16 @@ const MainPage: FunctionComponent = () => {
   const [filters, setFilters] = useState<Filters>(defaultFilters);
   const [unsavedFilters, setUnsavedFilters] = useState<Filters>(defaultFilters);
   const [categories, setCategories] = useState<string[]>([]);
-  // User sign-in info
+  // User info
   const [isSignedIn, setIsSignedIn] = useState<boolean>(false);
   const [token, setToken] = useState<string>("");
-  const [username, setUsername] = useState<string>("");
+  const [user, setUser] = useState<User>(null);
   // Event details
   const [expandedEvent, setExpandedEvent] = useState<Event>(null);
   const [isEventExpanded, setIsEventExpanded] = useState<boolean>(false);
   const [comments, setComments] = useState<Map<number, Comment[]>>(new Map());
+  // Tabs
+  const [tab, setTab] = useState<TabOption>(TabOption.NearbyEvents);
 
   const expandEvent = (event: Event) => {
     setExpandedEvent(event);
@@ -60,7 +64,7 @@ const MainPage: FunctionComponent = () => {
   }
 
   const addCommentToEvent = async (eventId: number, text: string) => {
-    const newComment = await eventService.submitEventComment(eventId, text, username, token).then((fetchedComment: Comment) => {
+    const newComment = await eventService.submitEventComment(eventId, text, user.username, token).then((fetchedComment: Comment) => {
       return fetchedComment;
     });
     let newComments = new Map(comments);
@@ -70,31 +74,97 @@ const MainPage: FunctionComponent = () => {
 
   // Asynchronously load the events
   const loadEvents = async () => {
-    let eventList;
-    // If the "Saved Events" checkbox is checked, only load the user's saved events. Otherwise, load all events.
-    if (filters.saved) {
-      eventList = await eventService.fetchFilteredEvents(filters, true, username, token).then((fetchedEvents: Event[]) => {
-        return fetchedEvents;
-      });
-    } else {
-      eventList = await eventService.fetchFilteredEvents(filters, false).then((fetchedEvents: Event[]) => {
-        return fetchedEvents;
-      });
-      // if signed in, set the "saved" attribute of each event to true if the user has saved it
-      if (isSignedIn) {
-        const savedEvents = await eventService.fetchFilteredEvents(filters, true, username, token).then((fetchedEvents: Event[]) => {
+    let eventList: Event[];
+    let userSavedEvents: Event[];
+    let groupSavedEvents: Event[];
+    switch (tab) {
+
+      case TabOption.NearbyEvents:
+        eventList = await eventService.fetchFilteredEvents(filters).then((fetchedEvents: Event[]) => {
           return fetchedEvents;
         });
+        // if signed in, set the userSaved and groupSaved attributes of each event as necessary
+        if (isSignedIn) {
+          userSavedEvents = await eventService.fetchUserSavedEvents(user.username, token).then((fetchedEvents: Event[]) => {
+            return fetchedEvents;
+          });
+          groupSavedEvents = await eventService.fetchGroupSavedEvents(user.groupId, token).then((fetchedEvents: Event[]) => {
+            return fetchedEvents;
+          });
+          eventList.forEach((event: Event) => {
+            userSavedEvents.concat(groupSavedEvents).forEach((savedEvent: Event) => {
+              if (event.id === savedEvent.id) {
+                if (savedEvent.userSaved) {
+                  event.userSaved = true;
+                } else if (savedEvent.groupSaved) {
+                  event.groupSaved = true;
+                }
+              }
+            });
+          });
+        }
+        break;
 
+      case TabOption.MySavedEvents:
+        eventList = await eventService.fetchUserSavedEvents(user.username, token).then((fetchedEvents: Event[]) => {
+          return fetchedEvents;
+        });
+        groupSavedEvents = await eventService.fetchGroupSavedEvents(user.groupId, token).then((fetchedEvents: Event[]) => {
+          return fetchedEvents;
+        });
         eventList.forEach((event: Event) => {
-          savedEvents.forEach((savedEvent: Event) => {
+          groupSavedEvents.forEach((savedEvent: Event) => {
             if (event.id === savedEvent.id) {
-              event.saved = true;
+              event.groupSaved = true;
             }
           });
         });
-      }
+        break;
+
+      case TabOption.MyGroupSavedEvents:
+        eventList = await eventService.fetchGroupSavedEvents(user.groupId, token).then((fetchedEvents: Event[]) => {
+          return fetchedEvents;
+        });
+        userSavedEvents = await eventService.fetchUserSavedEvents(user.username, token).then((fetchedEvents: Event[]) => {
+          return fetchedEvents;
+        });
+        eventList.forEach((event: Event) => {
+          userSavedEvents.forEach((savedEvent: Event) => {
+            if (event.id === savedEvent.id) {
+              event.userSaved = true;
+            }
+          });
+        });
+        break;
+
+      case TabOption.MyCreatedEvents:
+        eventList = await eventService.fetchUserCreatedEvents(user.username, token).then((fetchedEvents: Event[]) => {
+          return fetchedEvents;
+        });
+        userSavedEvents = await eventService.fetchUserSavedEvents(user.username, token).then((fetchedEvents: Event[]) => {
+          return fetchedEvents;
+        });
+        groupSavedEvents = await eventService.fetchGroupSavedEvents(user.groupId, token).then((fetchedEvents: Event[]) => {
+          return fetchedEvents;
+        });
+        eventList.forEach((event: Event) => {
+          userSavedEvents.concat(groupSavedEvents).forEach((savedEvent: Event) => {
+            if (event.id === savedEvent.id) {
+              if (savedEvent.userSaved) {
+                event.userSaved = true;
+              } else if (savedEvent.groupSaved) {
+                event.groupSaved = true;
+              }
+            }
+          });
+        });
+        break;
+
+      default:
+        // This should never be reached; return to be safe
+        return;
     }
+
     // update the displayed events
     setEvents(eventList);
 
@@ -132,11 +202,11 @@ const MainPage: FunctionComponent = () => {
     loadPois();
   }, [])
 
-  // When the filters change, close the expanded event and reload events
+  // When the filters or tab changes, close the expanded event and load the applicable events
   useEffect(() => {
     closeEvent();
     loadEvents();
-  }, [filters]);
+  }, [filters, tab]);
 
   return (
     <div className={classes.flexColumn}>
@@ -150,10 +220,12 @@ const MainPage: FunctionComponent = () => {
         setIsSignedIn={setIsSignedIn}
         token={token}
         setToken={setToken}
-        username={username}
-        setUsername={setUsername}
+        user={user}
+        setUser={setUser}
         expandEvent={expandEvent}
         closeEvent={closeEvent}
+        tab={tab}
+        setTab={setTab}
       />
       <Divider/>
       <Box className={classes.mainBox}>
@@ -162,9 +234,9 @@ const MainPage: FunctionComponent = () => {
           setEvents={setEvents}
           isSignedIn={isSignedIn}
           token={token}
-          username={username}
+          user={user}
           onlineOnly={filters.online}
-          savedOnly={filters.saved}
+          tab={tab}
           expandedEvent={expandedEvent}
           expandEvent={expandEvent}
           closeEvent={closeEvent}
@@ -190,6 +262,11 @@ const MainPage: FunctionComponent = () => {
           pois={pois}
         />
       </Box>
+      <TabBar
+        isSignedIn={isSignedIn}
+        tab={tab}
+        setTab={setTab}
+      />
     </div>
   );
 }

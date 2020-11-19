@@ -11,6 +11,7 @@ import { AccessTime, RoomOutlined, LinkOutlined, Close, LocalOfferOutlined } fro
 import AddressField from './AddressField';
 import Alert from '@material-ui/lab/Alert';
 import EventService from "../service/EventService";
+import TabOption from '../domain/TabOption';
 
 interface Props {
   expandEvent: (event: Event) => void;
@@ -20,6 +21,7 @@ interface Props {
   categories: string[];
   token: string;
   username: string;
+  setTab: (newTab: TabOption) => void;
 }
 
 const eventService = new EventService();
@@ -186,6 +188,7 @@ const CreateEventWindow: FunctionComponent<Props> = (props: Props) => {
       const newEvent = await eventService.submitEvent(event, props.username, props.token).then((fetchedEvent: Event) => {
         return fetchedEvent;
       });
+      props.setTab(TabOption.MyCreatedEvents);
       props.expandEvent(newEvent);
       props.setIsCreateOpen(false);
       resetFields();
@@ -350,6 +353,7 @@ const CreateEventWindow: FunctionComponent<Props> = (props: Props) => {
         </DialogActions>
       </Dialog>
       <Snackbar
+        style={{zIndex: 4}}
         open={isToastOpen}
         autoHideDuration={3000}
         onClose={handleCloseToast}

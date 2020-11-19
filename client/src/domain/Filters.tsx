@@ -6,5 +6,4 @@ export default interface Filters {
     radius?: number; // in degress of lat/lng (?)
     limit?: number;
     online?: boolean;
-    saved?: boolean;
 }
