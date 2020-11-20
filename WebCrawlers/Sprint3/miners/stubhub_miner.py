@@ -4,8 +4,11 @@ from dateutil import parser as dt_parser
 from itertools import chain
 import re, json
 from geopy.geocoders import GoogleV3
+from pathlib import Path
 
-geolocator = GoogleV3(api_key="AIzaSyBpNi3qyG9Vhc3zMKZH1ZYnuQLT0AMDzQ4",user_agent="cafe_analytics")
+path = Path(__file__).resolve().parent
+key = open(path / "api_key.txt").read()
+geolocator = GoogleV3(api_key=key, user_agent="cafe_analytics")
 locations = {}
 
 #Iterate thru main page
