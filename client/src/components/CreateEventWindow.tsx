@@ -15,8 +15,8 @@ import TabOption from '../domain/TabOption';
 
 interface Props {
   expandEvent: (event: Event) => void;
-  isCreateOpen: boolean;
-  setIsCreateOpen: (open: boolean) => void;
+  open: boolean;
+  setOpen: (open: boolean) => void;
   filters: Filters;
   categories: string[];
   token: string;
@@ -51,7 +51,7 @@ const CreateEventWindow: FunctionComponent<Props> = (props: Props) => {
   // unsaved changes
   const [unsavedDialogOpen, setUnsavedDialogOpen] = useState<boolean>(false);
 
-  const handleCloseToast = (event?: React.SyntheticEvent, reason?: string) => {
+  const closeToast = (event?: React.SyntheticEvent, reason?: string) => {
     if (reason === 'clickaway') {
       return;
     }
@@ -150,7 +150,7 @@ const CreateEventWindow: FunctionComponent<Props> = (props: Props) => {
   const handleDiscard = () => {
     resetFields();
     setUnsavedDialogOpen(false);
-    props.setIsCreateOpen(false);
+    props.setOpen(false);
   }
 
   // "Cancel" option of the unsaved changes dialog
@@ -160,16 +160,16 @@ const CreateEventWindow: FunctionComponent<Props> = (props: Props) => {
 
   // Called when the user attempts to close the create window.
   // Will open an unsaved changes dialog if any fields are dirty
-  const closeCreateWindow = () => {
+  const close = () => {
     if (fieldsDirty()) {
       setUnsavedDialogOpen(true);
     } else {
-      props.setIsCreateOpen(false);
+      props.setOpen(false);
       resetFields();
     }
   }
 
-  const handleCreateEvent = async () => {
+  const createEvent = async () => {
     try {
       // Cancel submission if any fields are invalid
       if (!validateFields()) {
@@ -190,7 +190,7 @@ const CreateEventWindow: FunctionComponent<Props> = (props: Props) => {
       });
       props.setTab(TabOption.MyCreatedEvents);
       props.expandEvent(newEvent);
-      props.setIsCreateOpen(false);
+      props.setOpen(false);
       resetFields();
       // Display confirmation toast
       setIsToastOpen(true);
@@ -201,18 +201,18 @@ const CreateEventWindow: FunctionComponent<Props> = (props: Props) => {
 
   return (
     <div>
-      <Dialog open={props.isCreateOpen} onClose={closeCreateWindow} scroll="paper" fullWidth maxWidth="md">
+      <Dialog open={props.open} onClose={close} scroll="paper" fullWidth maxWidth="md">
         <Card style={{marginTop: -10}}>
           <CardHeader
             title="Create Event"
             action={
-              <IconButton onClick={closeCreateWindow}>
+              <IconButton onClick={close}>
                 <Close/>
               </IconButton>
             }
           />
           <CardContent>
-            <div style={{marginTop: -25}} />
+            <div style={{marginTop: -15}} />
             <TextField
               required
               error={!titleValid}
@@ -311,11 +311,11 @@ const CreateEventWindow: FunctionComponent<Props> = (props: Props) => {
               value={desc}
               onChange={handleDescChange}
             />
-            <div style={{display: 'flex', justifyContent: 'flex-end', marginTop: 15, marginBottom: -10}}>
+            <div style={{display: 'flex', justifyContent: 'flex-end', marginTop: 25, marginBottom: -10}}>
               <Button
                 color="primary"
                 size="large"
-                onClick={closeCreateWindow}
+                onClick={close}
               >
                 Cancel
               </Button>
@@ -324,7 +324,7 @@ const CreateEventWindow: FunctionComponent<Props> = (props: Props) => {
                 color="primary"
                 size="large"
                 className={classes.createButton}
-                onClick={handleCreateEvent}
+                onClick={createEvent}
               >
                 Create
               </Button>
@@ -347,7 +347,7 @@ const CreateEventWindow: FunctionComponent<Props> = (props: Props) => {
           <Button onClick={handleCancel} color="primary">
             Cancel
           </Button>
-          <Button onClick={handleDiscard} color="primary" autoFocus>
+          <Button onClick={handleDiscard} color="primary">
             Discard
           </Button>
         </DialogActions>
@@ -356,10 +356,10 @@ const CreateEventWindow: FunctionComponent<Props> = (props: Props) => {
         style={{zIndex: 4}}
         open={isToastOpen}
         autoHideDuration={3000}
-        onClose={handleCloseToast}
+        onClose={closeToast}
         anchorOrigin={{vertical: 'bottom', horizontal: 'center'}}
       >
-        <Alert onClose={handleCloseToast} severity="success">
+        <Alert onClose={closeToast} severity="success">
           Event created
         </Alert>
       </Snackbar>

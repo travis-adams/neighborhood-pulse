@@ -11,6 +11,8 @@ import SearchBar from './SearchBar';
 import TabOption from "../domain/TabOption";
 import User from "../domain/User";
 import Group from "../domain/Group";
+import UserMenu from "./UserMenu";
+import UserInfoWindow from "./UserInfoWindow";
 
 interface Props {
   filters: Filters;
@@ -34,21 +36,33 @@ interface Props {
 const NavBar: FunctionComponent<Props> = (props: Props) => {
   const logo = "c1-logo-full.png";
   const classes = useStyles();
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  // menu anchors
+  const [filterAnchorEl, setFilterAnchorEl] = useState<null | HTMLElement>(null);
+  const [userAnchorEl, setUserAnchorEl] = useState<null | HTMLElement>(null);
   // Sign-in
   const [isSignInOpen, setIsSignInOpen] = useState<boolean>(false);
   const [isSignUp, setIsSignUp] = useState<boolean>(false);
   const [isSignInToastOpen, setIsSignInToastOpen] = useState<boolean>(false);
+  // User info
+  const [isUserInfoOpen, setIsUserInfoOpen] = useState<boolean>(false);
   // Event creation
   const [isCreateOpen, setIsCreateOpen] = useState<boolean>(false);
 
-  const handleOpenFilters = (event: React.MouseEvent<HTMLButtonElement>) => {
-    anchorEl ? handleCloseFilters() : setAnchorEl(event.currentTarget);
+  const openFilterMenu = (event: React.MouseEvent<HTMLButtonElement>) => {
+    filterAnchorEl ? closeFilterMenu() : setFilterAnchorEl(event.currentTarget);
   }
 
-  const handleCloseFilters = () => {
-    setAnchorEl(null);
+  const closeFilterMenu = () => {
+    setFilterAnchorEl(null);
     props.setUnsavedFilters(props.filters);
+  }
+
+  const openUserMenu = (event: React.MouseEvent<HTMLButtonElement>) => {
+    userAnchorEl ? closeUserMenu() : setUserAnchorEl(event.currentTarget);
+  }
+
+  const closeUserMenu = () => {
+    setUserAnchorEl(null);
   }
 
   const signOut = () => {
@@ -58,14 +72,15 @@ const NavBar: FunctionComponent<Props> = (props: Props) => {
     props.setIsSignedIn(false);
     // Move to the Nearby Events tab
     props.setTab(TabOption.NearbyEvents);
+    closeUserMenu();
     // Display confirmation toast
     setIsSignInToastOpen(true);
   }
 
   // Called when the user clicks the signin/signout button on the navbar
-  const handleSignInOutButton = () => {
+  const handleUserButton = (event: React.MouseEvent<HTMLButtonElement>) => {
     if (props.isSignedIn) {
-     signOut();
+      openUserMenu(event);
     } else {
       // Open sign-in popup
       setIsSignUp(false);
@@ -78,6 +93,10 @@ const NavBar: FunctionComponent<Props> = (props: Props) => {
     setIsCreateOpen(true);
   }
 
+  const openUserInfo = () => {
+    setIsUserInfoOpen(true);
+  }
+
   return (
     <AppBar position="static" className={classes.navBar}>
       <Toolbar>
@@ -88,20 +107,20 @@ const NavBar: FunctionComponent<Props> = (props: Props) => {
                 className={classes.filterButton}
                 color="inherit"
                 // variant="contained"
-                onClick={handleOpenFilters}
-                endIcon={anchorEl ? <ExpandLess/> : <ExpandMore/>}
+                onClick={openFilterMenu}
+                endIcon={filterAnchorEl ? <ExpandLess/> : <ExpandMore/>}
               >
                   Filter Results
               </Button>
           }
           <FilterMenu
-            anchorEl={anchorEl}
-            setAnchorEl={setAnchorEl}
+            anchorEl={filterAnchorEl}
+            setAnchorEl={setFilterAnchorEl}
             filters={props.filters}
             setFilters={props.setFilters}
             unsavedFilters={props.unsavedFilters}
             setUnsavedFilters={props.setUnsavedFilters}
-            handleCloseFilters={handleCloseFilters}
+            close={closeFilterMenu}
             categories={props.categories}
             isSignedIn={props.isSignedIn}
           />
@@ -126,8 +145,8 @@ const NavBar: FunctionComponent<Props> = (props: Props) => {
           }
           <CreateEventWindow
             expandEvent={props.expandEvent}
-            isCreateOpen={isCreateOpen}
-            setIsCreateOpen={setIsCreateOpen}
+            open={isCreateOpen}
+            setOpen={setIsCreateOpen}
             filters={props.filters}
             categories={props.categories}
             token={props.token}
@@ -137,15 +156,15 @@ const NavBar: FunctionComponent<Props> = (props: Props) => {
           <Button
             className={classes.userButton}
             color="inherit"
-            onClick={handleSignInOutButton}
+            onClick={handleUserButton}
             startIcon={<PermIdentity/>}
           >
-            {props.isSignedIn ? "Sign Out" : "Sign In"}
+            {(props.isSignedIn && props.user) ? props.user.username : "Sign In"}
           </Button>
           <SignInWindow
             isSignedIn={props.isSignedIn}
-            isSignInOpen={isSignInOpen}
-            setIsSignInOpen={setIsSignInOpen}
+            open={isSignInOpen}
+            setOpen={setIsSignInOpen}
             isSignUp={isSignUp}
             setIsSignUp={setIsSignUp}
             setIsSignedIn={props.setIsSignedIn}
@@ -154,6 +173,21 @@ const NavBar: FunctionComponent<Props> = (props: Props) => {
             setIsToastOpen={setIsSignInToastOpen}
             setUser={props.setUser}
             groups={props.groups}
+          />
+          <UserInfoWindow
+            open={isUserInfoOpen}
+            setOpen={setIsUserInfoOpen}
+            user={props.user}
+            setUser={props.setUser}
+            groups={props.groups}
+            token={props.token}
+          />
+          <UserMenu
+            anchorEl={userAnchorEl}
+            setAnchorEl={setUserAnchorEl}
+            close={closeUserMenu}
+            signOut={signOut}
+            openUserInfo={openUserInfo}
           />
         </div>
       </Toolbar>

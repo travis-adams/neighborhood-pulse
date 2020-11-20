@@ -10,8 +10,8 @@ import Group from '../domain/Group';
 
 interface Props {
   isSignedIn: boolean;
-  isSignInOpen: boolean;
-  setIsSignInOpen: (bool: boolean) => void;
+  open: boolean;
+  setOpen: (bool: boolean) => void;
   isSignUp: boolean;
   setIsSignUp: (bool: boolean) => void;
   setIsSignedIn: (bool: boolean) => void;
@@ -43,7 +43,7 @@ const SignInWindow: FunctionComponent<Props> = (props: Props) => {
   const [confirmPasswordValid, setConfirmPasswordValid] = useState<boolean>(true);
   const [errorMessage, setErrorMessage] = useState<string>("");
 
-  const handleCloseToast = (event?: React.SyntheticEvent, reason?: string) => {
+  const closeToast = (event?: React.SyntheticEvent, reason?: string) => {
     if (reason === 'clickaway') {
       return;
     }
@@ -98,13 +98,13 @@ const SignInWindow: FunctionComponent<Props> = (props: Props) => {
     setErrorMessage("");
  }
 
- const handleCloseSignIn = () => {
-   props.setIsSignInOpen(false);
+ const close = () => {
+   props.setOpen(false);
    resetFields();
  }
 
   // Handles signing the user in/up
-  const handleUserSignIn = async () => {
+  const signInOrUp = async () => {
     try {
       let fieldsMissing = false;
       if (username == null || username == "") {
@@ -151,7 +151,7 @@ const SignInWindow: FunctionComponent<Props> = (props: Props) => {
       const user: User = await eventService.fetchUserInfo(username, token);
       props.setUser(user);
       props.setIsSignedIn(true);
-      handleCloseSignIn();
+      close();
       // Display confirmation toast
       props.setIsToastOpen(true);
     } catch (error) {
@@ -160,19 +160,19 @@ const SignInWindow: FunctionComponent<Props> = (props: Props) => {
   }
 
   // Toggles between the sign-in and sign-up screens
-  const handleToggleSignUp = () => {
+  const toggleSignUp = () => {
     props.setIsSignUp(!props.isSignUp);
     resetFields();
   }
 
   return (
     <div>
-      <Dialog open={props.isSignInOpen} onClose={handleCloseSignIn}>
+      <Dialog open={props.open} onClose={close}>
         <div style={{display: "flex", alignItems: "flex-start"}}>
           <div className={classes.gap}/>
           <img src={logo} style={{marginTop: "3%"}} className={classes.logoImg}/>
           <div className={classes.endDiv}>
-            <IconButton onClick={handleCloseSignIn}>
+            <IconButton onClick={close}>
               <Close/>
             </IconButton>
           </div>
@@ -247,14 +247,14 @@ const SignInWindow: FunctionComponent<Props> = (props: Props) => {
         </DialogContent>
         <DialogActions disableSpacing style={{display: "flex", flexDirection: "column"}}>
           <Button
-            onClick={handleUserSignIn}
+            onClick={signInOrUp}
             variant="contained"
             color="primary"
             size="large">
             {props.isSignUp ? "Sign Up" : "Sign In"}
           </Button>
           <div style={{marginTop: 8}}/>
-          <Button onClick={handleToggleSignUp} color="primary" size="small">
+          <Button onClick={toggleSignUp} color="primary" size="small">
             {props.isSignUp ? "Return to sign in" : "Create an account"}
           </Button>
         </DialogActions>
@@ -263,10 +263,10 @@ const SignInWindow: FunctionComponent<Props> = (props: Props) => {
       <Snackbar
         open={props.isToastOpen}
         autoHideDuration={3000}
-        onClose={handleCloseToast}
+        onClose={closeToast}
         anchorOrigin={{vertical: 'bottom', horizontal: 'center'}}
       >
-        <Alert onClose={handleCloseToast} severity="success">
+        <Alert onClose={closeToast} severity="success">
           {props.isSignedIn ? "Signed in" : "Signed out"}
         </Alert>
       </Snackbar>

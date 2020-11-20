@@ -187,6 +187,17 @@ export default class EventService {
     }
   }
 
+  // Modifies a user's account
+  userModify = async (id_: number, firstName_: string, lastName_: string, groupId_: number, username_: string, token: string): Promise<User> => {
+    try {
+      const newUser = await axios.put(this.baseUrl + '/user/modify', {id: id_, firstName: firstName_, lastName: lastName_, groupID: groupId_, username: username_, password: ""}, {headers: {'Authorization': token}});
+      return this.formatUser(newUser.data);
+    } catch (error) {
+      console.error(error);
+      throw new Error("Internal server error. Please try again.");
+    }
+  }
+
   // Saves an event to a user
   userSaveEvent = async (eventId: number, username: string, token: string): Promise<void> => {
     try {

@@ -14,7 +14,7 @@ interface Props {
   setFilters: (filters: Filters) => void;
   unsavedFilters: Filters;
   setUnsavedFilters: (filters: Filters) => void;
-  handleCloseFilters: () => void;
+  close: () => void;
   categories: string[];
   isSignedIn: boolean;
 }
@@ -51,7 +51,7 @@ const FilterMenu: FunctionComponent<Props> = (props: Props) => {
     <Menu
       anchorEl={props.anchorEl}
       open={Boolean(props.anchorEl)}
-      onClose={props.handleCloseFilters}
+      onClose={props.close}
       anchorReference="anchorPosition"
       // anchorPosition and transformOrigin handle the position of the filter menu dropdown
       anchorPosition={{
@@ -64,7 +64,7 @@ const FilterMenu: FunctionComponent<Props> = (props: Props) => {
       }}
     >
       <FormGroup className={classes.filterMenu}>
-        <FormControl className={classes.filterElement}>
+        <FormControl className={classes.filterMenuElement}>
           <InputLabel id="limit">Number of Results</InputLabel>
           <Select
           labelId="limit"
@@ -79,7 +79,7 @@ const FilterMenu: FunctionComponent<Props> = (props: Props) => {
             <MenuItem value={100}>100</MenuItem>
           </Select>
         </FormControl>
-        <FormControl className={classes.filterElement}>
+        <FormControl className={classes.filterMenuElement}>
           <MuiPickersUtilsProvider utils={DateFnsUtils}>
             <DatePicker
             clearable
@@ -91,7 +91,7 @@ const FilterMenu: FunctionComponent<Props> = (props: Props) => {
             />
           </MuiPickersUtilsProvider>
         </FormControl>
-        <FormControl className={classes.filterElement}>
+        <FormControl className={classes.filterMenuElement}>
           <MuiPickersUtilsProvider utils={DateFnsUtils}>
             <DatePicker
             clearable
@@ -103,7 +103,7 @@ const FilterMenu: FunctionComponent<Props> = (props: Props) => {
             />
           </MuiPickersUtilsProvider>
         </FormControl>
-        <FormControl className={classes.filterElement}>
+        <FormControl className={classes.filterMenuElement}>
           <FormControlLabel
             control={<Checkbox
                       checked={props.unsavedFilters.online}
@@ -115,7 +115,7 @@ const FilterMenu: FunctionComponent<Props> = (props: Props) => {
             labelPlacement="end"
           />
         </FormControl>
-        <FormControl className={classes.filterElement}>
+        <FormControl className={classes.filterMenuElement}>
           <Autocomplete
             multiple
             options={props.categories}
@@ -130,7 +130,7 @@ const FilterMenu: FunctionComponent<Props> = (props: Props) => {
             )}
           />
         </FormControl>
-        <FormControl className={classes.filterElement}>
+        <FormControl className={classes.filterMenuElement}>
           <Button
             variant="contained"
             color="primary"

@@ -94,12 +94,23 @@ const useStyles = makeStyles((theme: Theme) =>
       flexDirection: 'column'
     },
     filterMenu: {
-      padding: theme.spacing(1, 2)
+      margin: theme.spacing(1, 2),
+      width: 300
     },
-    filterElement: {
+    filterMenuElement: {
+      margin: theme.spacing(1)
+    },
+    userMenu: {
+      display: 'flex',
+      flexDirection: 'column',
       margin: theme.spacing(1),
-      maxWidth: 300,
-      minWidth: 300
+      width: 130
+    },
+    manageAccountButton: {
+      margin: theme.spacing(0, 1, 1, 1),
+    },
+    signOutButton: {
+      margin: theme.spacing(1, 1, 0, 1),
     },
     search: {
       flex: 1,
@@ -146,6 +157,13 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     userButton: {
       color: buttonColor
+    },
+    accountFieldDisabled: {
+      color: theme.palette.text.primary
+    },
+    accountFieldLabelDisabled: {
+      color: theme.palette.text.primary + " !important",
+      fontWeight: 'bold'
     }
   })
 );
