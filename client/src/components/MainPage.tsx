@@ -12,6 +12,7 @@ import Comment from "../domain/Comment";
 import PointOfInterest from "../domain/PointOfInterest";
 import TabOption from "../domain/TabOption";
 import User from "../domain/User";
+import Group from "../domain/Group";
 import TabBar from "./TabBar";
 
 export const defaultFilters: Filters = {
@@ -38,6 +39,7 @@ const MainPage: FunctionComponent = () => {
   const [isSignedIn, setIsSignedIn] = useState<boolean>(false);
   const [token, setToken] = useState<string>("");
   const [user, setUser] = useState<User>(null);
+  const [groups, setGroups] = useState<Group[]>([]);
   // Event details
   const [expandedEvent, setExpandedEvent] = useState<Event>(null);
   const [isEventExpanded, setIsEventExpanded] = useState<boolean>(false);
@@ -196,10 +198,19 @@ const MainPage: FunctionComponent = () => {
     setPois(poiList)
   }
 
-  // When the page loads for the first time, load categories and points of interest
+  // Load user groups
+  const loadGroups = async () => {
+    const groupList = await eventService.fetchGroups().then((fetchedGroups: Group[]) => {
+      return fetchedGroups;
+    });
+    setGroups(groupList);
+  }
+
+  // When the page loads for the first time, load categories, points of interest, and user groups
   useEffect(() => {
     loadCategories();
     loadPois();
+    loadGroups();
   }, [])
 
   // When the filters or tab changes, close the expanded event and load the applicable events
@@ -226,6 +237,7 @@ const MainPage: FunctionComponent = () => {
         closeEvent={closeEvent}
         tab={tab}
         setTab={setTab}
+        groups={groups}
       />
       <Divider/>
       <Box className={classes.mainBox}>

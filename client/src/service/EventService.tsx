@@ -178,9 +178,9 @@ export default class EventService {
   }
 
   // Creates an account with the provided username and password
-  userSignUp = async (username_: string, password_: string): Promise<void> => {
+  userSignUp = async (username_: string, password_: string, firstName_: string, lastName_: string, groupId_: number): Promise<void> => {
     try {
-      await axios.post(this.baseUrl + '/user/sign-up', {username: username_, password: password_});
+      await axios.post(this.baseUrl + '/user/sign-up', {username: username_, password: password_, firstName: firstName_, lastName: lastName_, groupID: groupId_});
     } catch (error) {
       console.error(error);
       throw new Error("Username taken. Please try again.");

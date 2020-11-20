@@ -10,6 +10,7 @@ import CreateEventWindow from './CreateEventWindow';
 import SearchBar from './SearchBar';
 import TabOption from "../domain/TabOption";
 import User from "../domain/User";
+import Group from "../domain/Group";
 
 interface Props {
   filters: Filters;
@@ -27,6 +28,7 @@ interface Props {
   closeEvent: () => void;
   tab: TabOption
   setTab: (newTab: TabOption) => void;
+  groups: Group[];
 }
 
 const NavBar: FunctionComponent<Props> = (props: Props) => {
@@ -151,6 +153,7 @@ const NavBar: FunctionComponent<Props> = (props: Props) => {
             isToastOpen={isSignInToastOpen}
             setIsToastOpen={setIsSignInToastOpen}
             setUser={props.setUser}
+            groups={props.groups}
           />
         </div>
       </Toolbar>
