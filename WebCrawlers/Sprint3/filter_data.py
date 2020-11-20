@@ -2,16 +2,15 @@ def event(events):
 
     output = []
     for event in events:
-        good = True
-        restrict_list = ["party","rave","club","dating","happy hour","damn","shit","fuck","sex","booze","weed","cannabis"]
+        restrict_list = ["party","rave","club","dating","happy hour","damn","shit","fuck","sex","booze","weed","cannabis","420","$","earn","drink"]
         if event["catg"] == "parties" or event["name"] == None:
-            good = False
+            continue
         for word in restrict_list:
-            if (event['name'] != None and word in event["name"].lower()) or \
-            (event['desc'] != None and word in event["desc"].lower()):
-                good = False
-        if good == True:
-            output.append(event)
+            text = event["name"] + str(event["desc"])
+            if word in text:
+                continue
+        #if event is good
+        output.append(event)
                 
     return output
 

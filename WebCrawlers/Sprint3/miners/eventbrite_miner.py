@@ -1,9 +1,51 @@
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from threading import BoundedSemaphore
+
+'''
+SOURCE:
+https://www.bettercodebytes.com/theadpoolexecutor-with-a-bounded-queue-in-python/
+'''
+class BoundedExecutor:
+    """BoundedExecutor behaves as a ThreadPoolExecutor which will block on
+    calls to submit() once the limit given as "bound" work items are queued for
+    execution.
+    :param bound: Integer - the maximum number of items in the work queue
+    :param max_workers: Integer - the size of the thread pool
+    """
+    def __init__(self, bound, max_workers):
+        self.executor = ThreadPoolExecutor(max_workers=max_workers)
+        self.semaphore = BoundedSemaphore(bound + max_workers)
+
+    """See concurrent.futures.Executor#submit"""
+    def submit(self, fn, *args, **kwargs):
+        self.semaphore.acquire()
+        try:
+            future = self.executor.submit(fn, *args, **kwargs)
+        except:
+            self.semaphore.release()
+            raise
+        else:
+            future.add_done_callback(lambda x: self.semaphore.release())
+            return future
+
+    """See concurrent.futures.Executor#shutdown"""
+    def shutdown(self, wait=True):
+        self.executor.shutdown(wait)
+
+#--------------------------
+
 import requests
 from bs4 import BeautifulSoup
-import re, json
+from datetime import datetime
+
+today = datetime.today()
 
 #Iterate thru main page
 def main(main_url):
+
+    executor = BoundedExecutor(bound = 10, max_workers=50)
+    futures = []
+
     events = []
     i = 1
     end = -1
@@ -23,7 +65,8 @@ def main(main_url):
             link = el['href']
             if link not in seen:
                 seen.add(link)
-                events.append(page_parse(link)) #TODO add multithreading
+                future = executor.submit(page_parse, link, events)
+                futures.append(future)
         #output progress
         print("{} of {}".format(i,end))
         #detect if at end of pages, if so break
@@ -32,6 +75,9 @@ def main(main_url):
         else:
             i += 1
             url = main_url + "?page={}".format(i)
+
+    #block while executor still running...
+    for future in as_completed(futures): pass
 
     return events
 
@@ -52,6 +98,7 @@ def JSONGet(key, page):
     except:
         return None
 
+#fix various encoding issues
 def fixEncoding(string):
     if string == None:
         return None
@@ -59,10 +106,12 @@ def fixEncoding(string):
         return string.encode('ascii','ignore').decode('unicode-escape', 'ignore').encode('ascii','ignore').decode('unicode-escape','ignore').replace('\n','').replace('\xa0','')
 
 #Extract given page
-def page_parse(url):
+def page_parse(url, events):
+
     body = requests.get(url, headers={'User-Agent':"Firefox/48.0"})
     soup = BeautifulSoup(body.content, "html.parser")
     body = str(body.content)
+
     event = {}
     event['link'] = url
     event['name'] = fixEncoding(JSONGet('","display_name":"', body))
@@ -71,10 +120,12 @@ def page_parse(url):
     event['loca'] = fixEncoding(JSONGet('"display_venue_name":"', body))
     event['lati'] = JSONGet('"latitude":"', body)
     event['logi'] = JSONGet('"longitude":"', body)
+
     date_and_time = JSONGet('"start_date_with_tz":"', body)
     event['time'] = date_and_time.split(" ")[1] if date_and_time != None else None
     event['date'] = date_and_time.split(" ")[0] if date_and_time != None else None
     event['catg'] = None
+
     #get event format
     for el in soup.find_all("a", class_="js-d-track-link listing-tag badge badge--tag l-mar-top-2"):
         a_type = el["data-automation"]
@@ -84,9 +135,12 @@ def page_parse(url):
             link = link[link.rfind('/')+1:]
             event['catg'] = link
             break
-    print(event)
-    print('-------')
-    return event
+
+    event_date = datetime.strptime(event['date'], "%Y-%m-%d")
+    if event_date >= today:
+        events.append(event)
+
+    return
 
 if __name__ == "__main__":
     main("https://www.eventbrite.com/d/ga--atlanta/all-events/")

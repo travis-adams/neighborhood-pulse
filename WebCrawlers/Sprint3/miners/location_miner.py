@@ -1,6 +1,5 @@
 import requests
 from bs4 import BeautifulSoup
-import re, json
 from geopy.geocoders import GoogleV3
 from pathlib import Path
 

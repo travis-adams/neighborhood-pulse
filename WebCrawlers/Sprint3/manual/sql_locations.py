@@ -19,6 +19,8 @@ for i, row in df.iterrows():
     df.at[i,"latitude"]  = location.latitude
     df.at[i,"longitude"] = location.longitude
 
+print(df)
+
 #Connection stuff-----------------------------------------------
 host = 'database-1.c8futoifja4g.us-east-2.rds.amazonaws.com'
 port = 3306
