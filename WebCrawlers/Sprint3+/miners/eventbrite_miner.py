@@ -38,10 +38,10 @@ import requests
 from bs4 import BeautifulSoup
 from datetime import datetime
 
-today = datetime.today()
-
 #Iterate thru main page
 def main(main_url):
+
+    print("eventbrite mining...")
 
     executor = BoundedExecutor(bound = 10, max_workers=50)
     futures = []
@@ -71,6 +71,7 @@ def main(main_url):
         print("{} of {}".format(i,end))
         #detect if at end of pages, if so break
         if i == end: break
+        if i == 4: break
         #else set URL = url of next page of results
         else:
             i += 1
@@ -137,7 +138,7 @@ def page_parse(url, events):
             break
 
     event_date = datetime.strptime(event['date'], "%Y-%m-%d")
-    if event_date >= today:
+    if event_date >= datetime.today():
         events.append(event)
 
     return

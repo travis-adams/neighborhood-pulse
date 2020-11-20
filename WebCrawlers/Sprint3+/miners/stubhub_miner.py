@@ -13,6 +13,9 @@ locations = {}
 
 #Iterate thru main page
 def main(url):
+
+    print("stubhub mining...")
+
     events = []
     body = requests.get(url, headers={'User-Agent':"Chrome/86.0.4240.111"})
     body = BeautifulSoup(body.content, 'html.parser')
@@ -25,7 +28,7 @@ def main(url):
         title = title.text
         i = title.find("in")
         category = title[0:i].strip()
-        print(category)
+        # print(category)
 
         #iterate through each event
         for link in block.find_all("a", class_="entity-card__link"):
@@ -64,7 +67,7 @@ def main(url):
 
             e['catg'] = category
 
-            print(e)
+            # print(e)
             events.append(e)
 
     return events

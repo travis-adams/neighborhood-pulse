@@ -8,6 +8,8 @@ key = open(path / "api_key.txt").read()
 geolocator = GoogleV3(api_key=key, user_agent="cafe_analytics")
 
 def main(url):
+
+    print("google location mining...")
     
     locas = []
     body = requests.get(url, headers={'User-Agent':"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36"})
