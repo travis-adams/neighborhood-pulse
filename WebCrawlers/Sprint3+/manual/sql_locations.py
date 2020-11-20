@@ -6,8 +6,11 @@ pd.set_option("display.max_rows", None, "display.max_columns", None)
 #load in xlxs file
 df = pd.read_excel("manual/locations.xlsx")
 
+from pathlib import Path
 from geopy.geocoders import GoogleV3
-geolocator = GoogleV3(api_key="AIzaSyBpNi3qyG9Vhc3zMKZH1ZYnuQLT0AMDzQ4",user_agent="cafe_analytics")
+path = Path(__file__).resolve().parent
+key = open(path / "api_key.txt").read()
+geolocator = GoogleV3(api_key=key, user_agent="cafe_analytics")
 
 #add lat/long columns
 df["latitude"] = "x"
