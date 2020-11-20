@@ -1,19 +1,28 @@
-def event(events):
+def filter_events(events):
 
     output = []
     for event in events:
-        restrict_list = ["party","rave","club","dating","happy hour","damn","shit","fuck","sex","booze","weed","cannabis","420","$","earn","drink"]
+        
+        #exclude bad formatting / bad categories
         if event["catg"] == "parties" or event["name"] == None:
-            continue
+            continue #skip this event
+
+        #iterate thru restricted words
+        restrict_list = ["party","rave","club","dating","happy hour","damn","shit","fuck","sex","booze","weed","cannabis","420","$","earn","drink","hot"]
+        accept = True
         for word in restrict_list:
             text = event["name"] + str(event["desc"])
+            #if restricted word found
             if word in text:
-                continue
-        #if event is good
-        output.append(event)
+                accept = False
+                break #break out of word checking
+
+        #if event is good..
+        if accept:
+            output.append(event)
                 
     return output
 
-#TODO
-def location(locations):
+#TODO - not needed yet
+def filter_locations(locations):
     return locations

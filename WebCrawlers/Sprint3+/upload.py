@@ -1,8 +1,3 @@
-#load in JSON file
-#for each event in JSON file, write to SQL database
-
-#MAKE SURE 2 digit months for dates
-
 def events(events):
 
     def format(string):
@@ -38,15 +33,15 @@ def events(events):
         c_id = 0
         #enter into table
         sql = 'INSERT INTO %s VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)' % (table_name,name,date,desc,loca,addr,catg,time,link,lati,logi,e_id,c_id)#Define insert
-        print(sql)
-        print('=======================================')
-        cursor.execute(sql) #Execute insert
+        try:
+            cursor.execute(sql) #Execute insert
+        except:
+            pass
     conn.commit() #Commit all inserts
     conn.close()  #Close the connection
 
     return True
 
-#TODO
 def locations(locations):
 
     #Connection stuff-----------------------------------------------
@@ -71,7 +66,10 @@ def locations(locations):
         f = l["logi"]
 
         sql = 'INSERT INTO %s VALUES("%s","%s","%s","%s",%s,%s)' % (table_name, a,b,c,d,e,f)
-        cursor.execute(sql) #Execute insert
+        try:
+            cursor.execute(sql) #Execute insert
+        except:
+            pass
 
     conn.commit() #Commit all inserts
     conn.close()  #Close the connection
