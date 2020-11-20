@@ -4,6 +4,7 @@
 # Log file
 *.log
 
+api_key.txt
 #api-key
 api_key.txt
 # BlueJ files
