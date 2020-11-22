@@ -18,7 +18,7 @@ import TabBar from "./TabBar";
 export const defaultFilters: Filters = {
   searchPos: new google.maps.LatLng({lat: 33.8463, lng: -84.3621}),
   limit: 75,
-  firstDate: new Date('2020-01-02'),
+  firstDate: new Date(),
   lastDate: new Date('2021-01-01'),
   categories: [],
   online: false,
