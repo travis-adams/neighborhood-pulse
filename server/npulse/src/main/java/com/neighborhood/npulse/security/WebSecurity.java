@@ -41,6 +41,7 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
                 .antMatchers("/comment").permitAll()//Anyone can see comments
                 .antMatchers("/comment/all").permitAll()
                 .antMatchers("/locations/**").permitAll()
+                .antMatchers("/group/groups").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .addFilter(new JWTAuthenticationFilter(authenticationManager()))
@@ -61,6 +62,7 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
         CorsConfiguration configuration =  new CorsConfiguration();
         source.registerCorsConfiguration("/**", configuration.applyPermitDefaultValues());
         configuration.setExposedHeaders(Arrays.asList("Authorization"));
+        configuration.addAllowedMethod("*");
         return source;
     }
 }

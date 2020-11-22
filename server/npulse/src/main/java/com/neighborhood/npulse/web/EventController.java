@@ -7,16 +7,13 @@ import com.neighborhood.npulse.data.repository.EventSpecifications;
 import com.neighborhood.npulse.data.repository.SavedEventRepo;
 import com.neighborhood.npulse.user.AppUserRepo;
 import com.neighborhood.npulse.utils.FilterBuilder;
-import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-import javax.management.Query;
 import java.util.*;
 
 

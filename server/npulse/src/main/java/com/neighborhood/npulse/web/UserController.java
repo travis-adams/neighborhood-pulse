@@ -10,6 +10,8 @@ import com.neighborhood.npulse.user.AppUserRepo;
 import com.neighborhood.npulse.utils.FilterBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
@@ -34,9 +36,36 @@ public class UserController {
     }
 
     @PostMapping("/sign-up")
-    public void signUp(@RequestBody AppUser user){
+    public ResponseEntity<String> signUp(@RequestBody AppUser user){
         user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
+        Integer userID = appUserRepo.findIDByUsername(user.getUsername());
+        if (userID == null) {
+            appUserRepo.save(user);
+            return ResponseEntity.ok("User Created");
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Username already taken");
+        }
+    }
+
+    @GetMapping("/info")
+    public @ResponseBody AppUser getUserInfo(@RequestParam(value = "user")String user){
+        AppUser requestedUser = appUserRepo.findByUsername(user);
+        requestedUser.setPassword("This is not returned for Security Reasons");
+        return requestedUser;
+    }
+
+    @PutMapping("/modify")
+    public @ResponseBody AppUser modifyUserInfo(@RequestBody AppUser user){
+        AppUser currentCopy = appUserRepo.findById(user.getId());
+        if (user.getPassword().isEmpty()){
+            user.setPassword(currentCopy.getPassword());
+        } else {
+            user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
+        }
         appUserRepo.save(user);
+        AppUser toReturn = appUserRepo.findByUsername(user.getUsername());
+        toReturn.setPassword("This is not returned for Security Reasons");
+        return toReturn;
     }
 
     @PostMapping("/save")
@@ -103,5 +132,10 @@ public class UserController {
         return eventList;
     }
 
+    @GetMapping("/created")
+    public @ResponseBody Iterable<Event> getCreatedEvents(@RequestParam(value = "user")String user) {
+        int userID = appUserRepo.findIDByUsername(user);
+        return eventRepo.findEventsByUserID(userID);
+    }
 
 }

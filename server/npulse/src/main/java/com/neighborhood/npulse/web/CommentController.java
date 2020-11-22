@@ -2,6 +2,7 @@ package com.neighborhood.npulse.web;
 
 import com.neighborhood.npulse.data.entity.Comment;
 import com.neighborhood.npulse.data.repository.CommentRepo;
+import com.neighborhood.npulse.user.AppUser;
 import com.neighborhood.npulse.user.AppUserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -43,7 +44,11 @@ public class CommentController {
     public Comment submitComment(@RequestBody Comment comment) {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         comment.setTimestamp(formatter.format(new Date()));
-        comment.setUserID(userRepo.findIDByUsername(comment.getUsername()));
+        AppUser user = userRepo.findByUsername(comment.getUsername());
+        comment.setUserID(user.getId());
+        if(!user.getLastName().isEmpty() && !user.getFirstName().isEmpty()) {
+            comment.setUsername(user.getFirstName() + " " + user.getLastName());
+        }
         commentRepo.save(comment);
         return comment;
     }
