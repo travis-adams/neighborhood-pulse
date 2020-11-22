@@ -1,0 +1,4 @@
+geopy==2.0.0
+beautifulsoup4==4.8.2
+PyMySQL==0.10.1
+python-dateutil==2.8.1
