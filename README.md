@@ -41,18 +41,18 @@ For other downloading options, visit https://github.com/travis-adams/neighborhoo
 * Install prerequisite packages
 * Navigate to the WebCrawlers/Sprint3+/ directory
 * In command prompt, run
-* pip3 install -r requirements.txt
+* `pip3 install -r requirements.txt`
 * Wait for installation to complete 
 ## Run the web scraper
 * Navigate to the WebCrawlers/Sprint3+/ directory
 * In command prompt, run
-* python driver.py
+* `python driver.py`
 * By default, the webscraper runs once every 24 hours
-* To modify this, change the time.sleep() function within driver.py
+* To modify this, change the `time.sleep()` function within driver.py
 ## Bringing Up an Instance of the Frontend
 * Navigate to the client folder in the repository.
-* In the file public/index.html, replace API_KEY_HERE with a valid Google Maps API key.
-* Set the baseUrl variable in components/EventService.tsx to the URL of the backend.
+* In the file `public/index.html`, replace API_KEY_HERE with a valid Google Maps API key.
+* Set the baseUrl variable in `components/EventService.tsx` to the URL of the backend.
 * Run the command npm install to install all of the required frontend packages (NOTE: NodeJS version 10+ is required for all packages to successfully compile).
 * Run the command  npm run start to start the application.
 * Visit localhost:3000 in a web browser to see the application.
