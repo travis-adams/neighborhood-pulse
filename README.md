@@ -1,7 +1,7 @@
-Release Notes
-===============
-# Version 1.0 Released November 22, 2020
-## Features Added Since Alpha 4.0 (Sprint 4)
+# Neighorhood Pulse Application
+## Release Notes
+## Version 1.0 Released November 22, 2020
+### Features Added Since Alpha 4.0 (Sprint 4)
 * Automatic web-scraping and database management
 * AWS process that scrapes new events and deletes redundant or expired events
 * Added more volunteering-related locations
@@ -11,7 +11,7 @@ Release Notes
 * A tab-based navigation system has been added. The tabs allow the user to view certain subsets of events: all nearby events, only their saved events, only their group’s saved events, or only their created events.
 * An “Online” filter has been added to the filter menu, allowing users to view only events that are hosted online.
 * A location search bar has been implemented in the top navigation bar. Upon user input, suggested locations in the user’s proximity are displayed. Clicking a suggestion moves the map to that location and shows nearby events.
-## Bug Fixes
+### Bug Fixes
 * Validation alert boxes have been corrected to be a red color; they were erroneously turned all-black due to a package update.
 * Sign-in validation messages are now correctly reset when the sign-in window is closed.
 * Fixed an issue preventing users from creating events, introduced by the conversion of google.maps.LatLngLiteral objects to google.maps.LatLng objects.
@@ -23,18 +23,18 @@ Release Notes
 * There is no functionality for viewing only local volunteering locations/homeless shelters/schools/other community locations. This was requested by the client during Sprint 5.
 * The frontend is not usable on mobile platforms due to differences in CSS requirements.
 * Most of the software packages used by the frontend are not set to a fixed version, so there is a risk that one or more package(s) may update and inadvertently break the application.
-## Installation Instructions
-### Downloading the repository
+### Installation Instructions
+#### Downloading the repository
 The repository can be downloaded using the following git command:
 git clone https://github.com/travis-adams/neighborhood-pulse.git
 For other downloading options, visit https://github.com/travis-adams/neighborhood-pulse, navigate to the “Code” tab, and click the green “Code” button.
-## Setting up the Backend Service
+### Setting up the Backend Service
 * Using the DatabaseStructure.sql file, create a MySQL Database under this schema
 * Update the Connection Properties in the application.properties file
 * Update with Security Constants file to include the Secret Key you will be using for encryption
 * Build the Jar file of the Server directory using Maven (You will need the latest version of Maven and the JDK)
 * Start this Jar running on a server (We recommend AWS Elastic Beanstalk for easy setup)
-## Setting up the Web Scraper
+### Setting up the Web Scraper
 * Create a file called api_key.txt under the WebCrawlers/Sprint3+/miners/ directory
 * Paste a valid Google Maps API key into this file
 * Ensure Python 3 is installed on the target environment
@@ -43,13 +43,13 @@ For other downloading options, visit https://github.com/travis-adams/neighborhoo
 * In command prompt, run
 * `pip3 install -r requirements.txt`
 * Wait for installation to complete 
-## Run the web scraper
+### Run the web scraper
 * Navigate to the WebCrawlers/Sprint3+/ directory
 * In command prompt, run
 * `python driver.py`
 * By default, the webscraper runs once every 24 hours
 * To modify this, change the `time.sleep()` function within driver.py
-## Bringing Up an Instance of the Frontend
+### Bringing Up an Instance of the Frontend
 * Navigate to the client folder in the repository.
 * In the file `public/index.html`, replace API_KEY_HERE with a valid Google Maps API key.
 * Set the baseUrl variable in `components/EventService.tsx` to the URL of the backend.
@@ -58,7 +58,7 @@ For other downloading options, visit https://github.com/travis-adams/neighborhoo
 * Visit localhost:3000 in a web browser to see the application.
 
 
-### Troubleshooting
+## Troubleshooting
 * Ensure you installed Python 3, not Python 2.7
 * Ensure you ran pip3 not pip  
 * Ensure you paste only the API key into api_key.txt and nothing else
