@@ -186,8 +186,8 @@ const MainPage: FunctionComponent = () => {
     const categoryList = await eventService.fetchCategories().then((fetchedCategories: string[]) => {
       return fetchedCategories;
     });
-    // filter out the null category
-    setCategories(categoryList.filter(category => category != null));
+    // filter out the null and empty string categories
+    setCategories(categoryList.filter(category => category != null && category != ""));
   }
 
   // Load points of interest

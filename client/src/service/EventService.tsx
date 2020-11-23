@@ -14,13 +14,16 @@ export default class EventService {
   // Prepares fetched events for display on the map
   formatEvents = (events: any, isUserSaved: boolean, isGroupSaved: boolean): Event[] => {
     const formattedEvents = events.map((event: any) => {
+      // Add timezone to the event time
+      var time = new Date(event.date + ' ' + event.time);
+      time = new Date(time.getTime() - time.getTimezoneOffset() * 60 * 1000);
       return ({
         name: event.name,
         desc: event?.desc,
         userSaved: isUserSaved,
         groupSaved: isGroupSaved,
         id: event.id,
-        date: new Date(event.date + 'T' + event.time),
+        date: time,
         link: event.link,
         cat: event?.category,
         location: event?.loc,
@@ -33,12 +36,15 @@ export default class EventService {
 
   formatComments = (comments: any): Comment[] => {
     const formattedComments = comments.map((comment: any) => {
+      // Add timezone to the comment's timestamp
+      var time = new Date(comment.timestamp);
+      time = new Date(time.getTime() - time.getTimezoneOffset() * 60 * 1000);
       return ({
         id: comment.id,
         userId: comment.userID,
         eventId: comment.eventID,
         text: comment.text,
-        timestamp: new Date(comment.timestamp.replace(" ", "T")),
+        timestamp: time,
         username: comment.username
       } as Comment);
     });
@@ -278,7 +284,7 @@ export default class EventService {
         name: event.name,
         desc: event.desc,
         date: event.date.toISOString().split("T")[0], // YYYY-MM-DD
-        time: event.date.toISOString().split("T")[1].slice(0, 8), // HH:MM:SS
+        time: event.date.toISOString().split("T")[1].slice(0, 8), // HH:MM:SS (toISOString automatically converts to GMT-0)
         loc: event.location,
         addr: event.address,
         cat: event.category,
