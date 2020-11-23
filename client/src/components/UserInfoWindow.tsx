@@ -20,7 +20,6 @@ interface Props {
 const eventService = new EventService();
 
 const UserInfoWindow: FunctionComponent<Props> = (props: Props) => {
-  const logo = "c1-logo-full.png";
   const classes = useStyles();
   const [isEditing, setIsEditing] = useState<boolean>(false);
   // fields
@@ -73,20 +72,20 @@ const UserInfoWindow: FunctionComponent<Props> = (props: Props) => {
 
   const close = () => {
     props.setOpen(false);
-    stopEditing();
+    cancelEditing();
   }
 
   const startEditing = () => {
     setIsEditing(true);
   }
 
-  const stopEditing = () => {
-    resetFields()
+  const cancelEditing = () => {
+    resetFields();
     setIsEditing(false);
   }
 
   // Handles modifying the user's info
-  const modifyUser = async () => {
+  const submitUserEdit = async () => {
     try {
       let fieldsMissing = false;
       if (firstName == null || firstName == "") {
@@ -118,7 +117,8 @@ const UserInfoWindow: FunctionComponent<Props> = (props: Props) => {
       // Modify user info and set user
       const newUser: User = await eventService.userModify(props.user.id, firstName, lastName, parseInt(group), username, props.token);
       props.setUser(newUser);
-      stopEditing();
+      setErrorMessage("");
+      setIsEditing(false);
     } catch (error) {
       setErrorMessage(error.message);
     }
@@ -240,7 +240,7 @@ const UserInfoWindow: FunctionComponent<Props> = (props: Props) => {
             <Button
               color="primary"
               size="large"
-              onClick={isEditing ? stopEditing : startEditing}
+              onClick={isEditing ? cancelEditing: startEditing}
             >
               {isEditing ? "Cancel" : "Edit Details"}
             </Button>
@@ -249,7 +249,7 @@ const UserInfoWindow: FunctionComponent<Props> = (props: Props) => {
               color="primary"
               size="large"
               className={classes.createButton}
-              onClick={isEditing ? modifyUser : close}
+              onClick={isEditing ? submitUserEdit : close}
             >
               {isEditing ? "Submit Changes" : "Done"}
             </Button>
