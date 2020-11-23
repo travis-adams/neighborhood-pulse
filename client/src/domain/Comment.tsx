@@ -1,6 +1,8 @@
 export default interface Comment {
+    id: number;
+    userId: number;
     eventId: number;
     text: string;
-    username: string;
     timestamp: Date;
+    username: string;
 }

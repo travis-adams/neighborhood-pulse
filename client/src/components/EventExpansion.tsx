@@ -13,8 +13,8 @@ interface Props {
   isEventExpanded: boolean;
   closeEvent: () => void;
   comments: Comment[];
-  addComment: (text: string) => void;
-  signedIn: boolean;
+  addComment: (eventId: number, text: string) => void;
+  isSignedIn: boolean;
 }
 
 const EventExpansion: FunctionComponent<Props> = (props: Props) => {
@@ -36,14 +36,12 @@ const EventExpansion: FunctionComponent<Props> = (props: Props) => {
   }
 
   const addComment = (text: string) => {
-    props.addComment(text);
+    props.addComment(props.event.id, text);
     clearComment();
   }
 
   useEffect(() => {
-    if (!props.isEventExpanded) {
-      setCommentText("");
-    }
+    clearComment();
   },[props.event, props.isEventExpanded]);
 
   return (
@@ -121,12 +119,12 @@ const EventExpansion: FunctionComponent<Props> = (props: Props) => {
                 multiline
                 fullWidth
                 variant="filled"
-                placeholder={props.signedIn ? "Add a comment" : "Sign in to add a comment"}
+                placeholder={props.isSignedIn ? "Add a comment" : "Sign in to add a comment"}
                 value={commentText}
                 onChange={handleCommentChange}
-                disabled={!props.signedIn}
+                disabled={!props.isSignedIn}
               />
-              {props.signedIn &&
+              {props.isSignedIn &&
                 <div style={{display: 'flex', justifyContent: 'flex-end', marginTop: 5}}>
                   <Button
                     color="primary"

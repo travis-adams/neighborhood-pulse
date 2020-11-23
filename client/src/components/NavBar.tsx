@@ -1,15 +1,18 @@
 import React, { FunctionComponent, useState } from 'react';
-import { AppBar, Toolbar, Button, OutlinedInput, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Snackbar } from '@material-ui/core';
-import SearchIcon from '@material-ui/icons/Search';
-import UserIcon from '@material-ui/icons/PermIdentity'
-import Alert from '@material-ui/lab/Alert';
-import { ExpandMore, ExpandLess, Add } from '@material-ui/icons';
+import { AppBar, Toolbar, Button } from '@material-ui/core';
+import { ExpandMore, ExpandLess, Add, PermIdentity } from '@material-ui/icons';
 import useStyles from '../css';
 import Filters from '../domain/Filters';
 import FilterMenu from './FilterMenu';
 import SignInWindow from './SignInWindow';
 import Event from '../domain/Event';
 import CreateEventWindow from './CreateEventWindow';
+import SearchBar from './SearchBar';
+import TabOption from "../domain/TabOption";
+import User from "../domain/User";
+import Group from "../domain/Group";
+import UserMenu from "./UserMenu";
+import UserInfoWindow from "./UserInfoWindow";
 
 interface Props {
   filters: Filters;
@@ -17,64 +20,71 @@ interface Props {
   unsavedFilters: Filters;
   setUnsavedFilters: (filters: Filters) => void;
   categories: string[];
-  signedIn: boolean;
-  setSignedIn: (bool: boolean) => void;
+  isSignedIn: boolean;
+  setIsSignedIn: (bool: boolean) => void;
+  token: string;
   setToken: (token: string) => void;
-  setUsername: (username: string) => void;
+  user: User;
+  setUser: (newUser: User) => void;
   expandEvent: (event: Event) => void;
   closeEvent: () => void;
-  submitEvent: (event: Event) => void;
+  tab: TabOption
+  setTab: (newTab: TabOption) => void;
+  groups: Group[];
 }
 
 const NavBar: FunctionComponent<Props> = (props: Props) => {
   const logo = "c1-logo-full.png";
   const classes = useStyles();
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  // menu anchors
+  const [filterAnchorEl, setFilterAnchorEl] = useState<null | HTMLElement>(null);
+  const [userAnchorEl, setUserAnchorEl] = useState<null | HTMLElement>(null);
   // Sign-in
-  const [signInOpen, setSignInOpen] = useState<boolean>(false);
+  const [isSignInOpen, setIsSignInOpen] = useState<boolean>(false);
   const [isSignUp, setIsSignUp] = useState<boolean>(false);
-  const [isToastOpen, setIsToastOpen] = useState<boolean>(false);
+  const [isSignInToastOpen, setIsSignInToastOpen] = useState<boolean>(false);
+  // User info
+  const [isUserInfoOpen, setIsUserInfoOpen] = useState<boolean>(false);
   // Event creation
   const [isCreateOpen, setIsCreateOpen] = useState<boolean>(false);
-  const [unsavedDialogOpen, setUnsavedDialogOpen] = useState<boolean>(false);
-  const [dirty, setDirty] = useState<boolean>(false);
 
-  const handleCloseToast = (event?: React.SyntheticEvent, reason?: string) => {
-    if (reason === 'clickaway') {
-      return;
-    }
-    setIsToastOpen(false);
+  const openFilterMenu = (event: React.MouseEvent<HTMLButtonElement>) => {
+    filterAnchorEl ? closeFilterMenu() : setFilterAnchorEl(event.currentTarget);
   }
 
-  const handleOpenFilters = (event: React.MouseEvent<HTMLButtonElement>) => {
-    anchorEl ? handleCloseFilters() : setAnchorEl(event.currentTarget);
-  }
-
-  const handleCloseFilters = () => {
-    setAnchorEl(null);
+  const closeFilterMenu = () => {
+    setFilterAnchorEl(null);
     props.setUnsavedFilters(props.filters);
+  }
+
+  const openUserMenu = (event: React.MouseEvent<HTMLButtonElement>) => {
+    userAnchorEl ? closeUserMenu() : setUserAnchorEl(event.currentTarget);
+  }
+
+  const closeUserMenu = () => {
+    setUserAnchorEl(null);
   }
 
   const signOut = () => {
     // Reset sign-in info
     props.setToken("");
-    props.setUsername("");
-    props.setSignedIn(false);
-    // Uncheck "Saved Events"
-    props.setUnsavedFilters({ ...props.filters, saved: false });
-    props.setFilters({ ...props.filters, saved: false });
+    props.setUser(null);
+    props.setIsSignedIn(false);
+    // Move to the Nearby Events tab
+    props.setTab(TabOption.NearbyEvents);
+    closeUserMenu();
     // Display confirmation toast
-    setIsToastOpen(true);
+    setIsSignInToastOpen(true);
   }
 
   // Called when the user clicks the signin/signout button on the navbar
-  const handleSignInOutButton = () => {
-    if (props.signedIn) {
-     signOut();
+  const handleUserButton = (event: React.MouseEvent<HTMLButtonElement>) => {
+    if (props.isSignedIn) {
+      openUserMenu(event);
     } else {
       // Open sign-in popup
       setIsSignUp(false);
-      setSignInOpen(true);
+      setIsSignInOpen(true);
     }
   }
 
@@ -83,66 +93,47 @@ const NavBar: FunctionComponent<Props> = (props: Props) => {
     setIsCreateOpen(true);
   }
 
-  const closeCreate = () => {
-    // dirty-ness is broken right now
-    // if (dirty) {
-    //   setUnsavedDialogOpen(true);
-    // } else {
-    //   setIsCreateOpen(false);
-    // }
-    setIsCreateOpen(false);
-  }
-
-  const handleDiscard = () => {
-    setUnsavedDialogOpen(false);
-    setIsCreateOpen(false);
-  }
-
-  const handleCancel = () => {
-    setUnsavedDialogOpen(false);
+  const openUserInfo = () => {
+    setIsUserInfoOpen(true);
   }
 
   return (
     <AppBar position="static" className={classes.navBar}>
       <Toolbar>
-        <div className={classes.logoDiv}>
+        <div className={classes.beginDiv}>
           <img src={logo} className={classes.logoImg}/>
-        </div>
-        <div className={classes.filterAndSearch}>
-          <Button
-            className={classes.filterButton}
-            color="inherit"
-            onClick={handleOpenFilters}
-            endIcon={anchorEl ? <ExpandLess/> : <ExpandMore/>}
-          >
-              Filter Results
-          </Button>
+          {props.tab == TabOption.NearbyEvents &&
+              <Button
+                className={classes.filterButton}
+                color="inherit"
+                // variant="contained"
+                onClick={openFilterMenu}
+                endIcon={filterAnchorEl ? <ExpandLess/> : <ExpandMore/>}
+              >
+                  Filter Results
+              </Button>
+          }
           <FilterMenu
-            anchorEl={anchorEl}
-            setAnchorEl={setAnchorEl}
+            anchorEl={filterAnchorEl}
+            setAnchorEl={setFilterAnchorEl}
             filters={props.filters}
             setFilters={props.setFilters}
             unsavedFilters={props.unsavedFilters}
             setUnsavedFilters={props.setUnsavedFilters}
-            handleCloseFilters={handleCloseFilters}
+            close={closeFilterMenu}
             categories={props.categories}
-            signedIn={props.signedIn}
+            isSignedIn={props.isSignedIn}
           />
-          <div className={classes.search}>
-            <div className={classes.searchIcon}>
-              <SearchIcon/>
-            </div>
-            <OutlinedInput
-              placeholder="Search for a location or an event..."
-              classes={{
-                root: classes.inputRoot,
-                input: classes.inputInput
-              }}
-            />
-          </div>
+        </div>
+        <div className={classes.middleDiv}>
+          <SearchBar
+            filters={props.filters}
+            setFilters={props.setFilters}
+            setUnsavedFilters={props.setUnsavedFilters}
+          />
         </div>
         <div className={classes.endDiv}>
-          {props.signedIn &&
+          {props.isSignedIn &&
             <Button
               variant="contained"
               className={classes.createNavButton}
@@ -154,63 +145,52 @@ const NavBar: FunctionComponent<Props> = (props: Props) => {
           }
           <CreateEventWindow
             expandEvent={props.expandEvent}
-            isCreateOpen={isCreateOpen}
-            closeCreate={closeCreate}
+            open={isCreateOpen}
+            setOpen={setIsCreateOpen}
             filters={props.filters}
-            dirty={dirty}
-            setDirty={setDirty}
             categories={props.categories}
-            submitEvent={props.submitEvent}
+            token={props.token}
+            username={props.user ? props.user.username : ""}
+            setTab={props.setTab}
           />
           <Button
             className={classes.userButton}
             color="inherit"
-            onClick={handleSignInOutButton}
-            startIcon={<UserIcon/>}
+            onClick={handleUserButton}
+            startIcon={<PermIdentity/>}
           >
-            {props.signedIn ? "Sign Out" : "Sign In"}
+            {(props.isSignedIn && props.user) ? props.user.username : "Sign In"}
           </Button>
           <SignInWindow
-            signInOpen={signInOpen}
-            setSignInOpen={setSignInOpen}
+            isSignedIn={props.isSignedIn}
+            open={isSignInOpen}
+            setOpen={setIsSignInOpen}
             isSignUp={isSignUp}
             setIsSignUp={setIsSignUp}
-            setSignedIn={props.setSignedIn}
+            setIsSignedIn={props.setIsSignedIn}
             setToken={props.setToken}
-            setIsToastOpen={setIsToastOpen}
-            setUsername={props.setUsername}
+            isToastOpen={isSignInToastOpen}
+            setIsToastOpen={setIsSignInToastOpen}
+            setUser={props.setUser}
+            groups={props.groups}
+          />
+          <UserInfoWindow
+            open={isUserInfoOpen}
+            setOpen={setIsUserInfoOpen}
+            user={props.user}
+            setUser={props.setUser}
+            groups={props.groups}
+            token={props.token}
+          />
+          <UserMenu
+            anchorEl={userAnchorEl}
+            setAnchorEl={setUserAnchorEl}
+            close={closeUserMenu}
+            signOut={signOut}
+            openUserInfo={openUserInfo}
           />
         </div>
       </Toolbar>
-      <Snackbar
-        open={isToastOpen}
-        autoHideDuration={3000}
-        onClose={handleCloseToast}
-        anchorOrigin={{vertical: 'bottom', horizontal: 'center'}}
-      >
-        <Alert onClose={handleCloseToast} severity="success">
-          {props.signedIn ? "Signed in" : "Signed out"}
-        </Alert>
-      </Snackbar>
-      <Dialog
-        open={unsavedDialogOpen}
-        onClose={handleCancel}
-      >
-        <DialogTitle>{"Unsaved changes"}</DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-            You have unsaved changes. Do you want to discard them?
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCancel} color="primary">
-            Cancel
-          </Button>
-          <Button onClick={handleDiscard} color="primary" autoFocus>
-            Discard
-          </Button>
-        </DialogActions>
-      </Dialog>
     </AppBar>
   );
 }

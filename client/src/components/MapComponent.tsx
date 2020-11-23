@@ -20,7 +20,7 @@ interface Props {
 
 const MapComponent: FunctionComponent<Props> = (props: Props) => {
   const classes = useStyles();
-  const [map, setMap] = useState(null);
+  const [map, setMap] = useState<google.maps.Map>(null);
   const [openPin, setOpenPin] = useState<Key>(null);
   const [allPins, setAllPins] = useState<JSX.Element[]>([]);
 
@@ -29,22 +29,19 @@ const MapComponent: FunctionComponent<Props> = (props: Props) => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position: Position) => {
-          const pos = {
-            lat: position.coords.latitude,
-            lng: position.coords.longitude,
-          };
-          props.setFilters({ ...props.filters, userPos: pos });
-          props.setUnsavedFilters({ ...props.filters, userPos: pos });
+          const pos = new google.maps.LatLng({lat: position.coords.latitude, lng: position.coords.longitude});
+          props.setFilters({ ...props.filters, searchPos: pos });
+          props.setUnsavedFilters({ ...props.filters, searchPos: pos });
           map.setCenter(pos);
         },
         () => {
           // Error with geolocation
-          map.setCenter(defaultFilters.userPos);
+          map.setCenter(defaultFilters.searchPos);
         }
       );
     } else {
       // Browser doesn't support geolocation OR user denied request
-      map.setCenter(defaultFilters.userPos);
+      map.setCenter(defaultFilters.searchPos);
     }
     setMap(map);
   }, []);
@@ -56,7 +53,7 @@ const MapComponent: FunctionComponent<Props> = (props: Props) => {
   const createEventPins = () => {
     const eventMarkers: JSX.Element[] = (
       props.events?.map((event: Event, index: number) => {
-        if (event.position.lat && event.position.lng) {
+        if (event.position) {
           return (
             <Marker
               key={index}
@@ -143,9 +140,17 @@ const MapComponent: FunctionComponent<Props> = (props: Props) => {
     }
   }
 
+  // If the events, points of interest, or opened pin changes, rerender the pins
   useEffect(() => {
     createEventPins();
   }, [props.events, props.pois, openPin]);
+
+  // If the search position changes, move the map's center
+  useEffect(() => {
+    if (map) {
+      map.panTo(props.filters.searchPos);
+    }
+  }, [props.filters.searchPos]);
 
   return (
     <div>
@@ -153,7 +158,7 @@ const MapComponent: FunctionComponent<Props> = (props: Props) => {
       <GoogleMap
         id={"map"}
         mapContainerClassName={props.filters.online ? classes.mapContainerOnline : classes.mapContainer}
-        zoom={12}
+        zoom={13}
         onLoad={onLoad}
         onUnmount={onUnmount}
         onClick={() => props.closeEvent()}

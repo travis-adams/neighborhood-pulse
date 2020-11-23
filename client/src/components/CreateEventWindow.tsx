@@ -1,222 +1,369 @@
 import 'date-fns';
 import DateFnsUtils from '@date-io/date-fns';
 import { MuiPickersUtilsProvider, DatePicker, TimePicker } from '@material-ui/pickers';
-import React, { FunctionComponent, useState, useEffect } from 'react';
+import React, { FunctionComponent, useState } from 'react';
 import useStyles from '../css';
 import Event from '../domain/Event';
 import Filters from '../domain/Filters';
-import { Card, CardContent, CardHeader, Divider, IconButton, TextField, Button, FormControlLabel,
-  Switch, Autocomplete, Dialog } from '@material-ui/core';
+import { Card, CardContent, CardHeader, Divider, IconButton, TextField, Button, FormControlLabel, Switch,
+  Autocomplete, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Snackbar } from '@material-ui/core';
 import { AccessTime, RoomOutlined, LinkOutlined, Close, LocalOfferOutlined } from '@material-ui/icons';
 import AddressField from './AddressField';
+import Alert from '@material-ui/lab/Alert';
+import EventService from "../service/EventService";
+import TabOption from '../domain/TabOption';
 
 interface Props {
   expandEvent: (event: Event) => void;
-  isCreateOpen: boolean;
-  closeCreate: () => void;
+  open: boolean;
+  setOpen: (open: boolean) => void;
   filters: Filters;
-  dirty: boolean;
-  setDirty: (bool: boolean) => void;
   categories: string[];
-  submitEvent: (event: Event) => void;
+  token: string;
+  username: string;
+  setTab: (newTab: TabOption) => void;
 }
+
+const eventService = new EventService();
+// set in the database
+const MAX_DESC_LENGTH = 1500;
 
 const CreateEventWindow: FunctionComponent<Props> = (props: Props) => {
   const classes = useStyles();
+  const [isToastOpen, setIsToastOpen] = useState<boolean>(false);
+  // fields
   const [title, setTitle] = useState<string>("");
   const [cat, setCat] = useState<string>("");
   const [date, setDate] = useState<Date | null>(null);
-  const [address, setAddress] = useState<google.maps.places.AutocompletePrediction | null>(null);
-  const [addressString, setAddressString] = useState<string | null>(null);
-  const [addressLatLng, setAddressLatLng] = useState<google.maps.LatLng | null>(null);
+  const [address, setAddress] = useState<google.maps.places.AutocompletePrediction | null>(null); // full google.maps object of the selected address
+  const [addressLatLng, setAddressLatLng] = useState<google.maps.LatLng | null>(null);            // lat & lng of the selected address
+  const [addressString, setAddressString] = useState<string | null>(null);                        // street address of the selected address
   const [online, setOnline] = useState<boolean>(false);
   const [link, setLink] = useState<string>("");
   const [desc, setDesc] = useState<string>("");
+  // validation
+  const [titleValid, setTitleValid] = useState<boolean>(true);
+  const [dateValid, setDateValid] = useState<boolean>(true);
+  const [addressValid, setAddressValid] = useState<boolean>(true);
+  const [linkValid, setLinkValid] = useState<boolean>(true);
+  const [descValid, setDescValid] = useState<boolean>(true);
+  const [errorMessage, setErrorMessage] = useState<string>("");
+  // unsaved changes
+  const [unsavedDialogOpen, setUnsavedDialogOpen] = useState<boolean>(false);
 
-  const createEvent = () => {
-    const event: Event = {
-      name: title,
-      desc: desc,
-      date: date,
-      location: online ? "Online" : address.structured_formatting.main_text,
-      address: online ? "Online" : addressString,
-      category: cat,
-      link: link,
-      position: {lat: online ? null : addressLatLng.lat(), lng: online ? null : addressLatLng.lng()} as google.maps.LatLngLiteral
-    };
-    props.submitEvent(event);
-    resetFields();
-    props.closeCreate();
+  const closeToast = (event?: React.SyntheticEvent, reason?: string) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    setIsToastOpen(false);
   }
 
   const handleTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setTitle(event.target.value);
-    props.setDirty(true);
+    setTitleValid(true);
   }
 
   const handleCatChange = (event: React.ChangeEvent<HTMLInputElement>, input: string) => {
     setCat(input);
-    props.setDirty(true);
   }
 
   const handleDateChange = (date_: Date) => {
     setDate(date_);
-    props.setDirty(true);
+    setDateValid(true);
   }
 
   const handleOnlineChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setOnline(event.target.checked)
-    props.setDirty(true);
+    if (event.target.checked) {
+      setAddressValid(true);
+    }
   }
 
   const handleLinkChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setLink(event.target.value);
-    props.setDirty(true);
+    setLinkValid(true);
   }
 
   const handleDescChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setDesc(event.target.value);
-    props.setDirty(true);
+    setDescValid(true);
+  }
+
+  // Validates fields and returns whether all are valid
+  const validateFields = (): boolean => {
+    let valid = true;
+    if (title == null || title == "") {
+      setTitleValid(false);
+      valid = false;
+    }
+    if (date == null) {
+      setDateValid(false);
+      valid = false;
+    }
+    if (address == null && !online) {
+      setAddressValid(false);
+      valid = false;
+    }
+    // should also validate that it's a real link
+    if (link == null || link == "") {
+      setLinkValid(false);
+      valid = false;
+    }
+    if (desc.length > MAX_DESC_LENGTH) {
+      setDescValid(false);
+      valid = false;
+    }
+    return valid;
+  }
+
+  // Returns whether any fields have been modified
+  const fieldsDirty = (): boolean => {
+    return ((title != null && title != "")
+        || (cat != null && cat != "")
+        || date != null
+        || address != null
+        || (link != null && link != "")
+        || (desc != null && desc != ""));
   }
 
   const resetFields = () => {
+    // fields
     setTitle("");
     setCat("");
     setDate(null);
     setAddress(null);
+    setAddressString(null);
     setAddressLatLng(null);
     setOnline(false);
     setLink("");
     setDesc("");
-    props.setDirty(false);
+    // validation
+    setTitleValid(true);
+    setDateValid(true);
+    setAddressValid(true);
+    setLinkValid(true);
+    setDescValid(true);
+    setErrorMessage("");
   }
 
-  useEffect(() => {
-    if (!props.isCreateOpen) {
+  // "Discard" option of the unsaved changes dialog
+  const handleDiscard = () => {
+    resetFields();
+    setUnsavedDialogOpen(false);
+    props.setOpen(false);
+  }
+
+  // "Cancel" option of the unsaved changes dialog
+  const handleCancel = () => {
+    setUnsavedDialogOpen(false);
+  }
+
+  // Called when the user attempts to close the create window.
+  // Will open an unsaved changes dialog if any fields are dirty
+  const close = () => {
+    if (fieldsDirty()) {
+      setUnsavedDialogOpen(true);
+    } else {
+      props.setOpen(false);
       resetFields();
     }
-  }, [props.isCreateOpen]);
+  }
+
+  const createEvent = async () => {
+    try {
+      // Cancel submission if any fields are invalid
+      if (!validateFields()) {
+        throw new Error("Some fields are missing or invalid.")
+      }
+      const event: Event = {
+        name: title,
+        desc: desc,
+        date: date,
+        location: online ? "Online" : address.structured_formatting.main_text,
+        address: online ? "Online" : addressString,
+        category: cat,
+        link: link,
+        position: online ? null : addressLatLng
+      };
+      const newEvent = await eventService.submitEvent(event, props.username, props.token).then((fetchedEvent: Event) => {
+        return fetchedEvent;
+      });
+      props.setTab(TabOption.MyCreatedEvents);
+      props.expandEvent(newEvent);
+      props.setOpen(false);
+      resetFields();
+      // Display confirmation toast
+      setIsToastOpen(true);
+    } catch (error) {
+      setErrorMessage(error.message);
+    }
+  }
 
   return (
-    <Dialog open={props.isCreateOpen} onClose={props.closeCreate} scroll="paper" fullWidth maxWidth="md">
-      <Card style={{marginTop: -10}}>
-        <CardHeader
-          title="Create Event"
-          action={
-            <IconButton onClick={props.closeCreate}>
-              <Close/>
-            </IconButton>
-          }
-        />
-        <CardContent>
-          <div style={{marginTop: -25}} />
-          <TextField
-            required
-            fullWidth
-            variant="filled"
-            label="Title"
-            value={title}
-            onChange={handleTitleChange}
+    <div>
+      <Dialog open={props.open} onClose={close} scroll="paper" fullWidth maxWidth="md">
+        <Card style={{marginTop: -10}}>
+          <CardHeader
+            title="Create Event"
+            action={
+              <IconButton onClick={close}>
+                <Close/>
+              </IconButton>
+            }
           />
-          <div style={{paddingTop: 15}} />
-          <Divider/>
-          <div style={{display: 'flex', flexDirection: 'column', paddingTop: 15, paddingBottom: 15}}>
-            <div style={{display: 'flex', alignItems: 'center', paddingBottom: 15}}>
-              <LocalOfferOutlined style={{marginRight: 10}} />
-              <Autocomplete
-                freeSolo
-                options={props.categories}
-                style={{width: 300}}
-                onInputChange={handleCatChange}
-                renderInput={(params) => (
-                  <TextField {...params} label="Category" variant="filled" />
-                )}
-              />
-            </div>
-            <div style={{display: 'flex', alignItems: 'center'}}>
-              <AccessTime style={{marginRight: 10}} />
-              <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                <DatePicker
-                  required
-                  format="yyyy-MM-dd"
-                  label="Date"
-                  inputVariant="filled"
-                  value={date}
-                  onChange={handleDateChange}
-                  style={{marginRight: 10}}
+          <CardContent>
+            <div style={{marginTop: -15}} />
+            <TextField
+              required
+              error={!titleValid}
+              helperText={titleValid ? null : "Title is required"}
+              fullWidth
+              variant="filled"
+              label="Title"
+              value={title}
+              onChange={handleTitleChange}
+            />
+            <div style={{paddingTop: 15}} />
+            <Divider/>
+            <div style={{display: 'flex', flexDirection: 'column', paddingTop: 15, paddingBottom: 15}}>
+              <div style={{display: 'flex', alignItems: 'center', paddingBottom: 15}}>
+                <LocalOfferOutlined style={{marginRight: 10}} />
+                <Autocomplete
+                  freeSolo
+                  options={props.categories}
+                  style={{width: 300}}
+                  onInputChange={handleCatChange}
+                  renderInput={(params) => (
+                    <TextField {...params} label="Category" variant="filled" />
+                  )}
                 />
-                <TimePicker
-                  required
-                  label="Time"
-                  inputVariant="filled"
-                  value={date}
-                  onChange={handleDateChange}
+              </div>
+              <div style={{display: 'flex', alignItems: 'center'}}>
+                <AccessTime style={{marginRight: 10}} />
+                <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                  <DatePicker
+                    required
+                    error={!dateValid}
+                    helperText={dateValid ? null : "Date is required"}
+                    format="yyyy-MM-dd"
+                    label="Date"
+                    inputVariant="filled"
+                    value={date}
+                    onChange={handleDateChange}
+                    style={{marginRight: 10}}
+                  />
+                  <TimePicker
+                    required
+                    error={!dateValid}
+                    helperText={dateValid ? null : "Time is required"}
+                    label="Time"
+                    inputVariant="filled"
+                    value={date}
+                    onChange={handleDateChange}
+                  />
+                </MuiPickersUtilsProvider>
+              </div>
+              <div style={{display: 'flex', alignItems: 'center', paddingTop: 15, paddingBottom: 15}}>
+                <RoomOutlined style={{marginRight: 10}}/>
+                <AddressField
+                  valid={addressValid}
+                  setValid={setAddressValid}
+                  online={online}
+                  variant="filled"
+                  label="Address"
+                  value={address}
+                  setValue={setAddress}
+                  setAddressLatLng={setAddressLatLng}
+                  setAddressString={setAddressString}
                 />
-              </MuiPickersUtilsProvider>
+                <FormControlLabel
+                  checked={online}
+                  onChange={handleOnlineChange}
+                  control={<Switch color="primary" />}
+                  label="Online"
+                  labelPlacement="top"
+                />
+              </div>
+              <div style={{display: 'flex', alignItems: 'center'}}>
+                <LinkOutlined style={{marginRight: 10}}/>
+                <TextField
+                  required
+                  error={!linkValid}
+                  helperText={linkValid ? null : "Link is required"}
+                  fullWidth
+                  variant="filled"
+                  label="Link"
+                  value={link}
+                  onChange={handleLinkChange}
+                />
+              </div>
             </div>
-            <div style={{display: 'flex', alignItems: 'center', paddingTop: 15, paddingBottom: 15}}>
-              <RoomOutlined style={{marginRight: 10}}/>
-              <AddressField
-                online={online}
-                variant="filled"
-                value={address}
-                setValue={setAddress}
-                setAddressString={setAddressString}
-                setAddressLatLng={setAddressLatLng}
-                setDirty={props.setDirty}
-              />
-              <FormControlLabel
-                checked={online}
-                onChange={handleOnlineChange}
-                control={<Switch color="primary" />}
-                label="Online"
-                labelPlacement="top"
-              />
+            <Divider/>
+            <div style={{paddingBottom: 15}} />
+            <TextField
+              error={!descValid}
+              helperText={descValid ? null : "Description cannot exceed 1500 characters"}
+              rows={5}
+              multiline
+              fullWidth
+              variant="filled"
+              label="Description"
+              value={desc}
+              onChange={handleDescChange}
+            />
+            <div style={{display: 'flex', justifyContent: 'flex-end', marginTop: 25, marginBottom: -10}}>
+              <Button
+                color="primary"
+                size="large"
+                onClick={close}
+              >
+                Cancel
+              </Button>
+              <Button
+                variant="contained"
+                color="primary"
+                size="large"
+                className={classes.createButton}
+                onClick={createEvent}
+              >
+                Create
+              </Button>
             </div>
-            <div style={{display: 'flex', alignItems: 'center'}}>
-              <LinkOutlined style={{marginRight: 10}}/>
-              <TextField
-                required
-                fullWidth
-                variant="filled"
-                label="Link"
-                value={link}
-                onChange={handleLinkChange}
-              />
-            </div>
-          </div>
-          <Divider/>
-          <div style={{paddingBottom: 15}} />
-          <TextField
-            rows={5}
-            multiline
-            fullWidth
-            variant="filled"
-            label="Description"
-            value={desc}
-            onChange={handleDescChange}
-          />
-          <div style={{display: 'flex', justifyContent: 'flex-end', marginTop: 15, marginBottom: -10}}>
-            <Button
-              color="primary"
-              size="large"
-              onClick={props.closeCreate}
-            >
-              Cancel
-            </Button>
-            <Button
-              variant="contained"
-              color="primary"
-              size="large"
-              className={classes.createButton}
-              onClick={createEvent}
-            >
-              Create
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
-    </Dialog>
+          </CardContent>
+        </Card>
+        {errorMessage && <Alert severity="error" variant="filled">{errorMessage}</Alert>}
+      </Dialog>
+      <Dialog
+        open={unsavedDialogOpen}
+        onClose={handleCancel}
+      >
+        <DialogTitle>{"Unsaved changes"}</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            You have unsaved changes. Do you want to discard them?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCancel} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={handleDiscard} color="primary">
+            Discard
+          </Button>
+        </DialogActions>
+      </Dialog>
+      <Snackbar
+        style={{zIndex: 4}}
+        open={isToastOpen}
+        autoHideDuration={3000}
+        onClose={closeToast}
+        anchorOrigin={{vertical: 'bottom', horizontal: 'center'}}
+      >
+        <Alert onClose={closeToast} severity="success">
+          Event created
+        </Alert>
+      </Snackbar>
+    </div>
   );
 }
 

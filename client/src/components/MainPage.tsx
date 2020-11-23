@@ -10,18 +10,18 @@ import EventExpansion from "./EventExpansion";
 import useStyles from "../css";
 import Comment from "../domain/Comment";
 import PointOfInterest from "../domain/PointOfInterest";
+import TabOption from "../domain/TabOption";
+import User from "../domain/User";
+import Group from "../domain/Group";
+import TabBar from "./TabBar";
 
 export const defaultFilters: Filters = {
-  userPos: {
-    lat: 33.8463,
-    lng: -84.3621
-  },
+  searchPos: new google.maps.LatLng({lat: 33.8463, lng: -84.3621}),
   limit: 75,
-  firstDate: new Date('2020-01-02'),
+  firstDate: new Date(),
   lastDate: new Date('2021-01-01'),
   categories: [],
   online: false,
-  saved: false
 }
 
 const eventService = new EventService();
@@ -35,14 +35,17 @@ const MainPage: FunctionComponent = () => {
   const [filters, setFilters] = useState<Filters>(defaultFilters);
   const [unsavedFilters, setUnsavedFilters] = useState<Filters>(defaultFilters);
   const [categories, setCategories] = useState<string[]>([]);
-  // User sign-in info
-  const [signedIn, setSignedIn] = useState<boolean>(false);
+  // User info
+  const [isSignedIn, setIsSignedIn] = useState<boolean>(false);
   const [token, setToken] = useState<string>("");
-  const [username, setUsername] = useState<string>("");
+  const [user, setUser] = useState<User>(null);
+  const [groups, setGroups] = useState<Group[]>([]);
   // Event details
   const [expandedEvent, setExpandedEvent] = useState<Event>(null);
   const [isEventExpanded, setIsEventExpanded] = useState<boolean>(false);
-  const [comments, setComments] = useState<Comment[]>([]);
+  const [comments, setComments] = useState<Map<number, Comment[]>>(new Map());
+  // Tabs
+  const [tab, setTab] = useState<TabOption>(TabOption.NearbyEvents);
 
   const expandEvent = (event: Event) => {
     setExpandedEvent(event);
@@ -53,58 +56,129 @@ const MainPage: FunctionComponent = () => {
     setIsEventExpanded(false);
   }
 
-  const submitEvent = async (event: Event) => {
-    const newEvent = await eventService.submitEvent(event, username, token).then((fetchedEvent: Event) => {
-      return fetchedEvent;
-    });
-    expandEvent(newEvent);
+  // helper function; adds a Comment to a number->Comment[] map
+  const addCommentToMap = (comment: Comment, map: Map<number, Comment[]>) => {
+    if (map.has(comment.eventId)) {
+      map.set(comment.eventId, [...map.get(comment.eventId), comment]);
+    } else {
+      map.set(comment.eventId, [comment]);
+    }
   }
 
-  const addComment = async (text: string) => {
-    const newComment = await eventService.submitEventComment(expandedEvent.id, text, username, token).then((fetchedComment: Comment) => {
+  const addCommentToEvent = async (eventId: number, text: string) => {
+    const newComment = await eventService.submitEventComment(eventId, text, user.username, token).then((fetchedComment: Comment) => {
       return fetchedComment;
     });
-    setComments([ ...comments, newComment]);
-  }
-
-  const loadComments = async () => {
-    if (expandedEvent) {
-      const commentList = await eventService.fetchEventComments(expandedEvent.id).then((fetchedComments: Comment[]) => {
-        return fetchedComments;
-      });
-      setComments(commentList);
-    }
+    let newComments = new Map(comments);
+    addCommentToMap(newComment, newComments);
+    setComments(newComments);
   }
 
   // Asynchronously load the events
   const loadEvents = async () => {
-    let eventList;
-    // If the "Saved Events" checkbox is checked, only load the user's saved events. Otherwise, load all events.
-    if (filters.saved) {
-      eventList = await eventService.fetchFilteredEvents(filters, true, username, token).then((fetchedEvents: Event[]) => {
-        return fetchedEvents;
-      });
-    } else {
-      eventList = await eventService.fetchFilteredEvents(filters, false).then((fetchedEvents: Event[]) => {
-        return fetchedEvents;
-      });
-      // if signed in, set the "saved" attribute of each event to true if the user has saved it
-      if (signedIn) {
-        const savedEvents = await eventService.fetchFilteredEvents(filters, true, username, token).then((fetchedEvents: Event[]) => {
+    let eventList: Event[];
+    let userSavedEvents: Event[];
+    let groupSavedEvents: Event[];
+    switch (tab) {
+
+      case TabOption.NearbyEvents:
+        eventList = await eventService.fetchFilteredEvents(filters).then((fetchedEvents: Event[]) => {
           return fetchedEvents;
         });
+        // if signed in, set the userSaved and groupSaved attributes of each event as necessary
+        if (isSignedIn) {
+          userSavedEvents = await eventService.fetchUserSavedEvents(user.username, token).then((fetchedEvents: Event[]) => {
+            return fetchedEvents;
+          });
+          groupSavedEvents = await eventService.fetchGroupSavedEvents(user.groupId, token).then((fetchedEvents: Event[]) => {
+            return fetchedEvents;
+          });
+          eventList.forEach((event: Event) => {
+            userSavedEvents.concat(groupSavedEvents).forEach((savedEvent: Event) => {
+              if (event.id === savedEvent.id) {
+                if (savedEvent.userSaved) {
+                  event.userSaved = true;
+                } else if (savedEvent.groupSaved) {
+                  event.groupSaved = true;
+                }
+              }
+            });
+          });
+        }
+        break;
 
+      case TabOption.MySavedEvents:
+        eventList = await eventService.fetchUserSavedEvents(user.username, token).then((fetchedEvents: Event[]) => {
+          return fetchedEvents;
+        });
+        groupSavedEvents = await eventService.fetchGroupSavedEvents(user.groupId, token).then((fetchedEvents: Event[]) => {
+          return fetchedEvents;
+        });
         eventList.forEach((event: Event) => {
-          savedEvents.forEach((savedEvent: Event) => {
+          groupSavedEvents.forEach((savedEvent: Event) => {
             if (event.id === savedEvent.id) {
-              event.saved = true;
+              event.groupSaved = true;
             }
           });
         });
-      }
+        break;
+
+      case TabOption.MyGroupSavedEvents:
+        eventList = await eventService.fetchGroupSavedEvents(user.groupId, token).then((fetchedEvents: Event[]) => {
+          return fetchedEvents;
+        });
+        userSavedEvents = await eventService.fetchUserSavedEvents(user.username, token).then((fetchedEvents: Event[]) => {
+          return fetchedEvents;
+        });
+        eventList.forEach((event: Event) => {
+          userSavedEvents.forEach((savedEvent: Event) => {
+            if (event.id === savedEvent.id) {
+              event.userSaved = true;
+            }
+          });
+        });
+        break;
+
+      case TabOption.MyCreatedEvents:
+        eventList = await eventService.fetchUserCreatedEvents(user.username, token).then((fetchedEvents: Event[]) => {
+          return fetchedEvents;
+        });
+        userSavedEvents = await eventService.fetchUserSavedEvents(user.username, token).then((fetchedEvents: Event[]) => {
+          return fetchedEvents;
+        });
+        groupSavedEvents = await eventService.fetchGroupSavedEvents(user.groupId, token).then((fetchedEvents: Event[]) => {
+          return fetchedEvents;
+        });
+        eventList.forEach((event: Event) => {
+          userSavedEvents.concat(groupSavedEvents).forEach((savedEvent: Event) => {
+            if (event.id === savedEvent.id) {
+              if (savedEvent.userSaved) {
+                event.userSaved = true;
+              } else if (savedEvent.groupSaved) {
+                event.groupSaved = true;
+              }
+            }
+          });
+        });
+        break;
+
+      default:
+        // This should never be reached; return to be safe
+        return;
     }
-    // finally, update the displayed events
+
+    // update the displayed events
     setEvents(eventList);
+
+    // get comments for all events
+    let commentList = await eventService.fetchEventComments(eventList.map((event: Event) => event.id));
+    // generate the mapping between events and their comments
+    let commentMap = new Map<number, Comment[]>();
+    commentList.forEach((comment: Comment) => {
+      addCommentToMap(comment, commentMap);
+    });
+    // update the global comments map
+    setComments(commentMap);
   }
 
   // Load event categories
@@ -112,34 +186,38 @@ const MainPage: FunctionComponent = () => {
     const categoryList = await eventService.fetchCategories().then((fetchedCategories: string[]) => {
       return fetchedCategories;
     });
-    // slicing out the null category
-    setCategories(categoryList.slice(1, 18));
+    // filter out the null category
+    setCategories(categoryList.filter(category => category != null));
   }
 
   // Load points of interest
   const loadPois = async () => {
-    const poiList = await eventService.fetchPois(filters.userPos).then((fetchedPois: PointOfInterest[]) => {
+    const poiList = await eventService.fetchPois(filters.searchPos).then((fetchedPois: PointOfInterest[]) => {
       return fetchedPois;
     });
     setPois(poiList)
   }
 
-  // When the page loads for the first time, load categories and points of interest
+  // Load user groups
+  const loadGroups = async () => {
+    const groupList = await eventService.fetchGroups().then((fetchedGroups: Group[]) => {
+      return fetchedGroups;
+    });
+    setGroups(groupList);
+  }
+
+  // When the page loads for the first time, load categories, points of interest, and user groups
   useEffect(() => {
     loadCategories();
     loadPois();
+    loadGroups();
   }, [])
 
-  // When the filters change, close the expanded event and reload events
+  // When the filters or tab changes, close the expanded event and load the applicable events
   useEffect(() => {
     closeEvent();
     loadEvents();
-  }, [filters]);
-
-  // When an event is clicked, load its comments (this is very inefficient)
-  useEffect(() => {
-    loadComments();
-  }, [expandedEvent]);
+  }, [filters, tab]);
 
   return (
     <div className={classes.flexColumn}>
@@ -149,24 +227,28 @@ const MainPage: FunctionComponent = () => {
         unsavedFilters={unsavedFilters}
         setUnsavedFilters={setUnsavedFilters}
         categories={categories}
-        signedIn={signedIn}
-        setSignedIn={setSignedIn}
+        isSignedIn={isSignedIn}
+        setIsSignedIn={setIsSignedIn}
+        token={token}
         setToken={setToken}
-        setUsername={setUsername}
+        user={user}
+        setUser={setUser}
         expandEvent={expandEvent}
         closeEvent={closeEvent}
-        submitEvent={submitEvent}
+        tab={tab}
+        setTab={setTab}
+        groups={groups}
       />
       <Divider/>
       <Box className={classes.mainBox}>
         <EventGrid
           events={events}
           setEvents={setEvents}
-          signedIn={signedIn}
+          isSignedIn={isSignedIn}
           token={token}
-          username={username}
+          user={user}
           onlineOnly={filters.online}
-          savedOnly={filters.saved}
+          tab={tab}
           expandedEvent={expandedEvent}
           expandEvent={expandEvent}
           closeEvent={closeEvent}
@@ -177,9 +259,9 @@ const MainPage: FunctionComponent = () => {
           event={expandedEvent}
           isEventExpanded={isEventExpanded}
           closeEvent={closeEvent}
-          comments={comments}
-          addComment={addComment}
-          signedIn={signedIn}
+          comments={(expandedEvent && comments.has(expandedEvent.id)) ? comments.get(expandedEvent.id) : []}
+          addComment={addCommentToEvent}
+          isSignedIn={isSignedIn}
         />
         <MapComponent
           events={events}
@@ -192,6 +274,11 @@ const MainPage: FunctionComponent = () => {
           pois={pois}
         />
       </Box>
+      <TabBar
+        isSignedIn={isSignedIn}
+        tab={tab}
+        setTab={setTab}
+      />
     </div>
   );
 }

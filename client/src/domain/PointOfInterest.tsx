@@ -3,5 +3,5 @@ export default interface PointOfInterest {
   address?: string;
   desc?: string;
   link: string;
-  position: google.maps.LatLngLiteral;
+  position: google.maps.LatLng;
 }

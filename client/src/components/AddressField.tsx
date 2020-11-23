@@ -12,13 +12,16 @@ const autocompleteService = new google.maps.places.AutocompleteService();
 const placesService = new google.maps.places.PlacesService(document.createElement('div'));
 
 interface Props {
+  valid?: boolean;
+  setValid?: (valid: boolean) => void;
   online: boolean;
   variant: 'filled' | 'outlined' | 'standard';
+  label?: string;
+  placeholder?: string;
   value: google.maps.places.AutocompletePrediction | null;
   setValue: (value: google.maps.places.AutocompletePrediction | null) => void;
-  setAddressString: (address: string) => void;
   setAddressLatLng: (valuePos: google.maps.LatLng | null) => void;
-  setDirty?: (dirty: boolean) => void;
+  setAddressString?: (address: string) => void;
 }
 
 const AddressField: FunctionComponent<Props> = (props: Props) => {
@@ -35,7 +38,7 @@ const AddressField: FunctionComponent<Props> = (props: Props) => {
     [],
   );
 
-  // Get the lat and long of the address value
+  // Get the lat & long and full address of an address result
   const fetchValuePos = useMemo(
     () =>
       throttle((place_id: string, callback: (result: google.maps.places.PlaceResult) => void) => {
@@ -54,12 +57,12 @@ const AddressField: FunctionComponent<Props> = (props: Props) => {
       return undefined;
     }
     if (props.value) {
-      console.log(props.value);
       fetchValuePos(props.value.place_id, (result?: google.maps.places.PlaceResult) => {
         if (active && result) {
-          console.log(result);
-          props.setAddressString(result.formatted_address);
           props.setAddressLatLng(result.geometry.location);
+          if (props.setAddressString) {
+            props.setAddressString(result.formatted_address);
+          }
         }
       });
     }
@@ -83,8 +86,10 @@ const AddressField: FunctionComponent<Props> = (props: Props) => {
   useEffect(() => {
     if (props.online) {
       props.setValue(null);
-      props.setAddressString(null);
       props.setAddressLatLng(null);
+      if (props.setAddressString) {
+        props.setAddressString(null);
+      }
       setInputValue('');
       setOptions([]);
     }
@@ -105,7 +110,9 @@ const AddressField: FunctionComponent<Props> = (props: Props) => {
       onChange={(event: React.ChangeEvent<{}>, newValue: google.maps.places.AutocompletePrediction | null) => {
         setOptions(newValue ? [newValue, ...options] : options);
         props.setValue(newValue);
-        props?.setDirty(true);
+        if (typeof(props.setValid) === typeof(Function)) {
+          props.setValid(true);
+        }
       }}
       onInputChange={(event, newInputValue) => {
         setInputValue(newInputValue);
@@ -114,8 +121,11 @@ const AddressField: FunctionComponent<Props> = (props: Props) => {
         <TextField
           {...params}
           required={!props.online}
-          label={props.online ? "Online" : "Address"}
+          error={(props.valid === undefined) ? false : !props.valid}
+          helperText={(props.valid === undefined || props.valid) ? null : "Address is required for offline events"}
+          label={props.online ? "Online" : props.label}
           variant={props.variant}
+          placeholder={props.placeholder}
           fullWidth />
       )}
       renderOption={(option) => {

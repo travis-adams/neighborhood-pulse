@@ -70,7 +70,7 @@ const useStyles = makeStyles((theme: Theme) =>
       backgroundColor: theme.palette.common.white,
       boxShadow: 'none'
     },
-    logoDiv: {
+    beginDiv: {
       flex: 1,
       display: 'flex',
       justifyContent: 'flex-start'
@@ -85,48 +85,47 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     filterButton: {
       color: buttonColor,
-      marginRight: '2%'
+      marginLeft: 'auto',
+      marginRight: 'auto'
     },
-    filterAndSearch: {
+    middleDiv: {
       flex: 2,
       display: 'flex',
-      alignItems: 'center'
+      flexDirection: 'column'
     },
     filterMenu: {
-      padding: theme.spacing(1, 2, 1, 2)
+      margin: theme.spacing(1, 2),
+      width: 300
     },
-    filterElement: {
+    filterMenuElement: {
+      margin: theme.spacing(1)
+    },
+    userMenu: {
+      display: 'flex',
+      flexDirection: 'column',
       margin: theme.spacing(1),
-      maxWidth: 300,
-      minWidth: 300
+      width: 130
+    },
+    manageAccountButton: {
+      margin: theme.spacing(0, 1, 1, 1),
+    },
+    signOutButton: {
+      margin: theme.spacing(1, 1, 0, 1),
     },
     search: {
       flex: 1,
-      position: 'relative',
-      borderRadius: theme.shape.borderRadius,
-      backgroundColor: theme.palette.common.white,
-      marginRight: 0,
-      marginLeft: 0,
-      width: '100%'
+      height: '100%',
+      display: 'flex',
+      alignItems: 'center'
     },
     searchIcon: {
-      padding: theme.spacing(0, 2),
-      height: '100%',
-      position: 'absolute',
-      pointerEvents: 'none',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
       color: buttonColor
     },
-    inputRoot: {
-      width: '100%'
-    },
-    inputInput: {
+    searchInput: {
       padding: theme.spacing(1, 1, 1, 0),
-      paddingLeft: 50,
-      transition: theme.transitions.create('width'),
-      color: theme.palette.common.black
+      paddingLeft: 10,
+      color: theme.palette.common.black,
+      width: "100%"
     },
     endDiv: {
       flex: 1,
@@ -140,12 +139,31 @@ const useStyles = makeStyles((theme: Theme) =>
     createButton: {
       marginLeft: 10
     },
+    noTabIndicator: {
+      backgroundColor: 'transparent'
+    },
+    tabRoot: {
+      backgroundColor: theme.palette.grey[300],
+      borderRadius: theme.shape.borderRadius,
+      margin: theme.spacing(1, 0.5)
+    },
+    selectedTab: {
+      backgroundColor: theme.palette.primary.main,
+      color: theme.palette.common.white
+    },
     addressPinIcon: {
       color: theme.palette.text.secondary,
       marginRight: theme.spacing(2),
     },
     userButton: {
       color: buttonColor
+    },
+    accountFieldDisabled: {
+      color: theme.palette.text.primary
+    },
+    accountFieldLabelDisabled: {
+      color: theme.palette.text.primary + " !important",
+      fontWeight: 'bold'
     }
   })
 );
