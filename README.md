@@ -18,7 +18,6 @@
 * Fixed an issue preventing users from creating events, introduced by the conversion of google.maps.LatLngLiteral objects to google.maps.LatLng objects.
 * Fixed an issue where event comments were not immediately updating when the expanded event changed. Comments are now fetched collectively with all events, instead of individually whenever an event is expanded.
 * All Material-UI packages are now frozen at known functional versions. An unexpected update to a Material-UI package previously broke the application.
-* Known Bugs and Missing Functionality
 ### Missing Functionality
 * Hovering the mouse over an event in the event list does not result in that event’s map pin changing color. This was requested by the client early in the semester.
 * There is no functionality for viewing only local volunteering locations/homeless shelters/schools/other community locations. This was requested by the client during Sprint 5.
