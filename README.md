@@ -19,7 +19,7 @@
 * Fixed an issue where event comments were not immediately updating when the expanded event changed. Comments are now fetched collectively with all events, instead of individually whenever an event is expanded.
 * All Material-UI packages are now frozen at known functional versions. An unexpected update to a Material-UI package previously broke the application.
 * Known Bugs and Missing Functionality
-* Comments are currently submitted without a time zone, causing their timestamps to be incorrect (e.g. 5 hours ahead in GMT-5).
+### Missing Functionality
 * Hovering the mouse over an event in the event list does not result in that event’s map pin changing color. This was requested by the client early in the semester.
 * There is no functionality for viewing only local volunteering locations/homeless shelters/schools/other community locations. This was requested by the client during Sprint 5.
 * The frontend is not usable on mobile platforms due to differences in CSS requirements.
