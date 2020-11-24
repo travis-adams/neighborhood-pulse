@@ -11,6 +11,7 @@
 * A tab-based navigation system has been added. The tabs allow the user to view certain subsets of events: all nearby events, only their saved events, only their group’s saved events, or only their created events.
 * An “Online” filter has been added to the filter menu, allowing users to view only events that are hosted online.
 * A location search bar has been implemented in the top navigation bar. Upon user input, suggested locations in the user’s proximity are displayed. Clicking a suggestion moves the map to that location and shows nearby events.
+* Please Note: Sprint goals have changes since the beginning of the semester. Please reference the updated client charter: https://docs.google.com/document/d/1tpBNIKFgAYGjHi9PayDP1-Kk5dG7vl_p2LZwWCjRjyg
 ### Bug Fixes
 * Validation alert boxes have been corrected to be a red color; they were erroneously turned all-black due to a package update.
 * Sign-in validation messages are now correctly reset when the sign-in window is closed.
