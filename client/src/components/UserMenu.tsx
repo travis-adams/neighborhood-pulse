@@ -19,14 +19,14 @@ const UserMenu: FunctionComponent<Props> = (props: Props) => {
       open={Boolean(props.anchorEl)}
       onClose={props.close}
       anchorReference="anchorPosition"
-      // anchorPosition and transformOrigin handle the position of the filter menu dropdown
+      // anchorPosition and transformOrigin handle the position of the user menu dropdown
       anchorPosition={{
         top: (props.anchorEl?.getBoundingClientRect().bottom === undefined) ? 0 : props.anchorEl?.getBoundingClientRect().bottom,
-        left: props.anchorEl?.getBoundingClientRect().right
+        left: (props.anchorEl?.getBoundingClientRect().left + props.anchorEl?.getBoundingClientRect().right)/2
       }}
       transformOrigin={{
         vertical: 'top',
-        horizontal: 'right'
+        horizontal: 'center'
       }}
     >
       <div className={classes.userMenu}>

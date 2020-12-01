@@ -147,6 +147,9 @@ const SignInWindow: FunctionComponent<Props> = (props: Props) => {
       }
       // Hit the backend to sign the user in, then set token and user
       const token: string = await eventService.userLogIn(username, password);
+      if (!token) {
+        throw new Error("Error initializing user session. Please try again.");
+      }
       props.setToken(token);
       const user: User = await eventService.fetchUserInfo(username, token);
       props.setUser(user);

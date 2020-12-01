@@ -14,16 +14,14 @@ export default class EventService {
   // Prepares fetched events for display on the map
   formatEvents = (events: any, isUserSaved: boolean, isGroupSaved: boolean): Event[] => {
     const formattedEvents = events.map((event: any) => {
-      // Add timezone to the event time
-      var time = new Date(event.date + ' ' + event.time);
-      time = new Date(time.getTime() - time.getTimezoneOffset() * 60 * 1000);
+      // No timezone handling for events right now
       return ({
         name: event.name,
         desc: event?.desc,
         userSaved: isUserSaved,
         groupSaved: isGroupSaved,
         id: event.id,
-        date: time,
+        date: new Date(event.date + ' ' + event.time),
         link: event.link,
         cat: event?.category,
         location: event?.loc,
@@ -36,7 +34,7 @@ export default class EventService {
 
   formatComments = (comments: any): Comment[] => {
     const formattedComments = comments.map((comment: any) => {
-      // Add timezone to the comment's timestamp
+      // Comments are stored in the database with no timezone (GMT-0), so the current user's timezone is added here
       var time = new Date(comment.timestamp);
       time = new Date(time.getTime() - time.getTimezoneOffset() * 60 * 1000);
       return ({
@@ -95,7 +93,7 @@ export default class EventService {
         filterString += "&limit=" + filters.limit;
       }
       if (filters.firstDate && filters.lastDate) {
-        filterString += "&firstDate=" + filters.firstDate.toISOString().split("T")[0] + "&lastDate=" + filters.lastDate.toISOString().split("T")[0];
+        filterString += "&firstDate=" + filters.firstDate.toString("yyyy-MM-dd") + "&lastDate=" + filters.lastDate.toString("yyyy-MM-dd");
       }
       if (filters.categories) {
         if (filters.categories.length > 0) {
@@ -143,6 +141,7 @@ export default class EventService {
     }
   }
 
+  // Fetches a user's account information
   fetchUserInfo = async (username: string, token: string): Promise<User> => {
     try {
       const user = await axios.get(this.baseUrl + '/user/info?user=' + username, {headers: {'Authorization': token}});
@@ -152,6 +151,7 @@ export default class EventService {
     }
   }
 
+  // Fetches a list of all user groups
   fetchGroups = async (): Promise<Group[]> => {
     try {
       const groups = await axios.get(this.baseUrl + '/group/groups');
@@ -280,11 +280,14 @@ export default class EventService {
   // Submit a user-created event
   submitEvent = async (event: Event, username: string, token: string): Promise<Event> => {
     try {
+      // Events found by the scraper are stored in the database with the time given on the scraped website, without any timezone
+      // tracking. Therefore, for consistency, this user-created event will be given to the database with the time specified by
+      // the user, without accounting for possible timezone differences.
       const data = {
         name: event.name,
         desc: event.desc,
-        date: event.date.toISOString().split("T")[0], // YYYY-MM-DD
-        time: event.date.toISOString().split("T")[1].slice(0, 8), // HH:MM:SS (toISOString automatically converts to GMT-0)
+        date: event.date.toString("yyyy-MM-dd"),
+        time: event.date.toString("HH:mm:ss"),
         loc: event.location,
         addr: event.address,
         cat: event.category,
@@ -296,8 +299,10 @@ export default class EventService {
       return this.formatEvents([response.data], true, false)[0];
     } catch (error) {
       if (error.response) {
+        console.error(error);
         throw new Error("Internal server error: '" + error.response.statusText + "' Please try again.");
       } else {
+        console.error(error);
         throw new Error("Unexpected error during event creation. Please try again");
       }
     }

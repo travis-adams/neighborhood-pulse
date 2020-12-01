@@ -14,12 +14,13 @@ import TabOption from "../domain/TabOption";
 import User from "../domain/User";
 import Group from "../domain/Group";
 import TabBar from "./TabBar";
+import 'datejs';
 
 export const defaultFilters: Filters = {
   searchPos: new google.maps.LatLng({lat: 33.8463, lng: -84.3621}),
   limit: 75,
-  firstDate: new Date(),
-  lastDate: new Date('2021-01-01'),
+  firstDate: Date.today(),
+  lastDate: Date.today().addMonths(1),
   categories: [],
   online: false,
 }

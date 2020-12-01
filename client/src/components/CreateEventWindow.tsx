@@ -201,7 +201,7 @@ const CreateEventWindow: FunctionComponent<Props> = (props: Props) => {
 
   return (
     <div>
-      <Dialog open={props.open} onClose={close} scroll="paper" fullWidth maxWidth="md">
+      <Dialog open={props.open} onClose={close} scroll="body" fullWidth maxWidth="md">
         <Card style={{marginTop: -10}}>
           <CardHeader
             title="Create Event"

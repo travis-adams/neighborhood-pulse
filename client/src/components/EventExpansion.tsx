@@ -22,7 +22,7 @@ const EventExpansion: FunctionComponent<Props> = (props: Props) => {
   const [commentText, setCommentText] = useState<string>("");
 
   // unfortunate hackery is required here, since forcing the Collapse component to be 40% wide (width: '40% !important')
-  // breaks the collapsing animation. hopefully we can fix this
+  // breaks the collapsing animation.
   const width: number  = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
   const fortyPercent: string = (width * 0.4).toString() + 'px';
   const fiftyPercent: string = (width * 0.5).toString() + 'px';
@@ -67,10 +67,10 @@ const EventExpansion: FunctionComponent<Props> = (props: Props) => {
               <AccessTime style={{marginRight: 10}} />
               <div style={{display: 'flex', flexDirection: 'column'}}>
                 <Typography variant="body1" component="p">
-                  {props.event?.date.toDateString()}
+                  {props.event?.date.toString('D')}
                 </Typography>
                 <Typography variant="body1" component="p">
-                  {props.event?.date.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true})}
+                  {props.event?.date.toString('t')}
                 </Typography>
               </div>
             </div>
@@ -156,7 +156,7 @@ const EventExpansion: FunctionComponent<Props> = (props: Props) => {
                       {comment.username}
                     </Typography>
                     <Typography variant="body2" color={'textSecondary'} component="p" style={{marginLeft: 'auto'}}>
-                      {comment.timestamp.toDateString() + ' ' + comment.timestamp.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true})}
+                      {comment.timestamp.toString('F')}
                     </Typography>
                   </div>
                   <Typography variant="body1" component="p">
