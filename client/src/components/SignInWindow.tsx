@@ -1,12 +1,12 @@
-import React, { FunctionComponent, useState } from 'react';
+import React, { FunctionComponent, useState } from "react";
 import { Button, TextField, Dialog, DialogContent, DialogActions, IconButton, Snackbar,
-  Grid, Select, InputLabel, MenuItem, FormControl } from '@material-ui/core';
-import Alert from '@material-ui/lab/Alert';
-import { Close } from '@material-ui/icons';
+  Grid, Select, InputLabel, MenuItem, FormControl } from "@material-ui/core";
+import Alert from "@material-ui/lab/Alert";
+import { Close } from "@material-ui/icons";
 import EventService from "../service/EventService";
-import useStyles from '../css';
-import User from '../domain/User';
-import Group from '../domain/Group';
+import useStyles from "../css";
+import User from "../domain/User";
+import Group from "../domain/Group";
 
 interface Props {
   isSignedIn: boolean;
@@ -44,7 +44,7 @@ const SignInWindow: FunctionComponent<Props> = (props: Props) => {
   const [errorMessage, setErrorMessage] = useState<string>("");
 
   const closeToast = (event?: React.SyntheticEvent, reason?: string) => {
-    if (reason === 'clickaway') {
+    if (reason === "clickaway") {
       return;
     }
     props.setIsToastOpen(false);
@@ -183,10 +183,7 @@ const SignInWindow: FunctionComponent<Props> = (props: Props) => {
         <DialogContent className={classes.flexColumn}>
           {props.isSignUp && (
             <div>
-              <Grid
-                container
-                direction="row"
-              >
+              <Grid container direction="row">
                 <TextField
                   autoFocus
                   id="firstName"
@@ -264,7 +261,7 @@ const SignInWindow: FunctionComponent<Props> = (props: Props) => {
         open={props.isToastOpen}
         autoHideDuration={3000}
         onClose={closeToast}
-        anchorOrigin={{vertical: 'bottom', horizontal: 'center'}}
+        anchorOrigin={{vertical: "bottom", horizontal: "center"}}
       >
         <Alert onClose={closeToast} severity="success">
           {props.isSignedIn ? "Signed in" : "Signed out"}

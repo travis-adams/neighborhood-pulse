@@ -1,12 +1,12 @@
-import React, { FunctionComponent, useState, useEffect } from 'react';
+import React, { FunctionComponent, useState, useEffect } from "react";
 import { Button, TextField, Dialog, IconButton, Card, CardContent, CardHeader, Grid,
-  Select, InputLabel, MenuItem, FormControl } from '@material-ui/core';
-import Alert from '@material-ui/lab/Alert';
-import { Close } from '@material-ui/icons';
+  Select, InputLabel, MenuItem, FormControl } from "@material-ui/core";
+import Alert from "@material-ui/lab/Alert";
+import { Close } from "@material-ui/icons";
 import EventService from "../service/EventService";
-import useStyles from '../css';
-import User from '../domain/User';
-import Group from '../domain/Group';
+import useStyles from "../css";
+import User from "../domain/User";
+import Group from "../domain/Group";
 
 interface Props {
   open: boolean;
@@ -146,10 +146,7 @@ const UserInfoWindow: FunctionComponent<Props> = (props: Props) => {
           }
         />
         <CardContent>
-          <Grid
-            container
-            direction="row"
-          >
+          <Grid container direction="row">
             <TextField
               disabled={!isEditing}
               id="firstName"

@@ -1,15 +1,15 @@
-import React, { FunctionComponent } from 'react';
-import { Grid, Card, CardActionArea, CardContent, IconButton, Typography } from '@material-ui/core';
+import React, { FunctionComponent } from "react";
+import { Grid, Card, CardActionArea, CardContent, IconButton, Typography } from "@material-ui/core";
 import Event from "../domain/Event";
 import useStyles from "../css";
 import EventService from "../service/EventService";
-import UserSaved from '../../public/user-saved.svg';
-import UserUnsaved from '../../public/user-unsaved.svg';
-import GroupSaved from '../../public/group-saved.svg';
-import GroupUnsaved from '../../public/group-unsaved.svg';
-import TabOption from '../domain/TabOption';
-import User from '../domain/User';
-import 'datejs';
+import UserSaved from "../../public/user-saved.svg";
+import UserUnsaved from "../../public/user-unsaved.svg";
+import GroupSaved from "../../public/group-saved.svg";
+import GroupUnsaved from "../../public/group-unsaved.svg";
+import TabOption from "../domain/TabOption";
+import User from "../domain/User";
+import "datejs";
 
 interface Props {
   events: Event[];
@@ -96,10 +96,10 @@ const EventGrid: FunctionComponent<Props> = (props: Props) => {
               <CardContent className={classes.gridDateAndSave}>
                 <div className={classes.flexColumn}>
                   <Typography variant="h6">
-                    {event.date.toString('MMM')}
+                    {event.date.toString("MMM")}
                   </Typography>
                   <Typography variant="h4">
-                    {event.date.toString('dd')}
+                    {event.date.toString("dd")}
                   </Typography>
                 </div>
                 {props.isSignedIn &&
@@ -108,13 +108,13 @@ const EventGrid: FunctionComponent<Props> = (props: Props) => {
                       onClick={() => handleUserSaveButton(event)}
                       size="small"
                     >
-                      {event.userSaved ? <UserSaved width='35' height='35' viewBox='0 0 400 492.6014319809069' /> : <UserUnsaved width='35' height='35' viewBox='0 0 400 492.6014319809069' />}
+                      {event.userSaved ? <UserSaved width="35" height="35" viewBox="0 0 400 492.6014319809069"/> : <UserUnsaved width="35" height="35" viewBox="0 0 400 492.6014319809069"/>}
                     </IconButton>
                     <IconButton
                       onClick={() => handleGroupSaveButton(event)}
                       size="small"
                     >
-                      {event.groupSaved ? <GroupSaved width='35' height='35' viewBox='0 0 400 409.5238095238095' /> : <GroupUnsaved width='35' height='35' viewBox='0 0 400 409.5238095238095' />}
+                      {event.groupSaved ? <GroupSaved width="35" height="35" viewBox="0 0 400 409.5238095238095"/> : <GroupUnsaved width="35" height="35" viewBox="0 0 400 409.5238095238095"/>}
                     </IconButton>
                   </div>
                 }
@@ -125,7 +125,7 @@ const EventGrid: FunctionComponent<Props> = (props: Props) => {
                     {event.name}
                   </Typography>
                   <Typography variant="body2">
-                    {event.date.toString('t')}
+                    {event.date.toString("t")}
                   </Typography>
                   {!props.onlineOnly &&
                     <div>

@@ -1,12 +1,12 @@
-import axios from 'axios';
+import axios from "axios";
 import "core-js/stable";
 import "regenerator-runtime/runtime";
 import Event from "../domain/Event";
-import Filters from '../domain/Filters';
-import Comment from '../domain/Comment';
-import PointOfInterest from '../domain/PointOfInterest';
-import User from '../domain/User';
-import Group from '../domain/Group';
+import Filters from "../domain/Filters";
+import Comment from "../domain/Comment";
+import PointOfInterest from "../domain/PointOfInterest";
+import User from "../domain/User";
+import Group from "../domain/Group";
 
 export default class EventService {
   baseUrl = "http://npulsebackendpoc-env.eba-qcadjde2.us-east-2.elasticbeanstalk.com:5000";
@@ -22,7 +22,7 @@ export default class EventService {
       userSaved: isUserSaved,
       groupSaved: isGroupSaved,
       id: event.id,
-      date: new Date(event.date + ' ' + event.time),
+      date: new Date(event.date + " " + event.time),
       link: event.link,
       cat: event?.category,
       location: event?.loc,
@@ -108,7 +108,7 @@ export default class EventService {
 
   fetchUserSavedEvents = async (username: string, token: string): Promise<Event[]> => {
     try {
-      const events = await axios.get(this.baseUrl + '/user/saved?user=' + username, {headers: {'Authorization': token}});
+      const events = await axios.get(this.baseUrl + "/user/saved?user=" + username, {headers: {"Authorization": token}});
       return this.formatEvents(events.data, true, false);
     } catch (error) {
       console.error(error);
@@ -117,7 +117,7 @@ export default class EventService {
 
   fetchGroupSavedEvents = async (groupId: number, token: string): Promise<Event[]> => {
     try {
-      const events = await axios.get(this.baseUrl + '/group/events?group=' + groupId, {headers: {'Authorization': token}});
+      const events = await axios.get(this.baseUrl + "/group/events?group=" + groupId, {headers: {"Authorization": token}});
       return this.formatEvents(events.data, false, true);
     } catch (error) {
       console.error(error);
@@ -126,7 +126,7 @@ export default class EventService {
 
   fetchUserCreatedEvents = async (username: string, token: string): Promise<Event[]> => {
     try {
-      const events = await axios.get(this.baseUrl + '/user/created?user=' + username, {headers: {'Authorization': token}});
+      const events = await axios.get(this.baseUrl + "/user/created?user=" + username, {headers: {"Authorization": token}});
       return this.formatEvents(events.data, false, false);
     } catch (error) {
       console.error(error);
@@ -136,7 +136,7 @@ export default class EventService {
   // Fetches a user's account information
   fetchUserInfo = async (username: string, token: string): Promise<User> => {
     try {
-      const user = await axios.get(this.baseUrl + '/user/info?user=' + username, {headers: {'Authorization': token}});
+      const user = await axios.get(this.baseUrl + "/user/info?user=" + username, {headers: {"Authorization": token}});
       return this.formatUser(user.data);
     } catch (error) {
       console.error(error)
@@ -146,7 +146,7 @@ export default class EventService {
   // Fetches a list of all user groups
   fetchGroups = async (): Promise<Group[]> => {
     try {
-      const groups = await axios.get(this.baseUrl + '/group/groups');
+      const groups = await axios.get(this.baseUrl + "/group/groups");
       return this.formatGroups(groups.data);
     } catch (error) {
       console.error(error);
@@ -157,7 +157,7 @@ export default class EventService {
   // ["parties","networking","galas","festivals","classes","performances","other"]
   fetchCategories = async (): Promise<string[]> => {
     try {
-      const response = await axios.get(this.baseUrl + '/events/categories');
+      const response = await axios.get(this.baseUrl + "/events/categories");
       return response.data;
     } catch (error) {
       console.error(error);
@@ -167,7 +167,7 @@ export default class EventService {
   // Logs a user in. Returns the authorizaton token provided by the backend
   userLogIn = async (username_: string, password_: string): Promise<string> => {
     try {
-      const response = await axios.post(this.baseUrl + '/login', {username: username_, password: password_});
+      const response = await axios.post(this.baseUrl + "/login", {username: username_, password: password_});
       return response.headers["authorization"];
     } catch (error) {
       console.error(error);
@@ -178,7 +178,7 @@ export default class EventService {
   // Creates an account with the provided username and password
   userSignUp = async (username_: string, password_: string, firstName_: string, lastName_: string, groupId_: number): Promise<void> => {
     try {
-      await axios.post(this.baseUrl + '/user/sign-up', {username: username_, password: password_, firstName: firstName_, lastName: lastName_, groupID: groupId_});
+      await axios.post(this.baseUrl + "/user/sign-up", {username: username_, password: password_, firstName: firstName_, lastName: lastName_, groupID: groupId_});
     } catch (error) {
       console.error(error);
       throw new Error("Username taken. Please try again.");
@@ -188,7 +188,7 @@ export default class EventService {
   // Modifies a user's account
   userModify = async (id_: number, firstName_: string, lastName_: string, groupId_: number, username_: string, token: string): Promise<User> => {
     try {
-      const newUser = await axios.put(this.baseUrl + '/user/modify', {id: id_, firstName: firstName_, lastName: lastName_, groupID: groupId_, username: username_, password: ""}, {headers: {'Authorization': token}});
+      const newUser = await axios.put(this.baseUrl + "/user/modify", {id: id_, firstName: firstName_, lastName: lastName_, groupID: groupId_, username: username_, password: ""}, {headers: {"Authorization": token}});
       return this.formatUser(newUser.data);
     } catch (error) {
       console.error(error);
@@ -199,7 +199,7 @@ export default class EventService {
   // Saves an event to a user
   userSaveEvent = async (eventId: number, username: string, token: string): Promise<void> => {
     try {
-      await axios.post(this.baseUrl + '/user/save?event=' + eventId + '&user=' + username, null, {headers: {'Authorization': token}});
+      await axios.post(this.baseUrl + "/user/save?event=" + eventId + "&user=" + username, null, {headers: {"Authorization": token}});
     } catch (error) {
       console.error(error);
     }
@@ -208,7 +208,7 @@ export default class EventService {
   // Unsaves an event from a user
   userUnsaveEvent = async (eventId: number, username: string, token: string): Promise<void> => {
     try {
-      await axios.get(this.baseUrl + '/user/unsave?event=' + eventId + '&user=' + username, {headers: {'Authorization': token}});
+      await axios.get(this.baseUrl + "/user/unsave?event=" + eventId + "&user=" + username, {headers: {"Authorization": token}});
     } catch (error) {
       console.error(error);
     }
@@ -217,7 +217,7 @@ export default class EventService {
   // Saves an event to a group
   groupSaveEvent = async (eventId: number, groupId: number, token: string): Promise<void> => {
     try {
-      await axios.post(this.baseUrl + '/group/save?event=' + eventId + '&group=' + groupId, null, {headers: {'Authorization': token}});
+      await axios.post(this.baseUrl + "/group/save?event=" + eventId + "&group=" + groupId, null, {headers: {"Authorization": token}});
     } catch (error) {
       console.error(error);
     }
@@ -226,7 +226,7 @@ export default class EventService {
   // Unsaves an event from a group
   groupUnsaveEvent = async (eventId: number, groupId: number, token: string): Promise<void> => {
     try {
-      await axios.get(this.baseUrl + '/group/unsave?event=' + eventId + '&group=' + groupId, {headers: {'Authorization': token}});
+      await axios.get(this.baseUrl + "/group/unsave?event=" + eventId + "&group=" + groupId, {headers: {"Authorization": token}});
     } catch (error) {
       console.error(error);
     }
@@ -242,7 +242,7 @@ export default class EventService {
       eventIds.forEach((eventId: number) => {
         events += "event=" + eventId + "&";
       });
-      const response = await axios.get(this.baseUrl + '/comment/all?' + events);
+      const response = await axios.get(this.baseUrl + "/comment/all?" + events);
       return this.formatComments(response.data);
     } catch (error) {
       console.error(error);
@@ -252,7 +252,7 @@ export default class EventService {
   // Saves a new comment to an event
   submitEventComment = async (eventId: number, text_: string, username_: string, token: string): Promise<Comment> => {
     try {
-      const response = await axios.post(this.baseUrl + '/comment/submit', {eventID: eventId, text: text_, username: username_}, {headers: {'Authorization': token}});
+      const response = await axios.post(this.baseUrl + "/comment/submit", {eventID: eventId, text: text_, username: username_}, {headers: {"Authorization": token}});
       return this.formatComments([response.data])[0];
     } catch (error) {
       console.error(error);
@@ -287,7 +287,7 @@ export default class EventService {
         latitude: event.position ? event.position.lat() : null,
         longitude: event.position ? event.position.lng() : null
       };
-      const response = await axios.post(this.baseUrl + "/events/submit?username=" +  username, data, {headers: {'Authorization': token}});
+      const response = await axios.post(this.baseUrl + "/events/submit?username=" +  username, data, {headers: {"Authorization": token}});
       return this.formatEvents([response.data], true, false)[0];
     } catch (error) {
       if (error.response) {

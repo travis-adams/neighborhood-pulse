@@ -1,21 +1,23 @@
-import React, { FunctionComponent, useState, useEffect, useCallback, Key, memo } from 'react';
-import { GoogleMap, Marker, InfoWindow } from '@react-google-maps/api';
-import { Button, Typography, Link } from '@material-ui/core';
+import React, { FunctionComponent, useState, useEffect, useCallback, Key, memo } from "react";
+import { GoogleMap, Marker, InfoWindow } from "@react-google-maps/api";
+import { Button, Typography, Link } from "@material-ui/core";
 import Event from "../domain/Event";
-import { defaultFilters } from './MainPage';
+import { defaultFilters } from "./MainPage";
 import useStyles from "../css"
 import Filters from "../domain/Filters";
 import PointOfInterest from "../domain/PointOfInterest";
+import TabOption from "../domain/TabOption";
 
 interface Props {
   events: Event[];
   filters: Filters;
   unsavedFilters: Filters;
   setUnsavedFilters: (filters: Filters) => void;
-  setFilters: (filters: Filters) => void;
+  changeFilters: (newFilters: Filters) => void;
   expandEvent: (event: Event) => void;
   closeEvent: () => void;
   pois: PointOfInterest[];
+  tab: TabOption;
 }
 
 const MapComponent: FunctionComponent<Props> = (props: Props) => {
@@ -30,7 +32,7 @@ const MapComponent: FunctionComponent<Props> = (props: Props) => {
       navigator.geolocation.getCurrentPosition(
         (position: Position) => {
           const pos = new google.maps.LatLng({lat: position.coords.latitude, lng: position.coords.longitude});
-          props.setFilters({ ...props.filters, searchPos: pos });
+          props.changeFilters({ ...props.filters, searchPos: pos });
           props.setUnsavedFilters({ ...props.filters, searchPos: pos });
           map.setCenter(pos);
         },
@@ -95,7 +97,7 @@ const MapComponent: FunctionComponent<Props> = (props: Props) => {
         return (
           <Marker
             icon={{
-              url: 'http://maps.google.com/mapfiles/kml/paddle/grn-stars.png',
+              url: "http://maps.google.com/mapfiles/kml/paddle/grn-stars.png",
               scaledSize: new google.maps.Size(40, 40)
             }}
             key={poiIndex}
@@ -143,6 +145,11 @@ const MapComponent: FunctionComponent<Props> = (props: Props) => {
     createEventPins();
   }, [props.events, props.pois, openPin]);
 
+  // If the tab changes, close the open pin
+  useEffect(() => {
+    setOpenPin(null);
+  }, [props.tab]);
+
   // If the search position changes, move the map's center
   useEffect(() => {
     if (map) {
@@ -152,7 +159,7 @@ const MapComponent: FunctionComponent<Props> = (props: Props) => {
 
   return (
     <div>
-      {props.filters.online && <div className={classes.mapGrayCover} />}
+      {props.filters.online && <div className={classes.mapGrayCover}/>}
       <GoogleMap
         id={"map"}
         mapContainerClassName={props.filters.online ? classes.mapContainerOnline : classes.mapContainer}

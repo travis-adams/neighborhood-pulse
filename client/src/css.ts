@@ -1,6 +1,6 @@
-import { makeStyles, createStyles, Theme } from '@material-ui/core/styles';
+import { makeStyles, createStyles, Theme } from "@material-ui/core/styles";
 
-const buttonColor = '#444444';
+const buttonColor = "#444444";
 const eventGridBackground = "#dddddd";
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -18,22 +18,22 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     // CreateEventWindow
     createAddressOnline: {
-      display: 'flex',
-      alignItems: 'center',
+      display: "flex",
+      alignItems: "center",
       marginTop: 15,
       marginBottom: 15
     },
     createCat: {
-      display: 'flex',
-      alignItems: 'center',
+      display: "flex",
+      alignItems: "center",
       marginBottom: 15
     },
     createCatWidth: {
       width: 300
     },
     createDateAndLink: {
-      display: 'flex',
-      alignItems: 'center'
+      display: "flex",
+      alignItems: "center"
     },
     createToast: {
       zIndex: 4
@@ -46,8 +46,8 @@ const useStyles = makeStyles((theme: Theme) =>
       zIndex: 3
     },
     commentActions: {
-      display: 'flex',
-      justifyContent: 'flex-end',
+      display: "flex",
+      justifyContent: "flex-end",
       marginTop: 5
     },
     commentButton: {
@@ -55,26 +55,26 @@ const useStyles = makeStyles((theme: Theme) =>
       marginBottom: 1
     },
     commentSection: {
-      display: 'flex',
-      flexDirection: 'column',
+      display: "flex",
+      flexDirection: "column",
       marginTop: 10
     },
     expandAddressAndLink: {
-      display: 'flex',
-      alignItems: 'center',
+      display: "flex",
+      alignItems: "center",
       marginTop: 15
     },
     expandDate: {
-      display: 'flex',
-      alignItems: 'center'
+      display: "flex",
+      alignItems: "center"
     },
     expandDesc: {
       marginTop: 15,
       marginBottom: 15
     },
     flexWithGap: {
-      display: 'flex',
-      justifyContent: 'space-between'
+      display: "flex",
+      justifyContent: "space-between"
     },
     marginTopMinus20: {
       marginTop: -20
@@ -84,27 +84,27 @@ const useStyles = makeStyles((theme: Theme) =>
       backgroundColor: eventGridBackground,
       overflow: "auto",
       gridGap: theme.spacing(0.5),
-      width: '40%',
+      width: "40%",
       zIndex: 2,
     },
     eventGridOnline: {
       backgroundColor: eventGridBackground,
       overflow: "auto",
       gridGap: theme.spacing(0.5),
-      width: '50%',
+      width: "50%",
       zIndex: 2,
     },
     flex: {
-      display: 'flex'
+      display: "flex"
     },
     gridCard: {
-      display: 'flex',
-      height: '100%',
+      display: "flex",
+      height: "100%",
       flex: 1
     },
     gridDateAndSave: {
-      textAlign: 'center',
-      backgroundColor: '#eeeeff'
+      textAlign: "center",
+      backgroundColor: "#eeeeff"
     },
     // FilterMenu
     filterMenu: {
@@ -119,7 +119,7 @@ const useStyles = makeStyles((theme: Theme) =>
       flex: 1,
       display: "flex",
       flexFlow: "row nowrap",
-      position: 'relative',
+      position: "relative",
       overflow: "hidden",
       zIndex: 1
     },
@@ -130,25 +130,25 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     // MapComponent
     mapContainer: {
-      position: 'absolute',
+      position: "absolute",
       right: 0,
-      width: '60%',
-      height: '100%',
+      width: "60%",
+      height: "100%",
       zIndex: 1
     },
     mapContainerOnline: {
-      position: 'absolute',
+      position: "absolute",
       right: 0,
-      width: '50%',
-      height: '100%',
+      width: "50%",
+      height: "100%",
       zIndex: 1
     },
     mapGrayCover: {
-      backgroundColor: 'rgba(0, 0, 0, 0.4)',
-      position: 'absolute',
+      backgroundColor: "rgba(0, 0, 0, 0.4)",
+      position: "absolute",
       right: 0,
-      width: '50%',
-      height: '100%',
+      width: "50%",
+      height: "100%",
       zIndex: 2
     },
     moreDetails: {
@@ -160,32 +160,32 @@ const useStyles = makeStyles((theme: Theme) =>
     // NavBar
     beginDiv: {
       flex: 1,
-      display: 'flex',
-      justifyContent: 'flex-start'
+      display: "flex",
+      justifyContent: "flex-start"
     },
     createNavButton: {
-      marginLeft: 'auto',
-      marginRight: 'auto'
+      marginLeft: "auto",
+      marginRight: "auto"
     },
     filterButton: {
       color: buttonColor,
-      marginLeft: 'auto',
-      marginRight: 'auto'
+      marginLeft: "auto",
+      marginRight: "auto"
     },
     middleDiv: {
       flex: 2,
-      display: 'flex',
-      flexDirection: 'column'
+      display: "flex",
+      flexDirection: "column"
     },
     navBar: {
       flex: 0,
       backgroundColor: theme.palette.common.white,
-      boxShadow: 'none'
+      boxShadow: "none"
     },
     navLogoImg: {
       flex: 1,
-      maxWidth: '25%',
-      maxHeight: '25%'
+      maxWidth: "25%",
+      maxHeight: "25%"
     },
     userButton: {
       color: buttonColor
@@ -193,9 +193,9 @@ const useStyles = makeStyles((theme: Theme) =>
     // SearchBar
     search: {
       flex: 1,
-      height: '100%',
-      display: 'flex',
-      alignItems: 'center'
+      height: "100%",
+      display: "flex",
+      alignItems: "center"
     },
     searchIcon: {
       color: buttonColor
@@ -214,17 +214,17 @@ const useStyles = makeStyles((theme: Theme) =>
       alignItems: "flex-start"
     },
     marginTop1Percent: {
-      marginTop: '1%'
+      marginTop: "1%"
     },
     signInLogoImg: {
       flex: 1,
-      maxWidth: '25%',
-      maxHeight: '25%',
+      maxWidth: "25%",
+      maxHeight: "25%",
       marginTop: "3%"
     },
     // TabBar
     noTabIndicator: {
-      backgroundColor: 'transparent'
+      backgroundColor: "transparent"
     },
     selectedTab: {
       backgroundColor: theme.palette.primary.main + " !important",
@@ -241,7 +241,7 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     accountFieldLabelDisabled: {
       color: theme.palette.text.primary + " !important",
-      fontWeight: 'bold'
+      fontWeight: "bold"
     },
     // UserMenu
     manageAccountButton: {
@@ -251,16 +251,16 @@ const useStyles = makeStyles((theme: Theme) =>
       margin: theme.spacing(1, 1, 0, 1),
     },
     userMenu: {
-      display: 'flex',
-      flexDirection: 'column',
+      display: "flex",
+      flexDirection: "column",
       margin: theme.spacing(1),
       width: 130
     },
     /* ----- SHARED CLASSES ----- */
     // CreateEventWindow, EventExpansion
     eventFields: {
-      display: 'flex',
-      flexDirection: 'column',
+      display: "flex",
+      flexDirection: "column",
       marginTop: 15,
       marginBottom: 15
     },
@@ -269,8 +269,8 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     // CreateEventWindow, UserInfoWindow
     buttonsRight: {
-      display: 'flex',
-      justifyContent: 'flex-end',
+      display: "flex",
+      justifyContent: "flex-end",
       marginTop: 25,
       marginBottom: -10
     },
@@ -283,8 +283,8 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     // EventExpansion, EventGrid, SignInWindow
     flexColumn: {
-      display: 'flex',
-      flexDirection: 'column'
+      display: "flex",
+      flexDirection: "column"
     },
     // EventExpansion, MapComponent
     marginTopBottom5: {
@@ -298,13 +298,13 @@ const useStyles = makeStyles((theme: Theme) =>
     // NavBar, SignInWindow
     endDiv: {
       flex: 1,
-      display: 'flex',
-      justifyContent: 'flex-end'
+      display: "flex",
+      justifyContent: "flex-end"
     },
     // SignInWindow, UserInfoWindow
     groupField: {
-      marginTop: '1%',
-      marginBottom: '1%'
+      marginTop: "1%",
+      marginBottom: "1%"
     },
     nameField: {
       width: 275

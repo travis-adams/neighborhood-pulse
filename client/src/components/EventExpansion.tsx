@@ -1,11 +1,11 @@
-import React, { FunctionComponent, useEffect, useState } from 'react';
-import useStyles from '../css';
-import Event from '../domain/Event';
+import React, { FunctionComponent, useEffect, useState } from "react";
+import useStyles from "../css";
+import Event from "../domain/Event";
 import Comment from "../domain/Comment";
 import Filters from "../domain/Filters";
 import { Collapse, Card, CardContent, CardHeader, Typography, Divider,
-  Link, IconButton, TextField, Button } from '@material-ui/core';
-import { AccessTime, RoomOutlined, LinkOutlined, Close } from '@material-ui/icons';
+  Link, IconButton, TextField, Button } from "@material-ui/core";
+import { AccessTime, RoomOutlined, LinkOutlined, Close } from "@material-ui/icons";
 
 interface Props {
   filters: Filters;
@@ -21,11 +21,11 @@ const EventExpansion: FunctionComponent<Props> = (props: Props) => {
   const classes = useStyles();
   const [commentText, setCommentText] = useState<string>("");
 
-  // unfortunate hackery is required here, since forcing the Collapse component to be 40% wide (width: '40% !important')
+  // unfortunate hackery is required here, since forcing the Collapse component to be 40% wide (width: "40% !important")
   // breaks the collapsing animation.
   const width: number  = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
-  const fortyPercent: string = (width * 0.4).toString() + 'px';
-  const fiftyPercent: string = (width * 0.5).toString() + 'px';
+  const fortyPercent: string = (width * 0.4).toString() + "px";
+  const fiftyPercent: string = (width * 0.5).toString() + "px";
 
   const handleCommentChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setCommentText(event.target.value);
@@ -41,7 +41,9 @@ const EventExpansion: FunctionComponent<Props> = (props: Props) => {
   }
 
   useEffect(() => {
-    clearComment();
+    if (props.isEventExpanded) {
+      clearComment();
+    }
   },[props.event, props.isEventExpanded]);
 
   return (
@@ -50,7 +52,7 @@ const EventExpansion: FunctionComponent<Props> = (props: Props) => {
       in={props.isEventExpanded}
       className={classes.collapse}
     >
-      <Card style={{width: props.filters.online ? fiftyPercent : fortyPercent, height: '100%', overflow: 'auto'}} >
+      <Card style={{width: props.filters.online ? fiftyPercent : fortyPercent, height: "100%", overflow: "auto"}}>
         <CardHeader
           title={props.event?.name}
           action={
@@ -66,10 +68,10 @@ const EventExpansion: FunctionComponent<Props> = (props: Props) => {
               <AccessTime className={classes.marginRight10}/>
               <div className={classes.flexColumn}>
                 <Typography variant="body1" component="p">
-                  {props.event?.date.toString('D')}
+                  {props.event?.date.toString("D")}
                 </Typography>
                 <Typography variant="body1" component="p">
-                  {props.event?.date.toString('t')}
+                  {props.event?.date.toString("t")}
                 </Typography>
               </div>
             </div>
@@ -124,7 +126,7 @@ const EventExpansion: FunctionComponent<Props> = (props: Props) => {
                   <Button
                     color="primary"
                     disabled={!commentText}
-                    onClick={() => clearComment()}
+                    onClick={clearComment}
                   >
                     Cancel
                   </Button>
@@ -148,8 +150,8 @@ const EventExpansion: FunctionComponent<Props> = (props: Props) => {
                     <Typography variant="subtitle2" component="p">
                       {comment.username}
                     </Typography>
-                    <Typography variant="body2" color={'textSecondary'} component="p">
-                      {comment.timestamp.toString('F')}
+                    <Typography variant="body2" color={"textSecondary"} component="p">
+                      {comment.timestamp.toString("F")}
                     </Typography>
                   </div>
                   <Typography variant="body1" component="p">

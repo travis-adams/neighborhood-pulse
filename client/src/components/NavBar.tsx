@@ -1,13 +1,13 @@
-import React, { FunctionComponent, useState } from 'react';
-import { AppBar, Toolbar, Button } from '@material-ui/core';
-import { ExpandMore, ExpandLess, Add, PermIdentity } from '@material-ui/icons';
-import useStyles from '../css';
-import Filters from '../domain/Filters';
-import FilterMenu from './FilterMenu';
-import SignInWindow from './SignInWindow';
-import Event from '../domain/Event';
-import CreateEventWindow from './CreateEventWindow';
-import SearchBar from './SearchBar';
+import React, { FunctionComponent, useState } from "react";
+import { AppBar, Toolbar, Button } from "@material-ui/core";
+import { ExpandMore, ExpandLess, Add, PermIdentity } from "@material-ui/icons";
+import useStyles from "../css";
+import Filters from "../domain/Filters";
+import FilterMenu from "./FilterMenu";
+import SignInWindow from "./SignInWindow";
+import Event from "../domain/Event";
+import CreateEventWindow from "./CreateEventWindow";
+import SearchBar from "./SearchBar";
 import TabOption from "../domain/TabOption";
 import User from "../domain/User";
 import Group from "../domain/Group";
@@ -16,7 +16,7 @@ import UserInfoWindow from "./UserInfoWindow";
 
 interface Props {
   filters: Filters;
-  setFilters: (filters: Filters) => void;
+  changeFilters: (newfilters: Filters) => void;
   unsavedFilters: Filters;
   setUnsavedFilters: (filters: Filters) => void;
   categories: string[];
@@ -29,7 +29,7 @@ interface Props {
   expandEvent: (event: Event) => void;
   closeEvent: () => void;
   tab: TabOption
-  setTab: (newTab: TabOption) => void;
+  changeTab: (newTab: TabOption) => void;
   groups: Group[];
 }
 
@@ -71,7 +71,7 @@ const NavBar: FunctionComponent<Props> = (props: Props) => {
     props.setUser(null);
     props.setIsSignedIn(false);
     // Move to the Nearby Events tab
-    props.setTab(TabOption.NearbyEvents);
+    props.changeTab(TabOption.NearbyEvents);
     closeUserMenu();
     // Display confirmation toast
     setIsSignInToastOpen(true);
@@ -117,7 +117,7 @@ const NavBar: FunctionComponent<Props> = (props: Props) => {
             anchorEl={filterAnchorEl}
             setAnchorEl={setFilterAnchorEl}
             filters={props.filters}
-            setFilters={props.setFilters}
+            changeFilters={props.changeFilters}
             unsavedFilters={props.unsavedFilters}
             setUnsavedFilters={props.setUnsavedFilters}
             close={closeFilterMenu}
@@ -128,7 +128,7 @@ const NavBar: FunctionComponent<Props> = (props: Props) => {
         <div className={classes.middleDiv}>
           <SearchBar
             filters={props.filters}
-            setFilters={props.setFilters}
+            changeFilters={props.changeFilters}
             setUnsavedFilters={props.setUnsavedFilters}
           />
         </div>
@@ -138,7 +138,7 @@ const NavBar: FunctionComponent<Props> = (props: Props) => {
               variant="contained"
               className={classes.createNavButton}
               onClick={openCreate}
-              startIcon={<Add />}
+              startIcon={<Add/>}
             >
               Create Event
             </Button>
@@ -151,7 +151,7 @@ const NavBar: FunctionComponent<Props> = (props: Props) => {
             categories={props.categories}
             token={props.token}
             username={props.user ? props.user.username : ""}
-            setTab={props.setTab}
+            changeTab={props.changeTab}
           />
           <Button
             className={classes.userButton}

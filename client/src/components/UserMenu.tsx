@@ -1,6 +1,6 @@
-import React, { FunctionComponent } from 'react';
-import { Button, Menu } from '@material-ui/core';
-import useStyles from '../css';
+import React, { FunctionComponent } from "react";
+import { Button, Menu } from "@material-ui/core";
+import useStyles from "../css";
 
 interface Props {
   anchorEl: HTMLElement;
@@ -25,8 +25,8 @@ const UserMenu: FunctionComponent<Props> = (props: Props) => {
         left: (props.anchorEl?.getBoundingClientRect().left + props.anchorEl?.getBoundingClientRect().right)/2
       }}
       transformOrigin={{
-        vertical: 'top',
-        horizontal: 'center'
+        vertical: "top",
+        horizontal: "center"
       }}
     >
       <div className={classes.userMenu}>

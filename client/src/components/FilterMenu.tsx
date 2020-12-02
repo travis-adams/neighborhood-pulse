@@ -1,17 +1,17 @@
-import 'date-fns';
-import React, { FunctionComponent } from 'react';
-import { Button, Menu, MenuItem, FormControl, FormControlLabel, FormGroup, Checkbox, InputLabel, Select, TextField } from '@material-ui/core';
-import DateFnsUtils from '@date-io/date-fns';
-import { MuiPickersUtilsProvider, DatePicker } from '@material-ui/pickers';
-import Autocomplete from '@material-ui/lab/Autocomplete';
-import useStyles from '../css';
-import Filters from '../domain/Filters';
+import "date-fns";
+import React, { FunctionComponent } from "react";
+import { Button, Menu, MenuItem, FormControl, FormControlLabel, FormGroup, Checkbox, InputLabel, Select, TextField } from "@material-ui/core";
+import DateFnsUtils from "@date-io/date-fns";
+import { MuiPickersUtilsProvider, DatePicker } from "@material-ui/pickers";
+import Autocomplete from "@material-ui/lab/Autocomplete";
+import useStyles from "../css";
+import Filters from "../domain/Filters";
 
 interface Props {
   anchorEl: HTMLElement;
   setAnchorEl: (element: HTMLElement) => void;
   filters: Filters;
-  setFilters: (filters: Filters) => void;
+  changeFilters: (newFilters: Filters) => void;
   unsavedFilters: Filters;
   setUnsavedFilters: (filters: Filters) => void;
   close: () => void;
@@ -44,7 +44,7 @@ const FilterMenu: FunctionComponent<Props> = (props: Props) => {
 
   const handleApply = () => {
     props.setAnchorEl(null);
-    props.setFilters(props.unsavedFilters);
+    props.changeFilters(props.unsavedFilters);
   }
 
   return (
@@ -59,8 +59,8 @@ const FilterMenu: FunctionComponent<Props> = (props: Props) => {
         left: (props.anchorEl?.getBoundingClientRect().left + props.anchorEl?.getBoundingClientRect().right)/2
       }}
       transformOrigin={{
-        vertical: 'top',
-        horizontal: 'center'
+        vertical: "top",
+        horizontal: "center"
       }}
     >
       <FormGroup className={classes.filterMenu}>

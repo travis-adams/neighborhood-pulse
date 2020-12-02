@@ -1,8 +1,8 @@
-import React, { FunctionComponent, useState, useEffect } from 'react';
+import React, { FunctionComponent, useState, useEffect } from "react";
 import EventService from "../service/EventService";
 import { Divider, Box } from "@material-ui/core";
 import Event from "../domain/Event";
-import Filters from '../domain/Filters';
+import Filters from "../domain/Filters";
 import EventGrid from "./EventGrid";
 import MapComponent from "./MapComponent";
 import NavBar from "./NavBar";
@@ -14,7 +14,7 @@ import TabOption from "../domain/TabOption";
 import User from "../domain/User";
 import Group from "../domain/Group";
 import TabBar from "./TabBar";
-import 'datejs';
+import "datejs";
 
 export const defaultFilters: Filters = {
   searchPos: new google.maps.LatLng({lat: 33.8463, lng: -84.3621}),
@@ -41,7 +41,7 @@ const MainPage: FunctionComponent = () => {
   const [token, setToken] = useState<string>("");
   const [user, setUser] = useState<User>(null);
   const [groups, setGroups] = useState<Group[]>([]);
-  // Event details
+  // Expanded event details
   const [expandedEvent, setExpandedEvent] = useState<Event>(null);
   const [isEventExpanded, setIsEventExpanded] = useState<boolean>(false);
   const [comments, setComments] = useState<Map<number, Comment[]>>(new Map());
@@ -74,14 +74,14 @@ const MainPage: FunctionComponent = () => {
   }
 
   // Asynchronously load the events
-  const loadEvents = async () => {
+  const loadEvents = async (newFilters: Filters, newTab: TabOption) => {
     let eventList: Event[];
     let userSavedEvents: Event[];
     let groupSavedEvents: Event[];
-    switch (tab) {
+    switch (newTab) {
 
       case TabOption.NearbyEvents:
-        eventList = await eventService.fetchFilteredEvents(filters);
+        eventList = await eventService.fetchFilteredEvents(newFilters);
         // if signed in, set the userSaved and groupSaved attributes of each event as necessary
         if (isSignedIn) {
           userSavedEvents = await eventService.fetchUserSavedEvents(user.username, token);
@@ -179,6 +179,27 @@ const MainPage: FunctionComponent = () => {
     setGroups(groupList);
   }
 
+  // Changes the selected filters. This requires a reload of the displayed events
+  const changeFilters = (newFilters: Filters) => {
+    setFilters(newFilters);
+    closeEvent();
+    loadEvents(newFilters, tab);
+  }
+
+  // Changes the selected tab. This requires a reload of the displayed events
+  const changeTab = (newTab: TabOption) => {
+    setTab(newTab);
+    closeEvent();
+    // If moving to a tab that isn't "Nearby Events", remove the online filter to enable the map & pins
+    if (newTab != TabOption.NearbyEvents) {
+      setFilters({ ...filters, online: false });
+      setUnsavedFilters({ ...filters, online: false });
+      loadEvents({ ...filters, online: false }, newTab);
+    } else {
+      loadEvents(filters, newTab);
+    }
+  }
+
   // When the page loads for the first time, load categories, points of interest, and user groups
   useEffect(() => {
     loadCategories();
@@ -186,17 +207,11 @@ const MainPage: FunctionComponent = () => {
     loadGroups();
   }, [])
 
-  // When the filters or tab changes, close the expanded event and load the applicable events
-  useEffect(() => {
-    closeEvent();
-    loadEvents();
-  }, [filters, tab]);
-
   return (
     <div className={classes.mainFlexColumn}>
       <NavBar
         filters={filters}
-        setFilters={setFilters}
+        changeFilters={changeFilters}
         unsavedFilters={unsavedFilters}
         setUnsavedFilters={setUnsavedFilters}
         categories={categories}
@@ -209,7 +224,7 @@ const MainPage: FunctionComponent = () => {
         expandEvent={expandEvent}
         closeEvent={closeEvent}
         tab={tab}
-        setTab={setTab}
+        changeTab={changeTab}
         groups={groups}
       />
       <Divider/>
@@ -239,18 +254,19 @@ const MainPage: FunctionComponent = () => {
         <MapComponent
           events={events}
           filters={filters}
-          setFilters={setFilters}
+          changeFilters={changeFilters}
           unsavedFilters={unsavedFilters}
           setUnsavedFilters={setUnsavedFilters}
           expandEvent={expandEvent}
           closeEvent={closeEvent}
           pois={pois}
+          tab={tab}
         />
       </Box>
       <TabBar
         isSignedIn={isSignedIn}
         tab={tab}
-        setTab={setTab}
+        changeTab={changeTab}
       />
     </div>
   );

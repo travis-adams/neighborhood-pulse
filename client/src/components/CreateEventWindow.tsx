@@ -1,17 +1,17 @@
-import 'date-fns';
-import DateFnsUtils from '@date-io/date-fns';
-import { MuiPickersUtilsProvider, DatePicker, TimePicker } from '@material-ui/pickers';
-import React, { FunctionComponent, useState } from 'react';
-import useStyles from '../css';
-import Event from '../domain/Event';
-import Filters from '../domain/Filters';
+import "date-fns";
+import DateFnsUtils from "@date-io/date-fns";
+import { MuiPickersUtilsProvider, DatePicker, TimePicker } from "@material-ui/pickers";
+import React, { FunctionComponent, useState } from "react";
+import useStyles from "../css";
+import Event from "../domain/Event";
+import Filters from "../domain/Filters";
 import { Card, CardContent, CardHeader, Divider, IconButton, TextField, Button, FormControlLabel, Switch,
-  Autocomplete, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Snackbar } from '@material-ui/core';
-import { AccessTime, RoomOutlined, LinkOutlined, Close, LocalOfferOutlined } from '@material-ui/icons';
-import AddressField from './AddressField';
-import Alert from '@material-ui/lab/Alert';
+  Autocomplete, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Snackbar } from "@material-ui/core";
+import { AccessTime, RoomOutlined, LinkOutlined, Close, LocalOfferOutlined } from "@material-ui/icons";
+import AddressField from "./AddressField";
+import Alert from "@material-ui/lab/Alert";
 import EventService from "../service/EventService";
-import TabOption from '../domain/TabOption';
+import TabOption from "../domain/TabOption";
 
 interface Props {
   expandEvent: (event: Event) => void;
@@ -21,7 +21,7 @@ interface Props {
   categories: string[];
   token: string;
   username: string;
-  setTab: (newTab: TabOption) => void;
+  changeTab: (newTab: TabOption) => void;
 }
 
 const eventService = new EventService();
@@ -52,7 +52,7 @@ const CreateEventWindow: FunctionComponent<Props> = (props: Props) => {
   const [unsavedDialogOpen, setUnsavedDialogOpen] = useState<boolean>(false);
 
   const closeToast = (event?: React.SyntheticEvent, reason?: string) => {
-    if (reason === 'clickaway') {
+    if (reason === "clickaway") {
       return;
     }
     setIsToastOpen(false);
@@ -186,7 +186,7 @@ const CreateEventWindow: FunctionComponent<Props> = (props: Props) => {
         position: online ? null : addressLatLng
       };
       const newEvent = await eventService.submitEvent(event, props.username, props.token);
-      props.setTab(TabOption.MyCreatedEvents);
+      props.changeTab(TabOption.MyCreatedEvents);
       props.expandEvent(newEvent);
       props.setOpen(false);
       resetFields();
@@ -200,7 +200,7 @@ const CreateEventWindow: FunctionComponent<Props> = (props: Props) => {
   return (
     <div>
       <Dialog open={props.open} onClose={close} scroll="body" fullWidth maxWidth="md">
-        <Card >
+        <Card>
           <CardHeader
             className={classes.cardHeader}
             title="Create Event"
@@ -224,19 +224,19 @@ const CreateEventWindow: FunctionComponent<Props> = (props: Props) => {
             <Divider className={classes.marginTop15}/>
             <div className={classes.eventFields}>
               <div className={classes.createCat}>
-                <LocalOfferOutlined className={classes.marginRight10} />
+                <LocalOfferOutlined className={classes.marginRight10}/>
                 <Autocomplete
                   freeSolo
                   options={props.categories}
                   className={classes.createCatWidth}
                   onInputChange={handleCatChange}
                   renderInput={(params) => (
-                    <TextField {...params} label="Category" variant="filled" />
+                    <TextField {...params} label="Category" variant="filled"/>
                   )}
                 />
               </div>
               <div className={classes.createDateAndLink}>
-                <AccessTime className={classes.marginRight10} />
+                <AccessTime className={classes.marginRight10}/>
                 <MuiPickersUtilsProvider utils={DateFnsUtils}>
                   <DatePicker
                     required
@@ -276,7 +276,7 @@ const CreateEventWindow: FunctionComponent<Props> = (props: Props) => {
                 <FormControlLabel
                   checked={online}
                   onChange={handleOnlineChange}
-                  control={<Switch color="primary" />}
+                  control={<Switch color="primary"/>}
                   label="Online"
                   labelPlacement="top"
                 />
@@ -330,10 +330,7 @@ const CreateEventWindow: FunctionComponent<Props> = (props: Props) => {
         </Card>
         {errorMessage && <Alert severity="error" variant="filled">{errorMessage}</Alert>}
       </Dialog>
-      <Dialog
-        open={unsavedDialogOpen}
-        onClose={handleCancel}
-      >
+      <Dialog open={unsavedDialogOpen} onClose={handleCancel}>
         <DialogTitle>{"Unsaved changes"}</DialogTitle>
         <DialogContent>
           <DialogContentText>
@@ -354,7 +351,7 @@ const CreateEventWindow: FunctionComponent<Props> = (props: Props) => {
         open={isToastOpen}
         autoHideDuration={3000}
         onClose={closeToast}
-        anchorOrigin={{vertical: 'bottom', horizontal: 'center'}}
+        anchorOrigin={{vertical: "bottom", horizontal: "center"}}
       >
         <Alert onClose={closeToast} severity="success">
           Event created
