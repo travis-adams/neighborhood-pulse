@@ -1,21 +1,21 @@
-import React, { FunctionComponent, useEffect, useState, useMemo } from 'react';
-import TextField from '@material-ui/core/TextField';
-import Autocomplete from '@material-ui/lab/Autocomplete';
-import LocationOnIcon from '@material-ui/icons/LocationOn';
-import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
-import parse from 'autosuggest-highlight/parse';
-import throttle from 'lodash/throttle';
-import useStyles from '../css';
+import React, { FunctionComponent, useEffect, useState, useMemo } from "react";
+import TextField from "@material-ui/core/TextField";
+import Autocomplete from "@material-ui/lab/Autocomplete";
+import LocationOnIcon from "@material-ui/icons/LocationOn";
+import Grid from "@material-ui/core/Grid";
+import Typography from "@material-ui/core/Typography";
+import parse from "autosuggest-highlight/parse";
+import throttle from "lodash/throttle";
+import useStyles from "../css";
 
 const autocompleteService = new google.maps.places.AutocompleteService();
-const placesService = new google.maps.places.PlacesService(document.createElement('div'));
+const placesService = new google.maps.places.PlacesService(document.createElement("div"));
 
 interface Props {
   valid?: boolean;
   setValid?: (valid: boolean) => void;
   online: boolean;
-  variant: 'filled' | 'outlined' | 'standard';
+  variant: "filled" | "outlined" | "standard";
   label?: string;
   placeholder?: string;
   value: google.maps.places.AutocompletePrediction | null;
@@ -26,7 +26,7 @@ interface Props {
 
 const AddressField: FunctionComponent<Props> = (props: Props) => {
   const classes = useStyles();
-  const [inputValue, setInputValue] = useState('');
+  const [inputValue, setInputValue] = useState("");
   const [options, setOptions] = useState<google.maps.places.AutocompletePrediction[]>([]);
 
   // Get google's predictions for the address input value
@@ -52,7 +52,7 @@ const AddressField: FunctionComponent<Props> = (props: Props) => {
     if (!autocompleteService || !placesService) {
       return undefined;
     }
-    if (inputValue === '') {
+    if (inputValue === "") {
       setOptions(props.value ? [props.value] : []);
       return undefined;
     }
@@ -90,7 +90,7 @@ const AddressField: FunctionComponent<Props> = (props: Props) => {
       if (props.setAddressString) {
         props.setAddressString(null);
       }
-      setInputValue('');
+      setInputValue("");
       setOptions([]);
     }
   }, [props.online]);
@@ -98,7 +98,7 @@ const AddressField: FunctionComponent<Props> = (props: Props) => {
   return (
     <Autocomplete
       fullWidth
-      getOptionLabel={(option) => (typeof option === 'string' ? option : option.description)}
+      getOptionLabel={(option) => (typeof option === "string" ? option : option.description)}
       filterOptions={(x) => x}
       options={options}
       noOptionsText={"No results"}
@@ -126,7 +126,7 @@ const AddressField: FunctionComponent<Props> = (props: Props) => {
           label={props.online ? "Online" : props.label}
           variant={props.variant}
           placeholder={props.placeholder}
-          fullWidth />
+          fullWidth/>
       )}
       renderOption={(option) => {
         const matches = option.structured_formatting.main_text_matched_substrings;
@@ -138,11 +138,11 @@ const AddressField: FunctionComponent<Props> = (props: Props) => {
         return (
           <Grid container alignItems="center">
             <Grid item>
-              <LocationOnIcon className={classes.addressPinIcon} />
+              <LocationOnIcon className={classes.pinIcon}/>
             </Grid>
             <Grid item xs>
               {parts.map((part, index) => (
-                <span key={index} style={{ fontWeight: part.highlight ? 700 : 400 }}>
+                <span key={index} className={part.highlight ? classes.textBold : classes.textNormal}>
                   {part.text}
                 </span>
               ))}

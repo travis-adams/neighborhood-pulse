@@ -1,12 +1,12 @@
-import React, { FunctionComponent, useState } from 'react';
+import React, { FunctionComponent, useState } from "react";
 import { Button, TextField, Dialog, DialogContent, DialogActions, IconButton, Snackbar,
-  Grid, Select, InputLabel, MenuItem, FormControl } from '@material-ui/core';
-import Alert from '@material-ui/lab/Alert';
-import { Close } from '@material-ui/icons';
+  Grid, Select, InputLabel, MenuItem, FormControl } from "@material-ui/core";
+import Alert from "@material-ui/lab/Alert";
+import { Close } from "@material-ui/icons";
 import EventService from "../service/EventService";
-import useStyles from '../css';
-import User from '../domain/User';
-import Group from '../domain/Group';
+import useStyles from "../css";
+import User from "../domain/User";
+import Group from "../domain/Group";
 
 interface Props {
   isSignedIn: boolean;
@@ -44,7 +44,7 @@ const SignInWindow: FunctionComponent<Props> = (props: Props) => {
   const [errorMessage, setErrorMessage] = useState<string>("");
 
   const closeToast = (event?: React.SyntheticEvent, reason?: string) => {
-    if (reason === 'clickaway') {
+    if (reason === "clickaway") {
       return;
     }
     props.setIsToastOpen(false);
@@ -147,6 +147,9 @@ const SignInWindow: FunctionComponent<Props> = (props: Props) => {
       }
       // Hit the backend to sign the user in, then set token and user
       const token: string = await eventService.userLogIn(username, password);
+      if (!token) {
+        throw new Error("Error initializing user session. Please try again.");
+      }
       props.setToken(token);
       const user: User = await eventService.fetchUserInfo(username, token);
       props.setUser(user);
@@ -168,27 +171,24 @@ const SignInWindow: FunctionComponent<Props> = (props: Props) => {
   return (
     <div>
       <Dialog open={props.open} onClose={close}>
-        <div style={{display: "flex", alignItems: "flex-start"}}>
+        <div className={classes.logoAndClose}>
           <div className={classes.gap}/>
-          <img src={logo} style={{marginTop: "3%"}} className={classes.logoImg}/>
+          <img src={logo} className={classes.signInLogoImg}/>
           <div className={classes.endDiv}>
             <IconButton onClick={close}>
               <Close/>
             </IconButton>
           </div>
         </div>
-        <DialogContent style={{display: "flex", flexDirection: "column"}}>
+        <DialogContent className={classes.flexColumn}>
           {props.isSignUp && (
             <div>
-              <Grid
-                container
-                direction="row"
-              >
+              <Grid container direction="row">
                 <TextField
                   autoFocus
                   id="firstName"
                   label="First Name"
-                  style={{width: 275}}
+                  className={classes.nameField}
                   value={firstName}
                   onChange={handleFirstNameChange}
                   error={!firstNameValid}
@@ -196,14 +196,13 @@ const SignInWindow: FunctionComponent<Props> = (props: Props) => {
                 <TextField
                   id="lastName"
                   label="Last Name"
-                  style={{width: 275}}
+                  className={classes.nameField}
                   value={lastName}
                   onChange={handleLastNameChange}
                   error={!lastNameValid}
                 />
               </Grid>
-              <div style={{marginTop: "1%"}} />
-              <FormControl fullWidth error={!groupValid} >
+              <FormControl fullWidth error={!groupValid} className={classes.groupField}>
                 <InputLabel id="group">Group</InputLabel>
                 <Select
                   id="group"
@@ -213,7 +212,6 @@ const SignInWindow: FunctionComponent<Props> = (props: Props) => {
                   {props.groups.map((group: Group, index: number) => <MenuItem key={index} value={group.id.toString()}>{group.name}</MenuItem>)}
                 </Select>
               </FormControl>
-              <div style={{marginTop: "1%"}} />
             </div>
           )}
           <TextField
@@ -224,8 +222,8 @@ const SignInWindow: FunctionComponent<Props> = (props: Props) => {
             onChange={handleUsernameChange}
             error={!usernameValid}
           />
-          <div style={{marginTop: "1%"}} />
           <TextField
+            className={classes.marginTop1Percent}
             id="password"
             label="Password"
             type="password"
@@ -233,9 +231,9 @@ const SignInWindow: FunctionComponent<Props> = (props: Props) => {
             onChange={handlePasswordChange}
             error={!passwordValid}
           />
-          {props.isSignUp && <div style={{marginTop: "1%"}} />}
           {props.isSignUp && (
             <TextField
+              className={classes.marginTop1Percent}
               id="confirmPassword"
               label="Confirm Password"
               type="password"
@@ -245,7 +243,7 @@ const SignInWindow: FunctionComponent<Props> = (props: Props) => {
             />
           )}
         </DialogContent>
-        <DialogActions disableSpacing style={{display: "flex", flexDirection: "column"}}>
+        <DialogActions disableSpacing className={classes.flexColumn}>
           <Button
             onClick={signInOrUp}
             variant="contained"
@@ -253,8 +251,7 @@ const SignInWindow: FunctionComponent<Props> = (props: Props) => {
             size="large">
             {props.isSignUp ? "Sign Up" : "Sign In"}
           </Button>
-          <div style={{marginTop: 8}}/>
-          <Button onClick={toggleSignUp} color="primary" size="small">
+          <Button onClick={toggleSignUp} color="primary" size="small" className={classes.marginTop10}>
             {props.isSignUp ? "Return to sign in" : "Create an account"}
           </Button>
         </DialogActions>
@@ -264,7 +261,7 @@ const SignInWindow: FunctionComponent<Props> = (props: Props) => {
         open={props.isToastOpen}
         autoHideDuration={3000}
         onClose={closeToast}
-        anchorOrigin={{vertical: 'bottom', horizontal: 'center'}}
+        anchorOrigin={{vertical: "bottom", horizontal: "center"}}
       >
         <Alert onClose={closeToast} severity="success">
           {props.isSignedIn ? "Signed in" : "Signed out"}

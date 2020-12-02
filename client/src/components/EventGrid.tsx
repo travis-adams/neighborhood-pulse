@@ -1,14 +1,15 @@
-import React, { FunctionComponent } from 'react';
-import { Grid, Card, CardActionArea, CardContent, IconButton, Typography } from '@material-ui/core';
+import React, { FunctionComponent } from "react";
+import { Grid, Card, CardActionArea, CardContent, IconButton, Typography } from "@material-ui/core";
 import Event from "../domain/Event";
 import useStyles from "../css";
 import EventService from "../service/EventService";
-import UserSaved from '../../public/user-saved.svg';
-import UserUnsaved from '../../public/user-unsaved.svg';
-import GroupSaved from '../../public/group-saved.svg';
-import GroupUnsaved from '../../public/group-unsaved.svg';
-import TabOption from '../domain/TabOption';
-import User from '../domain/User';
+import UserSaved from "../../public/user-saved.svg";
+import UserUnsaved from "../../public/user-unsaved.svg";
+import GroupSaved from "../../public/group-saved.svg";
+import GroupUnsaved from "../../public/group-unsaved.svg";
+import TabOption from "../domain/TabOption";
+import User from "../domain/User";
+import "datejs";
 
 interface Props {
   events: Event[];
@@ -23,8 +24,6 @@ interface Props {
   closeEvent: () => void;
   isEventExpanded: boolean;
 }
-
-const monthsShort = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
 const eventService = new EventService();
 
@@ -92,74 +91,41 @@ const EventGrid: FunctionComponent<Props> = (props: Props) => {
     >
       {props.events.map((event, index) => {
          return (
-          <Grid
-            container
-            direction="row"
-            key={index}
-          >
-            <Card className={classes.event}>
-              {/* vvv VERTICAL SAVE BUTTONS vvv */}
-              {/* <CardContent style={{textAlign: 'center', backgroundColor: '#eeeeff', display: 'flex'}}>
-                {props.isSignedIn &&
-                  <div style={{display: 'flex', flexDirection: 'column', justifyContent: 'center'}}>
-                    <IconButton
-                      onClick={() => handleUserSaveButton(event)}
-                      size="small"
-                      style={{marginLeft: -7, marginBottom: 5}}
-                    >
-                      {event.userSaved ? <UserSaved width='35' height='35' viewBox='0 0 400 492.6014319809069' /> : <UserUnsaved width='35' height='35' viewBox='0 0 400 492.6014319809069' />}
-                    </IconButton>
-                    <IconButton
-                      // onClick={() => handleGroupSaveButton(event)}
-                      size="small"
-                    >
-                      {event.groupSaved ? <GroupSaved width='35' height='35' viewBox='0 0 400 409.5238095238095' /> : <GroupUnsaved width='35' height='35' viewBox='0 0 400 409.5238095238095' />}
-                    </IconButton>
-                  </div>
-                }
-                <div style={{display: 'flex', flexDirection: 'column'}}>
+          <Grid item key={index}>
+            <Card className={classes.gridCard}>
+              <CardContent className={classes.gridDateAndSave}>
+                <div className={classes.flexColumn}>
                   <Typography variant="h6">
-                    {monthsShort[event.date.getMonth()]}
+                    {event.date.toString("MMM")}
                   </Typography>
                   <Typography variant="h4">
-                    {('0' + event.date.getDate()).slice(-2)}
-                  </Typography>
-                </div>
-              </CardContent> */}
-              {/* vvv HORIZONTAL SAVE BUTTONS vvv */}
-              <CardContent style={{textAlign: 'center', backgroundColor: '#eeeeff'}}>
-                <div style={{display: 'flex', flexDirection: 'column'}}>
-                  <Typography variant="h6">
-                    {monthsShort[event.date.getMonth()]}
-                  </Typography>
-                  <Typography variant="h4">
-                    {('0' + event.date.getDate()).slice(-2)}
+                    {event.date.toString("dd")}
                   </Typography>
                 </div>
                 {props.isSignedIn &&
-                  <div style={{display: 'flex'}}>
+                  <div className={classes.flex}>
                     <IconButton
                       onClick={() => handleUserSaveButton(event)}
                       size="small"
                     >
-                      {event.userSaved ? <UserSaved width='35' height='35' viewBox='0 0 400 492.6014319809069' /> : <UserUnsaved width='35' height='35' viewBox='0 0 400 492.6014319809069' />}
+                      {event.userSaved ? <UserSaved width="35" height="35" viewBox="0 0 400 492.6014319809069"/> : <UserUnsaved width="35" height="35" viewBox="0 0 400 492.6014319809069"/>}
                     </IconButton>
                     <IconButton
                       onClick={() => handleGroupSaveButton(event)}
                       size="small"
                     >
-                      {event.groupSaved ? <GroupSaved width='35' height='35' viewBox='0 0 400 409.5238095238095' /> : <GroupUnsaved width='35' height='35' viewBox='0 0 400 409.5238095238095' />}
+                      {event.groupSaved ? <GroupSaved width="35" height="35" viewBox="0 0 400 409.5238095238095"/> : <GroupUnsaved width="35" height="35" viewBox="0 0 400 409.5238095238095"/>}
                     </IconButton>
                   </div>
                 }
               </CardContent>
               <CardActionArea onClick={() => ((event.id === props.expandedEvent?.id) && props.isEventExpanded) ? props.closeEvent() : props.expandEvent(event)}>
-                <CardContent style={{textOverflow: "ellipsis"}}>
+                <CardContent>
                   <Typography variant="h6" noWrap>
                     {event.name}
                   </Typography>
                   <Typography variant="body2">
-                    {event.date.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })}
+                    {event.date.toString("t")}
                   </Typography>
                   {!props.onlineOnly &&
                     <div>

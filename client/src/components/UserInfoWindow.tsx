@@ -1,12 +1,12 @@
-import React, { FunctionComponent, useState, useEffect } from 'react';
+import React, { FunctionComponent, useState, useEffect } from "react";
 import { Button, TextField, Dialog, IconButton, Card, CardContent, CardHeader, Grid,
-  Select, InputLabel, MenuItem, FormControl } from '@material-ui/core';
-import Alert from '@material-ui/lab/Alert';
-import { Close } from '@material-ui/icons';
+  Select, InputLabel, MenuItem, FormControl } from "@material-ui/core";
+import Alert from "@material-ui/lab/Alert";
+import { Close } from "@material-ui/icons";
 import EventService from "../service/EventService";
-import useStyles from '../css';
-import User from '../domain/User';
-import Group from '../domain/Group';
+import useStyles from "../css";
+import User from "../domain/User";
+import Group from "../domain/Group";
 
 interface Props {
   open: boolean;
@@ -20,7 +20,6 @@ interface Props {
 const eventService = new EventService();
 
 const UserInfoWindow: FunctionComponent<Props> = (props: Props) => {
-  const logo = "c1-logo-full.png";
   const classes = useStyles();
   const [isEditing, setIsEditing] = useState<boolean>(false);
   // fields
@@ -73,20 +72,20 @@ const UserInfoWindow: FunctionComponent<Props> = (props: Props) => {
 
   const close = () => {
     props.setOpen(false);
-    stopEditing();
+    cancelEditing();
   }
 
   const startEditing = () => {
     setIsEditing(true);
   }
 
-  const stopEditing = () => {
-    resetFields()
+  const cancelEditing = () => {
+    resetFields();
     setIsEditing(false);
   }
 
   // Handles modifying the user's info
-  const modifyUser = async () => {
+  const submitUserEdit = async () => {
     try {
       let fieldsMissing = false;
       if (firstName == null || firstName == "") {
@@ -118,7 +117,8 @@ const UserInfoWindow: FunctionComponent<Props> = (props: Props) => {
       // Modify user info and set user
       const newUser: User = await eventService.userModify(props.user.id, firstName, lastName, parseInt(group), username, props.token);
       props.setUser(newUser);
-      stopEditing();
+      setErrorMessage("");
+      setIsEditing(false);
     } catch (error) {
       setErrorMessage(error.message);
     }
@@ -135,8 +135,9 @@ const UserInfoWindow: FunctionComponent<Props> = (props: Props) => {
 
   return (
     <Dialog open={props.open} onClose={close} scroll="paper" fullWidth maxWidth="sm">
-      <Card style={{marginTop: -10}}>
+      <Card>
         <CardHeader
+          className={classes.cardHeader}
           title="Account Details"
           action={
             <IconButton onClick={close}>
@@ -145,16 +146,12 @@ const UserInfoWindow: FunctionComponent<Props> = (props: Props) => {
           }
         />
         <CardContent>
-          <div style={{marginTop: -15}} />
-          <Grid
-            container
-            direction="row"
-          >
+          <Grid container direction="row">
             <TextField
               disabled={!isEditing}
               id="firstName"
               label="First Name"
-              style={{width: 275}}
+              className={classes.nameField}
               value={firstName}
               onChange={handleFirstNameChange}
               error={!firstNameValid}
@@ -174,7 +171,7 @@ const UserInfoWindow: FunctionComponent<Props> = (props: Props) => {
               disabled={!isEditing}
               id="lastName"
               label="Last Name"
-              style={{width: 275}}
+              className={classes.nameField}
               value={lastName}
               onChange={handleLastNameChange}
               error={!lastNameValid}
@@ -191,8 +188,7 @@ const UserInfoWindow: FunctionComponent<Props> = (props: Props) => {
               }}
             />
           </Grid>
-          <div style={{marginTop: "1%"}} />
-          <FormControl fullWidth error={!groupValid} disabled={!isEditing}>
+          <FormControl fullWidth error={!groupValid} disabled={!isEditing} className={classes.groupField}>
             <InputLabel
               id="group"
               classes={{
@@ -215,7 +211,6 @@ const UserInfoWindow: FunctionComponent<Props> = (props: Props) => {
               {props.groups.map((group: Group, index: number) => <MenuItem key={index} value={group.id.toString()}>{group.name}</MenuItem>)}
             </Select>
           </FormControl>
-          <div style={{marginTop: "1%"}} />
           <TextField
             disabled={!isEditing}
             fullWidth
@@ -236,11 +231,11 @@ const UserInfoWindow: FunctionComponent<Props> = (props: Props) => {
               }
             }}
           />
-          <div style={{display: 'flex', justifyContent: 'flex-end', marginTop: 30, marginBottom: -10}}>
+          <div className={classes.buttonsRight}>
             <Button
               color="primary"
               size="large"
-              onClick={isEditing ? stopEditing : startEditing}
+              onClick={isEditing ? cancelEditing: startEditing}
             >
               {isEditing ? "Cancel" : "Edit Details"}
             </Button>
@@ -248,8 +243,8 @@ const UserInfoWindow: FunctionComponent<Props> = (props: Props) => {
               variant="contained"
               color="primary"
               size="large"
-              className={classes.createButton}
-              onClick={isEditing ? modifyUser : close}
+              className={classes.submitButton}
+              onClick={isEditing ? submitUserEdit : close}
             >
               {isEditing ? "Submit Changes" : "Done"}
             </Button>

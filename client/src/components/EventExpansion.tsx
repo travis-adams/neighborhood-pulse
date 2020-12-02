@@ -1,11 +1,11 @@
-import React, { FunctionComponent, useEffect, useState } from 'react';
-import useStyles from '../css';
-import Event from '../domain/Event';
+import React, { FunctionComponent, useEffect, useState } from "react";
+import useStyles from "../css";
+import Event from "../domain/Event";
 import Comment from "../domain/Comment";
 import Filters from "../domain/Filters";
 import { Collapse, Card, CardContent, CardHeader, Typography, Divider,
-  Link, IconButton, TextField, Button } from '@material-ui/core';
-import { AccessTime, RoomOutlined, LinkOutlined, Close } from '@material-ui/icons';
+  Link, IconButton, TextField, Button } from "@material-ui/core";
+import { AccessTime, RoomOutlined, LinkOutlined, Close } from "@material-ui/icons";
 
 interface Props {
   filters: Filters;
@@ -21,11 +21,11 @@ const EventExpansion: FunctionComponent<Props> = (props: Props) => {
   const classes = useStyles();
   const [commentText, setCommentText] = useState<string>("");
 
-  // unfortunate hackery is required here, since forcing the Collapse component to be 40% wide (width: '40% !important')
-  // breaks the collapsing animation. hopefully we can fix this
+  // unfortunate hackery is required here, since forcing the Collapse component to be 40% wide (width: "40% !important")
+  // breaks the collapsing animation.
   const width: number  = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
-  const fortyPercent: string = (width * 0.4).toString() + 'px';
-  const fiftyPercent: string = (width * 0.5).toString() + 'px';
+  const fortyPercent: string = (width * 0.4).toString() + "px";
+  const fiftyPercent: string = (width * 0.5).toString() + "px";
 
   const handleCommentChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setCommentText(event.target.value);
@@ -41,7 +41,9 @@ const EventExpansion: FunctionComponent<Props> = (props: Props) => {
   }
 
   useEffect(() => {
-    clearComment();
+    if (props.isEventExpanded) {
+      clearComment();
+    }
   },[props.event, props.isEventExpanded]);
 
   return (
@@ -50,7 +52,7 @@ const EventExpansion: FunctionComponent<Props> = (props: Props) => {
       in={props.isEventExpanded}
       className={classes.collapse}
     >
-      <Card style={{width: props.filters.online ? fiftyPercent : fortyPercent, height: '100%', overflow: 'auto'}} >
+      <Card style={{width: props.filters.online ? fiftyPercent : fortyPercent, height: "100%", overflow: "auto"}}>
         <CardHeader
           title={props.event?.name}
           action={
@@ -60,24 +62,23 @@ const EventExpansion: FunctionComponent<Props> = (props: Props) => {
           }
         />
         <CardContent>
-          <div style={{marginTop: -18}} />
-          <Divider/>
-          <div style={{display: 'flex', flexDirection: 'column', paddingTop: 15, paddingBottom: 15}}>
-            <div style={{display: 'flex', alignItems: 'center'}}>
-              <AccessTime style={{marginRight: 10}} />
-              <div style={{display: 'flex', flexDirection: 'column'}}>
+          <Divider className={classes.marginTopMinus20}/>
+          <div className={classes.eventFields}>
+            <div className={classes.expandDate}>
+              <AccessTime className={classes.marginRight10}/>
+              <div className={classes.flexColumn}>
                 <Typography variant="body1" component="p">
-                  {props.event?.date.toDateString()}
+                  {props.event?.date.toString("D")}
                 </Typography>
                 <Typography variant="body1" component="p">
-                  {props.event?.date.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true})}
+                  {props.event?.date.toString("t")}
                 </Typography>
               </div>
             </div>
             {!props.filters.online &&
-              <div style={{display: 'flex', alignItems: 'center', paddingTop: 15}}>
-                <RoomOutlined style={{marginRight: 10}}/>
-                <div style={{display: 'flex', flexDirection: 'column'}}>
+              <div className={classes.expandAddressAndLink}>
+                <RoomOutlined className={classes.marginRight10}/>
+                <div className={classes.flexColumn}>
                   <Typography variant="body1" component="p">
                     {props.event?.location}
                   </Typography>
@@ -87,8 +88,8 @@ const EventExpansion: FunctionComponent<Props> = (props: Props) => {
                 </div>
               </div>
             }
-            <div style={{display: 'flex', alignItems: 'center', paddingTop: 15}}>
-              <LinkOutlined style={{marginRight: 10}}/>
+            <div className={classes.expandAddressAndLink}>
+              <LinkOutlined className={classes.marginRight10}/>
               <Typography variant="body1" component="p">
                 <Link target="_blank" rel="noopener noreferrer" href={props.event?.link}>
                   {props.event?.link}
@@ -99,21 +100,17 @@ const EventExpansion: FunctionComponent<Props> = (props: Props) => {
           <Divider/>
           {props.event?.desc &&
             <div>
-              <div style={{paddingBottom: 15}} />
-              <Typography variant="body2" component="p">
+              <Typography className={classes.expandDesc} variant="body2" component="p">
                 {props.event?.desc}
               </Typography>
-              <div style={{paddingTop: 15}} />
               <Divider/>
             </div>
           }
-          <div style={{paddingBottom: 10}} />
-          <div style={{display: 'flex', flexDirection: 'column'}}>
+          <div className={classes.commentSection}>
             <Typography variant="h6" component="h6">
               Comments
             </Typography>
-            <div style={{paddingBottom: 7}} />
-            <div>
+            <div className={classes.marginTop10}>
               <TextField
                 rows={2}
                 multiline
@@ -125,11 +122,11 @@ const EventExpansion: FunctionComponent<Props> = (props: Props) => {
                 disabled={!props.isSignedIn}
               />
               {props.isSignedIn &&
-                <div style={{display: 'flex', justifyContent: 'flex-end', marginTop: 5}}>
+                <div className={classes.commentActions}>
                   <Button
                     color="primary"
                     disabled={!commentText}
-                    onClick={() => clearComment()}
+                    onClick={clearComment}
                   >
                     Cancel
                   </Button>
@@ -148,15 +145,13 @@ const EventExpansion: FunctionComponent<Props> = (props: Props) => {
             {props?.comments.slice(0).reverse().map((comment: Comment, index: number) => {
               return (
                 <div key={index}>
-                  <div style={{marginTop: 5}}/>
-                  <Divider/>
-                  <div style={{marginBottom: 5}}/>
-                  <div style={{display: 'flex'}}>
-                    <Typography variant="subtitle2" component="p" style={{marginRight: 'auto'}}>
+                  <Divider className={classes.marginTopBottom5}/>
+                  <div className={classes.flexWithGap}>
+                    <Typography variant="subtitle2" component="p">
                       {comment.username}
                     </Typography>
-                    <Typography variant="body2" color={'textSecondary'} component="p" style={{marginLeft: 'auto'}}>
-                      {comment.timestamp.toDateString() + ' ' + comment.timestamp.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true})}
+                    <Typography variant="body2" color={"textSecondary"} component="p">
+                      {comment.timestamp.toString("F")}
                     </Typography>
                   </div>
                   <Typography variant="body1" component="p">

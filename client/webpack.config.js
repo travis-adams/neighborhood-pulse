@@ -24,7 +24,7 @@ module.exports = {
       },
       {
         test: /\.svg$/,
-        use: ['@svgr/webpack'],
+        use: ["@svgr/webpack"],
       }
     ]
   },
@@ -37,7 +37,7 @@ module.exports = {
   devServer: {
     contentBase: path.join(__dirname, "public/"),
     port: 3000,
-    host: '0.0.0.0',
+    host: "0.0.0.0",
     publicPath: "http://0.0.0.0:3000/dist/",
     hotOnly: true
   },
