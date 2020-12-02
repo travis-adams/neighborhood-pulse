@@ -66,16 +66,15 @@ const MapComponent: FunctionComponent<Props> = (props: Props) => {
                   position={event.position}
                   onCloseClick={() => {setOpenPin(null); props.closeEvent();}}
                 >
-                  <div style={{marginTop: 5}}>
-                    <Typography variant="subtitle2" component="p">
+                  <div>
+                    <Typography variant="subtitle2" component="p" className={classes.marginTopBottom5}>
                       {event.name}
                     </Typography>
-                    <div style={{marginTop: 5}}/>
                     <Typography variant="caption" component="p">
                       {event?.desc}
                     </Typography>
                     <Button
-                      style={{marginLeft: -4}}
+                      className={classes.moreDetails}
                       color="primary"
                       size="small"
                       onClick={() => {props.expandEvent(event);}}
@@ -109,15 +108,14 @@ const MapComponent: FunctionComponent<Props> = (props: Props) => {
                 position={poi.position}
                 onCloseClick={() => {setOpenPin(null); props.closeEvent();}}
               >
-                <div style={{marginTop: 5}}>
-                  <Typography variant="subtitle2" component="p">
+                <div>
+                  <Typography variant="subtitle2" component="p" className={classes.marginTopBottom5}>
                     {poi.name}
                   </Typography>
-                  <div style={{marginTop: 5}}/>
                   <Typography variant="caption" component="p">
                     {poi?.desc}
                   </Typography>
-                  <Typography variant="caption" component="p">
+                  <Typography variant="caption" component="p" className={classes.poiLink}>
                     <Link target="_blank" rel="noopener noreferrer" href={poi.link}>
                       {poi.link}
                     </Link>

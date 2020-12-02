@@ -135,8 +135,9 @@ const UserInfoWindow: FunctionComponent<Props> = (props: Props) => {
 
   return (
     <Dialog open={props.open} onClose={close} scroll="paper" fullWidth maxWidth="sm">
-      <Card style={{marginTop: -10}}>
+      <Card>
         <CardHeader
+          className={classes.cardHeader}
           title="Account Details"
           action={
             <IconButton onClick={close}>
@@ -145,7 +146,6 @@ const UserInfoWindow: FunctionComponent<Props> = (props: Props) => {
           }
         />
         <CardContent>
-          <div style={{marginTop: -15}} />
           <Grid
             container
             direction="row"
@@ -154,7 +154,7 @@ const UserInfoWindow: FunctionComponent<Props> = (props: Props) => {
               disabled={!isEditing}
               id="firstName"
               label="First Name"
-              style={{width: 275}}
+              className={classes.nameField}
               value={firstName}
               onChange={handleFirstNameChange}
               error={!firstNameValid}
@@ -174,7 +174,7 @@ const UserInfoWindow: FunctionComponent<Props> = (props: Props) => {
               disabled={!isEditing}
               id="lastName"
               label="Last Name"
-              style={{width: 275}}
+              className={classes.nameField}
               value={lastName}
               onChange={handleLastNameChange}
               error={!lastNameValid}
@@ -191,8 +191,7 @@ const UserInfoWindow: FunctionComponent<Props> = (props: Props) => {
               }}
             />
           </Grid>
-          <div style={{marginTop: "1%"}} />
-          <FormControl fullWidth error={!groupValid} disabled={!isEditing}>
+          <FormControl fullWidth error={!groupValid} disabled={!isEditing} className={classes.groupField}>
             <InputLabel
               id="group"
               classes={{
@@ -215,7 +214,6 @@ const UserInfoWindow: FunctionComponent<Props> = (props: Props) => {
               {props.groups.map((group: Group, index: number) => <MenuItem key={index} value={group.id.toString()}>{group.name}</MenuItem>)}
             </Select>
           </FormControl>
-          <div style={{marginTop: "1%"}} />
           <TextField
             disabled={!isEditing}
             fullWidth
@@ -236,7 +234,7 @@ const UserInfoWindow: FunctionComponent<Props> = (props: Props) => {
               }
             }}
           />
-          <div style={{display: 'flex', justifyContent: 'flex-end', marginTop: 30, marginBottom: -10}}>
+          <div className={classes.buttonsRight}>
             <Button
               color="primary"
               size="large"
@@ -248,7 +246,7 @@ const UserInfoWindow: FunctionComponent<Props> = (props: Props) => {
               variant="contained"
               color="primary"
               size="large"
-              className={classes.createButton}
+              className={classes.submitButton}
               onClick={isEditing ? submitUserEdit : close}
             >
               {isEditing ? "Submit Changes" : "Done"}

@@ -91,14 +91,10 @@ const EventGrid: FunctionComponent<Props> = (props: Props) => {
     >
       {props.events.map((event, index) => {
          return (
-          <Grid
-            container
-            direction="row"
-            key={index}
-          >
-            <Card className={classes.event}>
-              <CardContent style={{textAlign: 'center', backgroundColor: '#eeeeff'}}>
-                <div style={{display: 'flex', flexDirection: 'column'}}>
+          <Grid item key={index}>
+            <Card className={classes.gridCard}>
+              <CardContent className={classes.gridDateAndSave}>
+                <div className={classes.flexColumn}>
                   <Typography variant="h6">
                     {event.date.toString('MMM')}
                   </Typography>
@@ -107,7 +103,7 @@ const EventGrid: FunctionComponent<Props> = (props: Props) => {
                   </Typography>
                 </div>
                 {props.isSignedIn &&
-                  <div style={{display: 'flex'}}>
+                  <div className={classes.flex}>
                     <IconButton
                       onClick={() => handleUserSaveButton(event)}
                       size="small"

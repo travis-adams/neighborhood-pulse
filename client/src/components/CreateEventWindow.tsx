@@ -185,9 +185,7 @@ const CreateEventWindow: FunctionComponent<Props> = (props: Props) => {
         link: link,
         position: online ? null : addressLatLng
       };
-      const newEvent = await eventService.submitEvent(event, props.username, props.token).then((fetchedEvent: Event) => {
-        return fetchedEvent;
-      });
+      const newEvent = await eventService.submitEvent(event, props.username, props.token);
       props.setTab(TabOption.MyCreatedEvents);
       props.expandEvent(newEvent);
       props.setOpen(false);
@@ -202,8 +200,9 @@ const CreateEventWindow: FunctionComponent<Props> = (props: Props) => {
   return (
     <div>
       <Dialog open={props.open} onClose={close} scroll="body" fullWidth maxWidth="md">
-        <Card style={{marginTop: -10}}>
+        <Card >
           <CardHeader
+            className={classes.cardHeader}
             title="Create Event"
             action={
               <IconButton onClick={close}>
@@ -212,7 +211,6 @@ const CreateEventWindow: FunctionComponent<Props> = (props: Props) => {
             }
           />
           <CardContent>
-            <div style={{marginTop: -15}} />
             <TextField
               required
               error={!titleValid}
@@ -223,23 +221,22 @@ const CreateEventWindow: FunctionComponent<Props> = (props: Props) => {
               value={title}
               onChange={handleTitleChange}
             />
-            <div style={{paddingTop: 15}} />
-            <Divider/>
-            <div style={{display: 'flex', flexDirection: 'column', paddingTop: 15, paddingBottom: 15}}>
-              <div style={{display: 'flex', alignItems: 'center', paddingBottom: 15}}>
-                <LocalOfferOutlined style={{marginRight: 10}} />
+            <Divider className={classes.marginTop15}/>
+            <div className={classes.eventFields}>
+              <div className={classes.createCat}>
+                <LocalOfferOutlined className={classes.marginRight10} />
                 <Autocomplete
                   freeSolo
                   options={props.categories}
-                  style={{width: 300}}
+                  className={classes.createCatWidth}
                   onInputChange={handleCatChange}
                   renderInput={(params) => (
                     <TextField {...params} label="Category" variant="filled" />
                   )}
                 />
               </div>
-              <div style={{display: 'flex', alignItems: 'center'}}>
-                <AccessTime style={{marginRight: 10}} />
+              <div className={classes.createDateAndLink}>
+                <AccessTime className={classes.marginRight10} />
                 <MuiPickersUtilsProvider utils={DateFnsUtils}>
                   <DatePicker
                     required
@@ -250,7 +247,7 @@ const CreateEventWindow: FunctionComponent<Props> = (props: Props) => {
                     inputVariant="filled"
                     value={date}
                     onChange={handleDateChange}
-                    style={{marginRight: 10}}
+                    className={classes.marginRight10}
                   />
                   <TimePicker
                     required
@@ -263,8 +260,8 @@ const CreateEventWindow: FunctionComponent<Props> = (props: Props) => {
                   />
                 </MuiPickersUtilsProvider>
               </div>
-              <div style={{display: 'flex', alignItems: 'center', paddingTop: 15, paddingBottom: 15}}>
-                <RoomOutlined style={{marginRight: 10}}/>
+              <div className={classes.createAddressOnline}>
+                <RoomOutlined className={classes.marginRight10}/>
                 <AddressField
                   valid={addressValid}
                   setValid={setAddressValid}
@@ -284,8 +281,8 @@ const CreateEventWindow: FunctionComponent<Props> = (props: Props) => {
                   labelPlacement="top"
                 />
               </div>
-              <div style={{display: 'flex', alignItems: 'center'}}>
-                <LinkOutlined style={{marginRight: 10}}/>
+              <div className={classes.createDateAndLink}>
+                <LinkOutlined className={classes.marginRight10}/>
                 <TextField
                   required
                   error={!linkValid}
@@ -299,8 +296,8 @@ const CreateEventWindow: FunctionComponent<Props> = (props: Props) => {
               </div>
             </div>
             <Divider/>
-            <div style={{paddingBottom: 15}} />
             <TextField
+              className={classes.marginTop15}
               error={!descValid}
               helperText={descValid ? null : "Description cannot exceed 1500 characters"}
               rows={5}
@@ -311,7 +308,7 @@ const CreateEventWindow: FunctionComponent<Props> = (props: Props) => {
               value={desc}
               onChange={handleDescChange}
             />
-            <div style={{display: 'flex', justifyContent: 'flex-end', marginTop: 25, marginBottom: -10}}>
+            <div className={classes.buttonsRight}>
               <Button
                 color="primary"
                 size="large"
@@ -323,7 +320,7 @@ const CreateEventWindow: FunctionComponent<Props> = (props: Props) => {
                 variant="contained"
                 color="primary"
                 size="large"
-                className={classes.createButton}
+                className={classes.submitButton}
                 onClick={createEvent}
               >
                 Create
@@ -353,7 +350,7 @@ const CreateEventWindow: FunctionComponent<Props> = (props: Props) => {
         </DialogActions>
       </Dialog>
       <Snackbar
-        style={{zIndex: 4}}
+        className={classes.createToast}
         open={isToastOpen}
         autoHideDuration={3000}
         onClose={closeToast}

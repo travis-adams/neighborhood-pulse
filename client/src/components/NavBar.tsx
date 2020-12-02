@@ -101,7 +101,7 @@ const NavBar: FunctionComponent<Props> = (props: Props) => {
     <AppBar position="static" className={classes.navBar}>
       <Toolbar>
         <div className={classes.beginDiv}>
-          <img src={logo} className={classes.logoImg}/>
+          <img src={logo} className={classes.navLogoImg}/>
           {props.tab == TabOption.NearbyEvents &&
               <Button
                 className={classes.filterButton}

@@ -60,12 +60,11 @@ const EventExpansion: FunctionComponent<Props> = (props: Props) => {
           }
         />
         <CardContent>
-          <div style={{marginTop: -18}} />
-          <Divider/>
-          <div style={{display: 'flex', flexDirection: 'column', paddingTop: 15, paddingBottom: 15}}>
-            <div style={{display: 'flex', alignItems: 'center'}}>
-              <AccessTime style={{marginRight: 10}} />
-              <div style={{display: 'flex', flexDirection: 'column'}}>
+          <Divider className={classes.marginTopMinus20}/>
+          <div className={classes.eventFields}>
+            <div className={classes.expandDate}>
+              <AccessTime className={classes.marginRight10}/>
+              <div className={classes.flexColumn}>
                 <Typography variant="body1" component="p">
                   {props.event?.date.toString('D')}
                 </Typography>
@@ -75,9 +74,9 @@ const EventExpansion: FunctionComponent<Props> = (props: Props) => {
               </div>
             </div>
             {!props.filters.online &&
-              <div style={{display: 'flex', alignItems: 'center', paddingTop: 15}}>
-                <RoomOutlined style={{marginRight: 10}}/>
-                <div style={{display: 'flex', flexDirection: 'column'}}>
+              <div className={classes.expandAddressAndLink}>
+                <RoomOutlined className={classes.marginRight10}/>
+                <div className={classes.flexColumn}>
                   <Typography variant="body1" component="p">
                     {props.event?.location}
                   </Typography>
@@ -87,8 +86,8 @@ const EventExpansion: FunctionComponent<Props> = (props: Props) => {
                 </div>
               </div>
             }
-            <div style={{display: 'flex', alignItems: 'center', paddingTop: 15}}>
-              <LinkOutlined style={{marginRight: 10}}/>
+            <div className={classes.expandAddressAndLink}>
+              <LinkOutlined className={classes.marginRight10}/>
               <Typography variant="body1" component="p">
                 <Link target="_blank" rel="noopener noreferrer" href={props.event?.link}>
                   {props.event?.link}
@@ -99,21 +98,17 @@ const EventExpansion: FunctionComponent<Props> = (props: Props) => {
           <Divider/>
           {props.event?.desc &&
             <div>
-              <div style={{paddingBottom: 15}} />
-              <Typography variant="body2" component="p">
+              <Typography className={classes.expandDesc} variant="body2" component="p">
                 {props.event?.desc}
               </Typography>
-              <div style={{paddingTop: 15}} />
               <Divider/>
             </div>
           }
-          <div style={{paddingBottom: 10}} />
-          <div style={{display: 'flex', flexDirection: 'column'}}>
+          <div className={classes.commentSection}>
             <Typography variant="h6" component="h6">
               Comments
             </Typography>
-            <div style={{paddingBottom: 7}} />
-            <div>
+            <div className={classes.marginTop10}>
               <TextField
                 rows={2}
                 multiline
@@ -125,7 +120,7 @@ const EventExpansion: FunctionComponent<Props> = (props: Props) => {
                 disabled={!props.isSignedIn}
               />
               {props.isSignedIn &&
-                <div style={{display: 'flex', justifyContent: 'flex-end', marginTop: 5}}>
+                <div className={classes.commentActions}>
                   <Button
                     color="primary"
                     disabled={!commentText}
@@ -148,14 +143,12 @@ const EventExpansion: FunctionComponent<Props> = (props: Props) => {
             {props?.comments.slice(0).reverse().map((comment: Comment, index: number) => {
               return (
                 <div key={index}>
-                  <div style={{marginTop: 5}}/>
-                  <Divider/>
-                  <div style={{marginBottom: 5}}/>
-                  <div style={{display: 'flex'}}>
-                    <Typography variant="subtitle2" component="p" style={{marginRight: 'auto'}}>
+                  <Divider className={classes.marginTopBottom5}/>
+                  <div className={classes.flexWithGap}>
+                    <Typography variant="subtitle2" component="p">
                       {comment.username}
                     </Typography>
-                    <Typography variant="body2" color={'textSecondary'} component="p" style={{marginLeft: 'auto'}}>
+                    <Typography variant="body2" color={'textSecondary'} component="p">
                       {comment.timestamp.toString('F')}
                     </Typography>
                   </div>

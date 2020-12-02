@@ -171,16 +171,16 @@ const SignInWindow: FunctionComponent<Props> = (props: Props) => {
   return (
     <div>
       <Dialog open={props.open} onClose={close}>
-        <div style={{display: "flex", alignItems: "flex-start"}}>
+        <div className={classes.logoAndClose}>
           <div className={classes.gap}/>
-          <img src={logo} style={{marginTop: "3%"}} className={classes.logoImg}/>
+          <img src={logo} className={classes.signInLogoImg}/>
           <div className={classes.endDiv}>
             <IconButton onClick={close}>
               <Close/>
             </IconButton>
           </div>
         </div>
-        <DialogContent style={{display: "flex", flexDirection: "column"}}>
+        <DialogContent className={classes.flexColumn}>
           {props.isSignUp && (
             <div>
               <Grid
@@ -191,7 +191,7 @@ const SignInWindow: FunctionComponent<Props> = (props: Props) => {
                   autoFocus
                   id="firstName"
                   label="First Name"
-                  style={{width: 275}}
+                  className={classes.nameField}
                   value={firstName}
                   onChange={handleFirstNameChange}
                   error={!firstNameValid}
@@ -199,14 +199,13 @@ const SignInWindow: FunctionComponent<Props> = (props: Props) => {
                 <TextField
                   id="lastName"
                   label="Last Name"
-                  style={{width: 275}}
+                  className={classes.nameField}
                   value={lastName}
                   onChange={handleLastNameChange}
                   error={!lastNameValid}
                 />
               </Grid>
-              <div style={{marginTop: "1%"}} />
-              <FormControl fullWidth error={!groupValid} >
+              <FormControl fullWidth error={!groupValid} className={classes.groupField}>
                 <InputLabel id="group">Group</InputLabel>
                 <Select
                   id="group"
@@ -216,7 +215,6 @@ const SignInWindow: FunctionComponent<Props> = (props: Props) => {
                   {props.groups.map((group: Group, index: number) => <MenuItem key={index} value={group.id.toString()}>{group.name}</MenuItem>)}
                 </Select>
               </FormControl>
-              <div style={{marginTop: "1%"}} />
             </div>
           )}
           <TextField
@@ -227,8 +225,8 @@ const SignInWindow: FunctionComponent<Props> = (props: Props) => {
             onChange={handleUsernameChange}
             error={!usernameValid}
           />
-          <div style={{marginTop: "1%"}} />
           <TextField
+            className={classes.marginTop1Percent}
             id="password"
             label="Password"
             type="password"
@@ -236,9 +234,9 @@ const SignInWindow: FunctionComponent<Props> = (props: Props) => {
             onChange={handlePasswordChange}
             error={!passwordValid}
           />
-          {props.isSignUp && <div style={{marginTop: "1%"}} />}
           {props.isSignUp && (
             <TextField
+              className={classes.marginTop1Percent}
               id="confirmPassword"
               label="Confirm Password"
               type="password"
@@ -248,7 +246,7 @@ const SignInWindow: FunctionComponent<Props> = (props: Props) => {
             />
           )}
         </DialogContent>
-        <DialogActions disableSpacing style={{display: "flex", flexDirection: "column"}}>
+        <DialogActions disableSpacing className={classes.flexColumn}>
           <Button
             onClick={signInOrUp}
             variant="contained"
@@ -256,8 +254,7 @@ const SignInWindow: FunctionComponent<Props> = (props: Props) => {
             size="large">
             {props.isSignUp ? "Sign Up" : "Sign In"}
           </Button>
-          <div style={{marginTop: 8}}/>
-          <Button onClick={toggleSignUp} color="primary" size="small">
+          <Button onClick={toggleSignUp} color="primary" size="small" className={classes.marginTop10}>
             {props.isSignUp ? "Return to sign in" : "Create an account"}
           </Button>
         </DialogActions>

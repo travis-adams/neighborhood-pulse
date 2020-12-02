@@ -138,11 +138,11 @@ const AddressField: FunctionComponent<Props> = (props: Props) => {
         return (
           <Grid container alignItems="center">
             <Grid item>
-              <LocationOnIcon className={classes.addressPinIcon} />
+              <LocationOnIcon className={classes.pinIcon} />
             </Grid>
             <Grid item xs>
               {parts.map((part, index) => (
-                <span key={index} style={{ fontWeight: part.highlight ? 700 : 400 }}>
+                <span key={index} className={part.highlight ? classes.textBold : classes.textNormal}>
                   {part.text}
                 </span>
               ))}

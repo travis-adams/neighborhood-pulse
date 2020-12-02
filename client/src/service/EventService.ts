@@ -13,27 +13,26 @@ export default class EventService {
 
   // Prepares fetched events for display on the map
   formatEvents = (events: any, isUserSaved: boolean, isGroupSaved: boolean): Event[] => {
-    const formattedEvents = events.map((event: any) => {
-      // No timezone handling for events right now
-      return ({
-        name: event.name,
-        desc: event?.desc,
-        userSaved: isUserSaved,
-        groupSaved: isGroupSaved,
-        id: event.id,
-        date: new Date(event.date + ' ' + event.time),
-        link: event.link,
-        cat: event?.category,
-        location: event?.loc,
-        address: event?.addr,
-        position: (event.latitude && event.longitude) ? new google.maps.LatLng({lat: event.latitude, lng: event.longitude}) : null
-      } as Event);
-    });
-    return formattedEvents;
+    // Filter out events with bad dates (database should do this)
+    const validEvents = events.filter((event: any) => /\d\d\d\d-\d\d-\d\d/.test(event.date) && /\d\d:\d\d:\d\d/.test(event.time));
+    // Format events into Event objects (no timezone handling right now)
+    return validEvents.map((event: any) => ({
+      name: event.name,
+      desc: event?.desc,
+      userSaved: isUserSaved,
+      groupSaved: isGroupSaved,
+      id: event.id,
+      date: new Date(event.date + ' ' + event.time),
+      link: event.link,
+      cat: event?.category,
+      location: event?.loc,
+      address: event?.addr,
+      position: (event.latitude && event.longitude) ? new google.maps.LatLng({lat: event.latitude, lng: event.longitude}) : null
+    } as Event));
   }
 
   formatComments = (comments: any): Comment[] => {
-    const formattedComments = comments.map((comment: any) => {
+    return comments.map((comment: any) => {
       // Comments are stored in the database with no timezone (GMT-0), so the current user's timezone is added here
       var time = new Date(comment.timestamp);
       time = new Date(time.getTime() - time.getTimezoneOffset() * 60 * 1000);
@@ -46,20 +45,16 @@ export default class EventService {
         username: comment.username
       } as Comment);
     });
-    return formattedComments;
   }
 
   formatPois = (pois: any): PointOfInterest[] => {
-    const formattedPois = pois.map((poi: any) => {
-      return ({
-        name: poi.name,
-        address: poi?.addr,
-        desc: poi?.desc,
-        link: poi.link,
-        position: new google.maps.LatLng({lat: poi.latitude, lng: poi.longitude})
-      } as PointOfInterest);
-    });
-    return formattedPois;
+    return pois.map((poi: any) => ({
+      name: poi.name,
+      address: poi?.addr,
+      desc: poi?.desc,
+      link: poi.link,
+      position: new google.maps.LatLng({lat: poi.latitude, lng: poi.longitude})
+    } as PointOfInterest));
   }
 
   formatUser = (user: any): User => {
@@ -73,13 +68,10 @@ export default class EventService {
   }
 
   formatGroups = (groups: any): Group[] => {
-    const formattedGroups = groups.map((group: any) => {
-      return ({
-        id: group.groupID,
-        name: group.groupName
-      } as Group);
-    });
-    return formattedGroups;
+    return groups.map((group: any) => ({
+      id: group.groupID,
+      name: group.groupName
+    } as Group));
   }
 
   // supports: limit, date range, lat/lng, online, categories
