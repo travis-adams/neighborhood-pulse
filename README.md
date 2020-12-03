@@ -19,9 +19,8 @@
 * Fixed an issue where event comments were not immediately updating when the expanded event changed. Comments are now fetched collectively with all events, instead of individually whenever an event is expanded.
 * All Material-UI packages are now frozen at known functional versions. An unexpected update to a Material-UI package previously broke the application.
 ### Missing Functionality
-* Hovering the mouse over an event in the event list does not result in that event’s map pin changing color. This was requested by the client early in the semester.
-* There is no functionality for viewing only local volunteering locations/homeless shelters/schools/other community locations. This was requested by the client during Sprint 5.
-* The frontend is not usable on mobile platforms due to differences in CSS requirements.
+* Hovering the mouse over an event in the event list does not result in that event’s map pin changing color. This was a goal from earlier in the semester.
+* The frontend scaling isn't optimized for mobile due to differences in CSS requirements.
 * Most of the software packages used by the frontend are not set to a fixed version, so there is a risk that one or more package(s) may update and inadvertently break the application.
 ### Installation Instructions
 #### Downloading the repository
