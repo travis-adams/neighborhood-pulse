@@ -25,4 +25,6 @@ public interface EventRepo extends PagingAndSortingRepository<Event, String>, Jp
 
     //Return a list of all the vents in the table whose id is contained in the provided list
     List<Event> findEventsByIdIn(List<Integer> ids);
+
+    List<Event> findEventsByUserID(int userID);
 }
