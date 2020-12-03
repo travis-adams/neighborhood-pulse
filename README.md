@@ -37,7 +37,6 @@ For other downloading options, visit https://github.com/travis-adams/neighborhoo
 * Create a file called api_key.txt under the WebCrawlers/Sprint3+/miners/ directory
 * Paste a valid Google Maps API key into this file
 * Ensure Python 3 is installed on the target environment
-* Install prerequisite packages
 * Navigate to the WebCrawlers/Sprint3+/ directory
 * In command prompt, run
 * `pip3 install -r requirements.txt`
