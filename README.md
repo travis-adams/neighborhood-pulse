@@ -50,7 +50,7 @@ For other downloading options, visit https://github.com/travis-adams/neighborhoo
 ### Bringing Up an Instance of the Frontend
 * Navigate to the client folder in the repository.
 * In the file `public/index.html`, replace API_KEY_HERE with a valid Google Maps API key.
-* Set the baseUrl variable in `components/EventService.tsx` to the URL of the backend.
+* Set the baseUrl variable in `components/EventService.ts` to the URL of the backend.
 * Run the command npm install to install all of the required frontend packages (NOTE: NodeJS version 10+ is required for all packages to successfully compile).
 * Run the command  npm run start to start the application.
 * Visit localhost:3000 in a web browser to see the application.
