@@ -33,6 +33,7 @@ For other downloading options, visit https://github.com/travis-adams/neighborhoo
 * Update with Security Constants file to include the Secret Key you will be using for encryption
 * Build the Jar file of the Server directory using Maven (You will need the latest version of Maven and the JDK)
 * Start this Jar running on a server (We recommend AWS Elastic Beanstalk for easy setup)
+* Ensure the CORS policy of the serer is set to allow all methods neccessary (GET,POST,PUT,DELETE) as well as allow headers for the authentication
 ### Setting up the Web Scraper
 * Create a file called api_key.txt under the WebCrawlers/Sprint3+/miners/ directory
 * Paste a valid Google Maps API key into this file
